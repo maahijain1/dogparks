@@ -44,7 +44,10 @@ export async function generateMetadata({ params }: SlugPageProps): Promise<Metad
     })
     if (articleResponse.ok) {
       const articles = await articleResponse.json()
+      console.log('Metadata - Fetched articles:', articles)
+      console.log('Metadata - Looking for slug:', slug)
       const article = articles.find((a: { slug: string }) => a.slug === slug)
+      console.log('Metadata - Found article:', article)
       if (article) {
         return {
           title: `${article.title} | ${siteConfig.siteName}`,
@@ -145,7 +148,10 @@ export default async function SlugPage({ params }: SlugPageProps) {
     })
     if (articleResponse.ok) {
       const articles = await articleResponse.json()
+      console.log('Fetched articles:', articles)
+      console.log('Looking for slug:', slug)
       const article = articles.find((a: { slug: string }) => a.slug === slug)
+      console.log('Found article:', article)
       if (article) {
         // This is an article, render it
         return (
