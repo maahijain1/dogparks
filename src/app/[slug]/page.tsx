@@ -36,15 +36,17 @@ interface Listing {
 export async function generateMetadata({ params }: SlugPageProps): Promise<Metadata> {
   const { slug } = await params
   
-  // Handle state pages
-  if (!slug.includes('-')) {
-    const stateName = slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+  // Handle state pages (format: dog-parks-south-dakota)
+  if (slug.includes('-') && slug.split('-').length >= 3) {
+    const parts = slug.split('-')
+    const stateParts = parts.slice(2) // Remove first two parts (dog-parks)
+    const stateName = stateParts.join(' ').replace(/\b\w/g, l => l.toUpperCase())
     return {
-      title: `${siteConfig.niche}s ${stateName} | ${siteConfig.siteName}`,
+      title: `${siteConfig.niche} ${stateName} | ${siteConfig.siteName}`,
       description: `Find the best ${siteConfig.niche.toLowerCase()}s in ${stateName}. Discover top-rated ${siteConfig.niche.toLowerCase()}s, read reviews, and get contact information.`,
       keywords: `${siteConfig.niche.toLowerCase()}s, ${stateName}, local ${siteConfig.niche.toLowerCase()}s, ${siteConfig.niche.toLowerCase()} directory, ${stateName} ${siteConfig.niche.toLowerCase()}s`,
       openGraph: {
-        title: `${siteConfig.niche}s ${stateName}`,
+        title: `${siteConfig.niche} ${stateName}`,
         description: `Find the best ${siteConfig.niche.toLowerCase()}s in ${stateName}`,
         url: `${siteConfig.siteUrl}/${slug}`,
         siteName: siteConfig.siteName,
@@ -52,7 +54,7 @@ export async function generateMetadata({ params }: SlugPageProps): Promise<Metad
       },
       twitter: {
         card: 'summary_large_image',
-        title: `${siteConfig.niche}s ${stateName}`,
+        title: `${siteConfig.niche} ${stateName}`,
         description: `Find the best ${siteConfig.niche.toLowerCase()}s in ${stateName}`,
       },
       alternates: {
@@ -98,9 +100,12 @@ export async function generateMetadata({ params }: SlugPageProps): Promise<Metad
 export default async function SlugPage({ params }: SlugPageProps) {
   const { slug } = await params
   
-  // Handle state pages (format: alabama)
-  if (!slug.includes('-')) {
-    const stateName = slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+  // Handle state pages (format: dog-parks-south-dakota)
+  if (slug.includes('-') && slug.split('-').length >= 3) {
+    // Extract state name by removing the niche part (first two parts: dog-parks)
+    const parts = slug.split('-')
+    const stateParts = parts.slice(2) // Remove first two parts (dog-parks)
+    const stateName = stateParts.join(' ').replace(/\b\w/g, l => l.toUpperCase())
     
     // Fetch cities and listings for this state
     let cities = []
@@ -153,7 +158,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
         <section className="bg-white text-gray-900 py-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-4">
-              {siteConfig.niche}s {stateName}
+              {siteConfig.niche} {stateName}
             </h1>
             <p className="text-xl md:text-2xl mb-8 text-gray-600">
               Explore {siteConfig.niche.toLowerCase()}s in {stateName}
@@ -255,6 +260,57 @@ export default async function SlugPage({ params }: SlugPageProps) {
   
   // Handle city pages (format: dog-park-fort-smith)
   if (slug.includes('-')) {
+    // First check if this is an article by trying to fetch it
+    try {
+      const articleResponse = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/articles`, {
+        cache: 'no-store'
+      })
+      if (articleResponse.ok) {
+        const articles = await articleResponse.json()
+        const article = articles.find((a: any) => a.slug === slug)
+        if (article) {
+          // This is an article, render it
+          return (
+            <div className="min-h-screen bg-white">
+              <nav className="bg-white shadow-sm border-b">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                  <div className="flex justify-between items-center py-4">
+                    <Link href="/" className="text-2xl font-bold text-blue-600">
+                      {siteConfig.siteName}
+                    </Link>
+                    <Link href="/" className="flex items-center text-gray-600 hover:text-blue-600">
+                      <ArrowLeft className="h-4 w-4 mr-2" />
+                      Back to Home
+                    </Link>
+                  </div>
+                </div>
+              </nav>
+
+              <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <header className="mb-8">
+                  <h1 className="text-4xl font-bold text-gray-900 mb-4">{article.title}</h1>
+                  {article.featured_image && (
+                    <img 
+                      src={article.featured_image} 
+                      alt={article.title}
+                      className="w-full h-64 object-cover rounded-lg mb-6"
+                    />
+                  )}
+                </header>
+                <div 
+                  className="prose prose-lg max-w-none"
+                  dangerouslySetInnerHTML={{ __html: article.content }}
+                />
+              </article>
+            </div>
+          )
+        }
+      }
+    } catch (error) {
+      console.log('Error checking for article:', error)
+    }
+
+    // If not an article, treat as city page
     const parts = slug.split('-')
     // Remove the first two parts (dog-park) and join the rest to get the full city name
     const cityParts = parts.slice(2) // Remove first two parts (dog-park)

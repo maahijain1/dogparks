@@ -32,6 +32,7 @@ export default function ArticleEditor({ content = '', onChange, placeholder = 'S
   const [isMounted, setIsMounted] = useState(false)
 
   const editor = useEditor({
+    immediatelyRender: false,
     extensions: [
       StarterKit,
       Image.configure({

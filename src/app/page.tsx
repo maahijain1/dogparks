@@ -78,9 +78,9 @@ export default function HomePage() {
     const fetchData = async () => {
       try {
         const [citiesRes, allListingsRes, articlesRes] = await Promise.all([
-          fetch('/api/cities'),
-          fetch('/api/listings'),
-          fetch('/api/articles?published=true')
+          fetch('/api/cities', { cache: 'no-store' }),
+          fetch('/api/listings', { cache: 'no-store' }),
+          fetch('/api/articles?published=true', { cache: 'no-store' })
         ])
 
         // Try to fetch featured listings separately to handle potential errors
@@ -318,13 +318,10 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 id="hero-heading" className="text-4xl md:text-6xl font-bold mb-6">
-              {siteConfig.content.hero.title}
+              {siteConfig.content.hero.title.replace('{niche}', siteConfig.niche)}
             </h1>
             <p className="text-xl md:text-2xl mb-8 text-gray-600">
-              {userLocation ? 
-                `Discover top-rated ${siteConfig.niche.toLowerCase()}s in our directory` : 
-                `Discover top-rated ${siteConfig.niche.toLowerCase()}s in your area`
-              }
+              {siteConfig.content.hero.subtitle.replace('{niche}', siteConfig.niche.toLowerCase())}
             </p>
             
             {/* Search Bar */}
@@ -335,7 +332,7 @@ export default function HomePage() {
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                     <input
                       type="text"
-                      placeholder={siteConfig.content.hero.searchPlaceholder}
+                      placeholder={siteConfig.content.hero.searchPlaceholder.replace('{niche}', siteConfig.niche.toLowerCase())}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
@@ -383,7 +380,7 @@ export default function HomePage() {
                     className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white px-2 py-1.5 rounded text-xs font-medium flex items-center justify-center transition-colors duration-200"
                   >
                     <Search className="h-3 w-3 mr-1" />
-                    {siteConfig.content.hero.searchButton}
+                    {siteConfig.content.hero.searchButton.replace('{niche}', siteConfig.niche)}
                   </button>
                   
                   {(searchQuery || selectedCity) && (
@@ -546,48 +543,65 @@ export default function HomePage() {
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               Browse by State
             </h2>
-            <p className="text-xl text-gray-600">
+            <p className="text-xl text-gray-600 mb-4">
               Explore {siteConfig.niche.toLowerCase()}s in different states
             </p>
+            <button
+              onClick={() => window.location.reload()}
+              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+            >
+              🔄 Refresh States
+            </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {cities.reduce((states, city) => {
-              const existingState = states.find(s => s.id === city.states?.id)
-              if (existingState) {
-                existingState.cities.push(city)
-                existingState.totalListings += allListings.filter(listing => listing.city_id === city.id).length
-              } else if (city.states) {
-                states.push({
-                  id: city.states.id,
-                  name: city.states.name,
-                  cities: [city],
-                  totalListings: allListings.filter(listing => listing.city_id === city.id).length
-                })
+          <div className="flex flex-wrap gap-4 justify-center">
+            {(() => {
+              const states = cities.reduce((states, city) => {
+                const existingState = states.find(s => s.id === city.states?.id)
+                if (existingState) {
+                  existingState.cities.push(city)
+                  existingState.totalListings += allListings.filter(listing => listing.city_id === city.id).length
+                } else if (city.states) {
+                  states.push({
+                    id: city.states.id,
+                    name: city.states.name,
+                    cities: [city],
+                    totalListings: allListings.filter(listing => listing.city_id === city.id).length
+                  })
+                }
+                return states
+              }, [] as Array<{id: string, name: string, cities: Array<{id: string, name: string}>, totalListings: number}>)
+              
+              
+              // If no states found from cities, show a message
+              if (states.length === 0 && cities.length > 0) {
+                return (
+                  <div className="col-span-full text-center py-12">
+                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <MapPin className="h-8 w-8 text-gray-400" />
+                    </div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">States Not Linked</h3>
+                    <p className="text-gray-600 mb-4">Cities exist but are not linked to states. Please check your admin panel.</p>
+                    <Link 
+                      href="/admin/listings/cities" 
+                      className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      Fix City-States Links
+                    </Link>
+                  </div>
+                )
               }
-              return states
-            }, [] as Array<{id: string, name: string, cities: Array<{id: string, name: string}>, totalListings: number}>).map((state) => (
+              
+              return states.map((state) => (
               <Link
                 key={state.id}
-                href={`/${state.name.toLowerCase().replace(/\s+/g, '-')}`}
-                className="group bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 p-6 border border-gray-200 hover:border-blue-300"
+                href={`/${siteConfig.niche.toLowerCase().replace(/\s+/g, '-')}-${state.name.toLowerCase().replace(/\s+/g, '-')}`}
+                className="text-blue-600 hover:text-blue-800 hover:underline"
               >
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-200 transition-colors">
-                    <MapPin className="h-8 w-8 text-blue-600" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
-                    {state.name}
-                  </h3>
-                  <p className="text-sm text-gray-600 mb-3">
-                    {state.cities.length} cit{state.cities.length !== 1 ? 'ies' : 'y'}
-                  </p>
-                  <div className="bg-gray-100 group-hover:bg-blue-50 rounded-full px-3 py-1 text-sm font-medium text-gray-700 group-hover:text-blue-700 transition-colors">
-                    {state.totalListings} {siteConfig.niche.toLowerCase()}{state.totalListings !== 1 ? 's' : ''}
-                  </div>
-                </div>
+                {state.name}
               </Link>
-            ))}
+              ))
+            })()}
           </div>
 
           {cities.length === 0 && (

@@ -11,6 +11,7 @@ export default function ArticlesPage() {
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingArticle, setEditingArticle] = useState<Article | null>(null)
+
   const [formData, setFormData] = useState({
     title: '',
     content: '',
@@ -66,7 +67,7 @@ export default function ArticlesPage() {
 
       if (response.ok) {
         await fetchArticles()
-        resetForm()
+        resetForm() // This will close the form (default behavior)
       }
     } catch (error) {
       console.error('Error saving article:', error)
@@ -74,7 +75,7 @@ export default function ArticlesPage() {
   }
 
   // Reset form
-  const resetForm = () => {
+  const resetForm = (closeForm = true) => {
     setFormData({
       title: '',
       content: '',
@@ -82,7 +83,9 @@ export default function ArticlesPage() {
       featured_image: '',
       published: false
     })
-    setShowForm(false)
+    if (closeForm) {
+      setShowForm(false)
+    }
     setEditingArticle(null)
   }
 
@@ -159,11 +162,9 @@ export default function ArticlesPage() {
             </div>
             <button
               onClick={() => {
-                console.log('New Article button clicked')
                 setShowForm(true)
                 setEditingArticle(null)
-                resetForm()
-                console.log('Form should be showing now')
+                resetForm(false) // Don't close the form
               }}
               className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
             >
@@ -172,6 +173,7 @@ export default function ArticlesPage() {
             </button>
           </div>
         </div>
+
 
         {/* Form Modal */}
         {showForm && (

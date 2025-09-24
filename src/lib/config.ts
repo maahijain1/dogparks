@@ -45,10 +45,10 @@ export const siteConfig = {
   content: {
     // Hero section
     hero: {
-      title: 'Find the Best Local Dog Parks',
-      subtitle: 'Discover top-rated dog parks in your area',
-      searchPlaceholder: 'Search dog parks, locations...',
-      searchButton: 'Find Dog Parks'
+      title: 'Find the Best Local {niche}s',
+      subtitle: 'Discover top-rated {niche}s in your area',
+      searchPlaceholder: 'Search {niche}s, locations...',
+      searchButton: 'Find {niche}s'
     },
     
     // Featured section

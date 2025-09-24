@@ -337,7 +337,7 @@ export default function ArticlesPage() {
                           <FileText className="w-5 h-5 text-blue-500 mr-3" />
                           <div>
                             <div className="text-sm font-medium text-gray-900 dark:text-white">
-                              {article.title}
+                              {article.title?.replace(/[^\w\s-]/g, '').substring(0, 50)}{article.title?.length > 50 ? '...' : ''}
                             </div>
                             <div className="text-sm text-gray-500">
                               /{article.slug}
