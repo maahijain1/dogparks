@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { ArrowLeft, MapPin } from 'lucide-react'
 import { siteConfig } from '@/lib/config'
 import { Metadata } from 'next'
+import { supabase } from '@/lib/supabase'
 
 interface SlugPageProps {
   params: Promise<{ slug: string }>
@@ -39,43 +40,43 @@ export async function generateMetadata({ params }: SlugPageProps): Promise<Metad
   
   // First check if this is an article
   try {
-    const articleResponse = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/articles`, {
-      cache: 'no-store'
-    })
-    if (articleResponse.ok) {
-      const articles = await articleResponse.json()
-      console.log('Metadata - Fetched articles:', articles)
-      console.log('Metadata - Looking for slug:', slug)
-      const article = articles.find((a: { slug: string }) => a.slug === slug)
-      console.log('Metadata - Found article:', article)
-      if (article) {
+    const { data: articles, error } = await supabase
+      .from('articles')
+      .select('*')
+      .eq('slug', slug)
+      .single()
+    
+    console.log('Metadata - Looking for slug:', slug)
+    console.log('Metadata - Found article:', articles)
+    console.log('Metadata - Error:', error)
+    
+    if (articles && !error) {
         return {
-          title: `${article.title} | ${siteConfig.siteName}`,
-          description: article.excerpt || `Read about ${article.title} on ${siteConfig.siteName}`,
-          keywords: `${siteConfig.niche.toLowerCase()}s, ${article.title}, ${siteConfig.niche.toLowerCase()} articles`,
+          title: `${articles.title} | ${siteConfig.siteName}`,
+          description: articles.excerpt || `Read about ${articles.title} on ${siteConfig.siteName}`,
+          keywords: `${siteConfig.niche.toLowerCase()}s, ${articles.title}, ${siteConfig.niche.toLowerCase()} articles`,
           openGraph: {
-            title: article.title,
-            description: article.excerpt || `Read about ${article.title}`,
+            title: articles.title,
+            description: articles.excerpt || `Read about ${articles.title}`,
             url: `${siteConfig.siteUrl}/${slug}`,
             siteName: siteConfig.siteName,
             type: 'article',
-            images: article.featured_image ? [{ url: article.featured_image }] : undefined,
+            images: articles.featured_image ? [{ url: articles.featured_image }] : undefined,
           },
           twitter: {
             card: 'summary_large_image',
-            title: article.title,
-            description: article.excerpt || `Read about ${article.title}`,
-            images: article.featured_image ? [article.featured_image] : undefined,
+            title: articles.title,
+            description: articles.excerpt || `Read about ${articles.title}`,
+            images: articles.featured_image ? [articles.featured_image] : undefined,
           },
           alternates: {
             canonical: `${siteConfig.siteUrl}/${slug}`,
           },
         }
       }
+    } catch (error) {
+      console.log('Error checking for article metadata:', error)
     }
-  } catch (error) {
-    console.log('Error checking for article metadata:', error)
-  }
   
   // Handle state pages (format: dog-parks-south-dakota)
   if (slug.includes('-') && slug.split('-').length >= 3) {
@@ -143,16 +144,17 @@ export default async function SlugPage({ params }: SlugPageProps) {
   
   // First check if this is an article by trying to fetch it
   try {
-    const articleResponse = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/articles`, {
-      cache: 'no-store'
-    })
-    if (articleResponse.ok) {
-      const articles = await articleResponse.json()
-      console.log('Fetched articles:', articles)
-      console.log('Looking for slug:', slug)
-      const article = articles.find((a: { slug: string }) => a.slug === slug)
-      console.log('Found article:', article)
-      if (article) {
+    const { data: article, error } = await supabase
+      .from('articles')
+      .select('*')
+      .eq('slug', slug)
+      .single()
+    
+    console.log('Looking for slug:', slug)
+    console.log('Found article:', article)
+    console.log('Error:', error)
+    
+    if (article && !error) {
         // This is an article, render it
         return (
           <div className="min-h-screen bg-white">
@@ -191,10 +193,9 @@ export default async function SlugPage({ params }: SlugPageProps) {
           </div>
         )
       }
+    } catch (error) {
+      console.log('Error checking for article:', error)
     }
-  } catch (error) {
-    console.log('Error checking for article:', error)
-  }
   
   // Handle state pages (format: dog-parks-south-dakota)
   if (slug.includes('-') && slug.split('-').length >= 3) {
