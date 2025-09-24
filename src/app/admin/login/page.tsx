@@ -39,7 +39,7 @@ export default function AdminLogin() {
         console.error('Login failed:', data.error || 'Invalid credentials')
       }
     } catch (error) {
-      console.error('Login failed. Please try again.')
+      console.error('Login failed. Please try again.', error)
     } finally {
       setLoading(false)
     }

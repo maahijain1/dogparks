@@ -18,6 +18,7 @@ export async function GET() {
       }
     })
   } catch (error) {
+    console.error('Error fetching states:', error)
     return NextResponse.json(
       { error: 'Failed to fetch states' },
       { status: 500 }
@@ -53,6 +54,7 @@ export async function POST(request: NextRequest) {
       }
     })
   } catch (error) {
+    console.error('Error creating state:', error)
     return NextResponse.json(
       { error: 'Failed to create state' },
       { status: 500 }

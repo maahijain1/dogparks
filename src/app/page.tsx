@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Search, MapPin, Star, Phone, Globe, Mail, Menu, X } from 'lucide-react'
 import { Listing, Article, City, State } from '@/types/database'
 import { siteConfig } from '@/lib/config'
@@ -706,9 +707,11 @@ export default function HomePage() {
               latestArticles.map((article) => (
               <article key={article.id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
                 {article.featured_image && (
-                  <img 
+                  <Image 
                     src={article.featured_image} 
                     alt={article.title}
+                    width={400}
+                    height={192}
                     className="w-full h-48 object-cover"
                   />
                 )}

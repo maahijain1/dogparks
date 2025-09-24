@@ -20,7 +20,8 @@ export async function GET(request: NextRequest) {
     if (error) throw error
 
     return NextResponse.json(data)
-  } catch {
+  } catch (error) {
+    console.error('Error fetching articles:', error)
     return NextResponse.json(
       { error: 'Failed to fetch articles' },
       { status: 500 }
@@ -54,7 +55,8 @@ export async function POST(request: NextRequest) {
     if (error) throw error
 
     return NextResponse.json(data, { status: 201 })
-  } catch {
+  } catch (error) {
+    console.error('Error creating article:', error)
     return NextResponse.json(
       { error: 'Failed to create article' },
       { status: 500 }

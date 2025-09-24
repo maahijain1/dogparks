@@ -279,7 +279,7 @@ export default function ArticlesPage() {
                   </button>
                   <button
                     type="button"
-                    onClick={resetForm}
+                    onClick={() => resetForm()}
                     className="flex-1 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 py-3 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors cursor-pointer"
                   >
                     Cancel

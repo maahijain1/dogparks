@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { ArrowLeft, MapPin } from 'lucide-react'
 import { siteConfig } from '@/lib/config'
 import { Metadata } from 'next'
@@ -267,7 +268,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
       })
       if (articleResponse.ok) {
         const articles = await articleResponse.json()
-        const article = articles.find((a: any) => a.slug === slug)
+        const article = articles.find((a: { slug: string }) => a.slug === slug)
         if (article) {
           // This is an article, render it
           return (
@@ -290,9 +291,11 @@ export default async function SlugPage({ params }: SlugPageProps) {
                 <header className="mb-8">
                   <h1 className="text-4xl font-bold text-gray-900 mb-4">{article.title}</h1>
                   {article.featured_image && (
-                    <img 
+                    <Image 
                       src={article.featured_image} 
                       alt={article.title}
+                      width={800}
+                      height={256}
                       className="w-full h-64 object-cover rounded-lg mb-6"
                     />
                   )}
