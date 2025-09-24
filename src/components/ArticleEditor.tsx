@@ -50,7 +50,6 @@ export default function ArticleEditor({ content = '', onChange, placeholder = 'S
       }),
     ],
     content,
-    immediatelyRender: false,
     onUpdate: ({ editor }) => {
       onChange?.(editor.getHTML())
     },

@@ -10,7 +10,13 @@ export async function GET() {
 
     if (error) throw error
 
-    return NextResponse.json(data)
+    return NextResponse.json(data, {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
+    })
   } catch (error) {
     return NextResponse.json(
       { error: 'Failed to fetch states' },
@@ -38,7 +44,14 @@ export async function POST(request: NextRequest) {
 
     if (error) throw error
 
-    return NextResponse.json(data, { status: 201 })
+    return NextResponse.json(data, { 
+      status: 201,
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
+    })
   } catch (error) {
     return NextResponse.json(
       { error: 'Failed to create state' },
