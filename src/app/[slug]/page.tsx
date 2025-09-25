@@ -229,6 +229,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
     console.log('=== STATE PAGE ===')
     console.log('URL slug:', slug)
     console.log('State name:', stateName)
+    console.log('Looking for cities in state:', stateName)
     
     // Fetch cities and listings for this state
     let cities: Array<{id: string, name: string}> = []
@@ -247,14 +248,16 @@ export default async function SlugPage({ params }: SlugPageProps) {
             name
           )
         `)
-        .ilike('states.name', stateName)
+        .eq('states.name', stateName)
       
       if (!citiesError && stateCities) {
+        console.log('Raw state cities data:', stateCities)
         cities = stateCities.map(city => ({
           id: city.id,
           name: city.name
         }))
         console.log('Found cities in state:', cities.map(c => c.name))
+        console.log('Cities count:', cities.length)
         
         // Get listings for these cities
         const cityIds = cities.map(c => c.id)
