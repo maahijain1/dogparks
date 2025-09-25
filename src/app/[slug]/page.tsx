@@ -39,35 +39,59 @@ export async function generateMetadata({ params }: SlugPageProps): Promise<Metad
   const { slug } = await params
   
   // First check if this is an article
+  let article = null
+  let articleError = null
+  
   try {
-    const { data: articles, error } = await supabase
+    const { data, error } = await supabase
       .from('articles')
       .select('*')
       .eq('slug', slug)
       .single()
     
-    console.log('Metadata - Looking for slug:', slug)
-    console.log('Metadata - Found article:', articles)
-    console.log('Metadata - Error:', error)
+    article = data
+    articleError = error
     
-    if (articles && !error) {
+    console.log('Metadata - Looking for slug:', slug)
+    console.log('Metadata - Found article:', article)
+    console.log('Metadata - Error:', articleError)
+    
+    // If Supabase fails, try API fallback
+    if (error && process.env.NEXT_PUBLIC_SITE_URL) {
+      console.log('Metadata - Supabase failed, trying API fallback...')
+      try {
+        const apiResponse = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/articles`, {
+          cache: 'no-store'
+        })
+        if (apiResponse.ok) {
+          const articles = await apiResponse.json()
+          article = articles.find((a: { slug: string }) => a.slug === slug)
+          articleError = null
+          console.log('Metadata - API fallback found article:', article)
+        }
+      } catch (apiError) {
+        console.log('Metadata - API fallback also failed:', apiError)
+      }
+    }
+    
+    if (article && !articleError) {
         return {
-          title: `${articles.title} | ${siteConfig.siteName}`,
-          description: articles.excerpt || `Read about ${articles.title} on ${siteConfig.siteName}`,
-          keywords: `${siteConfig.niche.toLowerCase()}s, ${articles.title}, ${siteConfig.niche.toLowerCase()} articles`,
+          title: `${article.title} | ${siteConfig.siteName}`,
+          description: article.excerpt || `Read about ${article.title} on ${siteConfig.siteName}`,
+          keywords: `${siteConfig.niche.toLowerCase()}s, ${article.title}, ${siteConfig.niche.toLowerCase()} articles`,
           openGraph: {
-            title: articles.title,
-            description: articles.excerpt || `Read about ${articles.title}`,
+            title: article.title,
+            description: article.excerpt || `Read about ${article.title}`,
             url: `${siteConfig.siteUrl}/${slug}`,
             siteName: siteConfig.siteName,
             type: 'article',
-            images: articles.featured_image ? [{ url: articles.featured_image }] : undefined,
+            images: article.featured_image ? [{ url: article.featured_image }] : undefined,
           },
           twitter: {
             card: 'summary_large_image',
-            title: articles.title,
-            description: articles.excerpt || `Read about ${articles.title}`,
-            images: articles.featured_image ? [articles.featured_image] : undefined,
+            title: article.title,
+            description: article.excerpt || `Read about ${article.title}`,
+            images: article.featured_image ? [article.featured_image] : undefined,
           },
           alternates: {
             canonical: `${siteConfig.siteUrl}/${slug}`,
@@ -143,19 +167,43 @@ export default async function SlugPage({ params }: SlugPageProps) {
   const { slug } = await params
   
   // First check if this is an article by trying to fetch it
+  let article = null
+  let articleError = null
+  
   try {
-    const { data: article, error } = await supabase
+    const { data, error } = await supabase
       .from('articles')
       .select('*')
       .eq('slug', slug)
       .single()
     
+    article = data
+    articleError = error
+    
     console.log('Looking for slug:', slug)
     console.log('Found article:', article)
-    console.log('Error:', error)
+    console.log('Error:', articleError)
     console.log('Supabase connection test:', supabase)
     
-    if (article && !error) {
+    // If Supabase fails, try API fallback
+    if (error && process.env.NEXT_PUBLIC_SITE_URL) {
+      console.log('Supabase failed, trying API fallback...')
+      try {
+        const apiResponse = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/articles`, {
+          cache: 'no-store'
+        })
+        if (apiResponse.ok) {
+          const articles = await apiResponse.json()
+          article = articles.find((a: { slug: string }) => a.slug === slug)
+          articleError = null
+          console.log('API fallback found article:', article)
+        }
+      } catch (apiError) {
+        console.log('API fallback also failed:', apiError)
+      }
+    }
+    
+    if (article && !articleError) {
         // This is an article, render it
         return (
           <div className="min-h-screen bg-white">
@@ -205,31 +253,76 @@ export default async function SlugPage({ params }: SlugPageProps) {
     const stateParts = parts.slice(2) // Remove first two parts (dog-parks)
     const stateName = stateParts.join(' ').replace(/\b\w/g, l => l.toUpperCase())
     
-    // Fetch cities and listings for this state
+    // Fetch cities and listings for this state with fallback
     let cities = []
     let allListings = []
     
     try {
-      const [citiesRes, listingsRes] = await Promise.all([
-        fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/cities`, {
-          cache: 'no-store'
-        }),
-        fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/listings`, {
-          cache: 'no-store'
-        })
+      // Try Supabase first
+      const [citiesResult, listingsResult] = await Promise.all([
+        supabase
+          .from('cities')
+          .select(`
+            *,
+            states (
+              id,
+              name
+            )
+          `),
+        supabase
+          .from('listings')
+          .select(`
+            *,
+            cities (
+              id,
+              name,
+              states (
+                id,
+                name
+              )
+            )
+          `)
       ])
       
-      if (citiesRes.ok) {
-        const response = await citiesRes.json()
-        const allCities = response.value || response // Handle both wrapped and direct responses
-        cities = allCities.filter((city: City) => 
+      if (!citiesResult.error && citiesResult.data) {
+        cities = citiesResult.data.filter((city: City) => 
           city.states?.name?.toLowerCase() === stateName.toLowerCase()
         )
+        console.log('Supabase cities fetch successful:', cities.length)
       }
       
-      if (listingsRes.ok) {
-        const response = await listingsRes.json()
-        allListings = response.value || response // Handle both wrapped and direct responses
+      if (!listingsResult.error && listingsResult.data) {
+        allListings = listingsResult.data
+        console.log('Supabase listings fetch successful:', allListings.length)
+      }
+      
+      // If Supabase fails, try API fallback
+      if (citiesResult.error || listingsResult.error) {
+        console.log('Supabase failed, trying API fallback...', { citiesError: citiesResult.error, listingsError: listingsResult.error })
+        
+        const [citiesRes, listingsRes] = await Promise.all([
+          fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/cities`, {
+            cache: 'no-store'
+          }),
+          fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/listings`, {
+            cache: 'no-store'
+          })
+        ])
+        
+        if (citiesRes.ok) {
+          const response = await citiesRes.json()
+          const allCities = response.value || response // Handle both wrapped and direct responses
+          cities = allCities.filter((city: City) => 
+            city.states?.name?.toLowerCase() === stateName.toLowerCase()
+          )
+          console.log('API fallback cities successful:', cities.length)
+        }
+        
+        if (listingsRes.ok) {
+          const response = await listingsRes.json()
+          allListings = response.value || response // Handle both wrapped and direct responses
+          console.log('API fallback listings successful:', allListings.length)
+        }
       }
     } catch (error) {
       console.error('Error fetching state data:', error)
@@ -364,19 +457,30 @@ export default async function SlugPage({ params }: SlugPageProps) {
     const cityParts = parts.slice(2) // Remove first two parts (dog-park)
     const cityName = cityParts.join(' ').replace(/\b\w/g, l => l.toUpperCase())
     
-    // Fetch listings from API
+    // Fetch listings from API with fallback
     let listings = []
     let totalListings = 0
     let featuredListings = 0
     
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/listings`, {
-        cache: 'no-store' // Always fetch fresh data
-      })
-      if (response.ok) {
-        const responseData = await response.json()
-        const allListings = responseData.value || responseData // Handle both wrapped and direct responses
-        
+      // Try Supabase first
+      const { data: allListings, error: listingsError } = await supabase
+        .from('listings')
+        .select(`
+          *,
+          cities (
+            id,
+            name,
+            states (
+              id,
+              name
+            )
+          )
+        `)
+        .order('featured', { ascending: false })
+        .order('business')
+      
+      if (!listingsError && allListings) {
         // Filter listings for this city
         listings = allListings.filter((listing: Listing) => 
           listing.cities?.name?.toLowerCase() === cityName.toLowerCase()
@@ -384,6 +488,27 @@ export default async function SlugPage({ params }: SlugPageProps) {
         
         totalListings = listings.length
         featuredListings = listings.filter((listing: Listing) => listing.featured).length
+        console.log('Supabase listings fetch successful:', { totalListings, featuredListings })
+      } else {
+        console.log('Supabase listings failed, trying API fallback...', listingsError)
+        
+        // Fallback to API
+        const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/listings`, {
+          cache: 'no-store' // Always fetch fresh data
+        })
+        if (response.ok) {
+          const responseData = await response.json()
+          const apiListings = responseData.value || responseData // Handle both wrapped and direct responses
+          
+          // Filter listings for this city
+          listings = apiListings.filter((listing: Listing) => 
+            listing.cities?.name?.toLowerCase() === cityName.toLowerCase()
+          )
+          
+          totalListings = listings.length
+          featuredListings = listings.filter((listing: Listing) => listing.featured).length
+          console.log('API fallback listings successful:', { totalListings, featuredListings })
+        }
       }
     } catch (error) {
       console.error('Error fetching listings:', error)
