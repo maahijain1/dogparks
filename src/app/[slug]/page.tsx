@@ -219,6 +219,11 @@ export default async function SlugPage({ params }: SlugPageProps) {
     console.error('Error fetching article:', error)
   }
   
+  // If no article found, return 404
+  if (!article) {
+    return notFound()
+  }
+  
   // If not an article, check if it's a state or city page
   const parts = slug.split('-')
   

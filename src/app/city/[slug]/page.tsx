@@ -274,7 +274,15 @@ export default async function CityPage({ params }: CityPageProps) {
                       <p><span className="font-medium">Address:</span> {listing.address}</p>
                     )}
                     {listing.phone && (
-                      <p><span className="font-medium">Phone:</span> {listing.phone}</p>
+                      <div className="flex items-center justify-between">
+                        <p><span className="font-medium">Phone:</span> {listing.phone}</p>
+                        <a 
+                          href={`tel:${listing.phone}`}
+                          className="inline-flex items-center px-3 py-1 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors"
+                        >
+                          📞 Call
+                        </a>
+                      </div>
                     )}
                     {listing.website && (
                       <p>

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Link from "next/link";
-import { ArrowLeft, Plus, Edit, Trash2, Upload, Building2 } from "lucide-react";
+import { ArrowLeft, Plus, Edit, Trash2, Upload, Building2, Phone } from "lucide-react";
 import { Listing, City, State } from '@/types/database'
 
 export default function BusinessesPage() {
@@ -550,6 +550,15 @@ export default function BusinessesPage() {
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-2">
+                          {listing.phone && (
+                            <a 
+                              href={`tel:${listing.phone}`}
+                              className="p-2 text-green-600 hover:bg-green-100 dark:hover:bg-green-900 rounded-lg transition-colors"
+                              title="Call Now"
+                            >
+                              <Phone className="w-4 h-4" />
+                            </a>
+                          )}
                           <button
                             onClick={() => handleEdit(listing)}
                             className="p-2 text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-lg transition-colors"
