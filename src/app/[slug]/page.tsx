@@ -35,11 +35,22 @@ interface Listing {
   }
 }
 
+interface Article {
+  id: string
+  title: string
+  content: string
+  slug: string
+  featured_image?: string
+  excerpt?: string
+  published: boolean
+  created_at: string
+}
+
 export async function generateMetadata({ params }: SlugPageProps): Promise<Metadata> {
   const { slug } = await params
   
   // First check if this is an article
-  let article = null
+  let article: Article | null = null
   let articleError = null
   
   try {
@@ -167,7 +178,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
   const { slug } = await params
   
   // First check if this is an article by trying to fetch it
-  let article = null
+  let article: Article | null = null
   let articleError = null
   
   try {
@@ -205,6 +216,10 @@ export default async function SlugPage({ params }: SlugPageProps) {
     
     if (article && !articleError) {
         // This is an article, render it
+        console.log('Article featured image URL:', article.featured_image)
+        if (!article.featured_image) {
+          console.log('No featured image for article:', article.title)
+        }
         return (
           <div className="min-h-screen bg-white">
             <nav className="bg-white shadow-sm border-b">
@@ -225,13 +240,27 @@ export default async function SlugPage({ params }: SlugPageProps) {
               <header className="mb-8">
                 <h1 className="text-4xl font-bold text-gray-900 mb-4">{article.title}</h1>
                 {article.featured_image && (
-                  <Image 
-                    src={article.featured_image} 
-                    alt={article.title}
-                    width={800}
-                    height={256}
-                    className="w-full h-64 object-cover rounded-lg mb-6"
-                  />
+                  <>
+                    <div className="w-full h-64 bg-gray-200 rounded-lg mb-6 flex items-center justify-center">
+                      <Image 
+                        src={article.featured_image} 
+                        alt={article.title}
+                        width={800}
+                        height={256}
+                        className="w-full h-full object-cover rounded-lg"
+                        onError={(e) => {
+                          console.error('Image failed to load:', article?.featured_image, e)
+                          e.currentTarget.style.display = 'none'
+                          // Show a placeholder
+                          const parent = e.currentTarget.parentElement
+                          if (parent) {
+                            parent.innerHTML = '<div class="w-full h-full bg-gray-300 rounded-lg flex items-center justify-center text-gray-500">Image not available</div>'
+                          }
+                        }}
+                        onLoad={() => console.log('Image loaded successfully:', article?.featured_image)}
+                      />
+                    </div>
+                  </>
                 )}
               </header>
               <div 
