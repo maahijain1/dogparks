@@ -237,18 +237,25 @@ export default async function SlugPage({ params }: SlugPageProps) {
     let featuredListings = 0
     
     try {
-      // Get cities in this state
+      // First, get the state ID
+      const { data: stateData, error: stateError } = await supabase
+        .from('states')
+        .select('id, name')
+        .eq('name', stateName)
+        .single()
+      
+      if (stateError || !stateData) {
+        console.log('State not found:', stateName, stateError)
+        return notFound()
+      }
+      
+      console.log('Found state:', stateData)
+      
+      // Then get cities in this state using state_id
       const { data: stateCities, error: citiesError } = await supabase
         .from('cities')
-        .select(`
-          id,
-          name,
-          states (
-            id,
-            name
-          )
-        `)
-        .eq('states.name', stateName)
+        .select('id, name')
+        .eq('state_id', stateData.id)
       
       if (!citiesError && stateCities) {
         console.log('Raw state cities data:', stateCities)
