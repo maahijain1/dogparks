@@ -241,13 +241,14 @@ export default async function SlugPage({ params }: SlugPageProps) {
                 <h1 className="text-4xl font-bold text-gray-900 mb-4">{article.title}</h1>
                 {article.featured_image && (
                   <div className="w-full h-64 bg-gray-200 rounded-lg mb-6 overflow-hidden">
-                    <Image 
+                    <img 
                       src={article.featured_image} 
                       alt={article.title}
-                      width={800}
-                      height={256}
                       className="w-full h-full object-cover"
-                      unoptimized={true}
+                      onError={(e) => {
+                        console.error('Image failed to load:', article.featured_image)
+                        e.currentTarget.style.display = 'none'
+                      }}
                     />
                   </div>
                 )}
