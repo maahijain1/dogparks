@@ -472,7 +472,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
     )
   }
   
-  // Handle city pages (format: dog-park-fort-smith)
+  // Handle city pages (format: dog-park-fort-smith) - redirect to proper city URL
   if (slug.includes('-') && !isLikelyStatePage) {
     // If not an article and not a state page, treat as city page
     console.log('URL parts:', parts)
@@ -481,120 +481,18 @@ export default async function SlugPage({ params }: SlugPageProps) {
     console.log('City parts after removing niche:', cityParts)
     const cityName = cityParts.join(' ').replace(/\b\w/g, l => l.toUpperCase())
     console.log('Final city name:', cityName)
-    console.log('=== PHOENIX DEBUG ===')
+    console.log('=== REDIRECTING TO CITY PAGE ===')
     console.log('URL slug:', slug)
     console.log('Parsed city name:', cityName)
     
-    // Fetch listings from API with fallback
-    let listings = []
-    let totalListings = 0
-    let featuredListings = 0
-    
-    try {
-      // Try Supabase first
-      const { data: allListings, error: listingsError } = await supabase
-        .from('listings')
-        .select(`
-          *,
-          cities (
-            id,
-            name,
-            states (
-              id,
-              name
-            )
-          )
-        `)
-        .order('featured', { ascending: false })
-        .order('business')
-      
-      if (!listingsError && allListings) {
-        console.log('All listings from Supabase:', allListings.length)
-        console.log('Looking for city name:', cityName)
-        console.log('Sample listing city names:', allListings.slice(0, 3).map((l: Listing) => l.cities?.name))
-        console.log('All unique city names in listings:', [...new Set(allListings.map((l: Listing) => l.cities?.name).filter(Boolean))])
-        
-        // Filter listings for this city
-        listings = allListings.filter((listing: Listing) => {
-          const listingCityName = listing.cities?.name?.toLowerCase().trim()
-          const targetCityName = cityName.toLowerCase().trim()
-          const matches = listingCityName === targetCityName
-          if (matches) {
-            console.log('Found matching listing:', listing.business, 'in city:', listing.cities?.name)
-          }
-          return matches
-        })
-        
-        // If no exact matches, try case-insensitive partial matching
-        if (listings.length === 0) {
-          console.log('No exact matches found, trying partial matching...')
-          listings = allListings.filter((listing: Listing) => {
-            const listingCityName = listing.cities?.name?.toLowerCase().trim()
-            const targetCityName = cityName.toLowerCase().trim()
-            const matches = listingCityName?.includes(targetCityName) || targetCityName.includes(listingCityName || '')
-            if (matches) {
-              console.log('Found partial matching listing:', listing.business, 'in city:', listing.cities?.name)
-            }
-            return matches
-          })
-        }
-        
-        totalListings = listings.length
-        featuredListings = listings.filter((listing: Listing) => listing.featured).length
-        console.log('Supabase listings fetch successful:', { totalListings, featuredListings, cityName })
-        console.log('Found listings:', listings.map((l: Listing) => ({ business: l.business, city: l.cities?.name })))
-      } else {
-        console.log('Supabase listings failed, trying API fallback...', listingsError)
-        
-        // Fallback to API
-        const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/listings`, {
-          cache: 'no-store' // Always fetch fresh data
-        })
-        if (response.ok) {
-          const responseData = await response.json()
-          const apiListings = responseData.value || responseData // Handle both wrapped and direct responses
-          
-          console.log('API fallback - All listings:', apiListings.length)
-          console.log('API fallback - Looking for city name:', cityName)
-          console.log('API fallback - Sample listing city names:', apiListings.slice(0, 3).map((l: Listing) => l.cities?.name))
-          console.log('API fallback - All unique city names in listings:', [...new Set(apiListings.map((l: Listing) => l.cities?.name).filter(Boolean))])
-          
-          // Filter listings for this city
-          listings = apiListings.filter((listing: Listing) => {
-            const listingCityName = listing.cities?.name?.toLowerCase().trim()
-            const targetCityName = cityName.toLowerCase().trim()
-            const matches = listingCityName === targetCityName
-            if (matches) {
-              console.log('API fallback - Found matching listing:', listing.business, 'in city:', listing.cities?.name)
-            }
-            return matches
-          })
-          
-          // If no exact matches, try case-insensitive partial matching
-          if (listings.length === 0) {
-            console.log('API fallback - No exact matches found, trying partial matching...')
-            listings = apiListings.filter((listing: Listing) => {
-              const listingCityName = listing.cities?.name?.toLowerCase().trim()
-              const targetCityName = cityName.toLowerCase().trim()
-              const matches = listingCityName?.includes(targetCityName) || targetCityName.includes(listingCityName || '')
-              if (matches) {
-                console.log('API fallback - Found partial matching listing:', listing.business, 'in city:', listing.cities?.name)
-              }
-              return matches
-            })
-          }
-          
-          totalListings = listings.length
-          featuredListings = listings.filter((listing: Listing) => listing.featured).length
-          console.log('API fallback listings successful:', { totalListings, featuredListings, cityName })
-          console.log('API fallback found listings:', listings.map((l: Listing) => ({ business: l.business, city: l.cities?.name })))
-        }
-      }
-    } catch (error) {
-      console.error('Error fetching listings:', error)
+    // Redirect to proper city URL
+    const citySlug = cityParts.join('-')
+    return {
+      redirect: {
+        destination: `/city/${citySlug}`,
+        permanent: true,
+      },
     }
-    
-    return (
       <div className="min-h-screen bg-white">
         {/* Structured Data for SEO */}
         <script
