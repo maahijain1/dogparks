@@ -135,7 +135,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
                 "@context": "https://schema.org",
                 "@type": "Article",
                 "headline": article.title,
-                "description": article.excerpt || article.content.substring(0, 160),
+                "description": article.excerpt || (article.content ? article.content.substring(0, 160) : ''),
                 "image": article.featured_image,
                 "datePublished": article.created_at,
                 "author": {
@@ -187,7 +187,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
                     alt={article.title}
                     className="w-full h-full object-cover"
                     onError={(e) => {
-                      console.error('Image failed to load:', article?.featured_image)
+                      console.error('Image failed to load:', article?.featured_image || 'No image URL')
                       e.currentTarget.style.display = 'none'
                     }}
                   />
@@ -196,7 +196,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
             </header>
             <div 
               className="prose prose-lg max-w-none"
-              dangerouslySetInnerHTML={{ __html: article.content }}
+              dangerouslySetInnerHTML={{ __html: article.content || '' }}
             />
           </article>
 
