@@ -246,7 +246,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
                       alt={article.title}
                       className="w-full h-full object-cover"
                       onError={(e) => {
-                        console.error('Image failed to load:', article.featured_image)
+                        console.error('Image failed to load:', article?.featured_image)
                         e.currentTarget.style.display = 'none'
                       }}
                     />
