@@ -240,27 +240,16 @@ export default async function SlugPage({ params }: SlugPageProps) {
               <header className="mb-8">
                 <h1 className="text-4xl font-bold text-gray-900 mb-4">{article.title}</h1>
                 {article.featured_image && (
-                  <>
-                    <div className="w-full h-64 bg-gray-200 rounded-lg mb-6 flex items-center justify-center">
-                      <Image 
-                        src={article.featured_image} 
-                        alt={article.title}
-                        width={800}
-                        height={256}
-                        className="w-full h-full object-cover rounded-lg"
-                        onError={(e) => {
-                          console.error('Image failed to load:', article?.featured_image, e)
-                          e.currentTarget.style.display = 'none'
-                          // Show a placeholder
-                          const parent = e.currentTarget.parentElement
-                          if (parent) {
-                            parent.innerHTML = '<div class="w-full h-full bg-gray-300 rounded-lg flex items-center justify-center text-gray-500">Image not available</div>'
-                          }
-                        }}
-                        onLoad={() => console.log('Image loaded successfully:', article?.featured_image)}
-                      />
-                    </div>
-                  </>
+                  <div className="w-full h-64 bg-gray-200 rounded-lg mb-6 overflow-hidden">
+                    <Image 
+                      src={article.featured_image} 
+                      alt={article.title}
+                      width={800}
+                      height={256}
+                      className="w-full h-full object-cover"
+                      unoptimized={true}
+                    />
+                  </div>
                 )}
               </header>
               <div 
