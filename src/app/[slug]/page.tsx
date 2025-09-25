@@ -246,10 +246,14 @@ export default async function SlugPage({ params }: SlugPageProps) {
       console.log('Error checking for article:', error)
     }
   
-  // Handle state pages (format: dog-parks-south-dakota)
-  if (slug.includes('-') && slug.split('-').length >= 3) {
+  // Handle state pages (format: dog-parks-south-dakota) - only if it looks like a state name
+  const parts = slug.split('-')
+  const isLikelyStatePage = slug.includes('-') && parts.length >= 3 && 
+    // Check if the last part(s) could be a state name (single word states)
+    (parts.length === 3 || (parts.length === 4 && (parts[2] === 'south' || parts[2] === 'north' || parts[2] === 'west' || parts[2] === 'new')))
+  
+  if (isLikelyStatePage) {
     // Extract state name by removing the niche part (first two parts: dog-parks)
-    const parts = slug.split('-')
     const stateParts = parts.slice(2) // Remove first two parts (dog-parks)
     const stateName = stateParts.join(' ').replace(/\b\w/g, l => l.toUpperCase())
     
@@ -450,9 +454,8 @@ export default async function SlugPage({ params }: SlugPageProps) {
   }
   
   // Handle city pages (format: dog-park-fort-smith)
-  if (slug.includes('-')) {
-    // If not an article, treat as city page
-    const parts = slug.split('-')
+  if (slug.includes('-') && !isLikelyStatePage) {
+    // If not an article and not a state page, treat as city page
     console.log('URL parts:', parts)
     // Remove the first two parts (dog-park) and join the rest to get the full city name
     const cityParts = parts.slice(2) // Remove first two parts (dog-park)
