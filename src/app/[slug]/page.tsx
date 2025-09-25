@@ -481,6 +481,9 @@ export default async function SlugPage({ params }: SlugPageProps) {
     console.log('City parts after removing niche:', cityParts)
     const cityName = cityParts.join(' ').replace(/\b\w/g, l => l.toUpperCase())
     console.log('Final city name:', cityName)
+    console.log('=== PHOENIX DEBUG ===')
+    console.log('URL slug:', slug)
+    console.log('Parsed city name:', cityName)
     
     // Fetch listings from API with fallback
     let listings = []
@@ -539,6 +542,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
         totalListings = listings.length
         featuredListings = listings.filter((listing: Listing) => listing.featured).length
         console.log('Supabase listings fetch successful:', { totalListings, featuredListings, cityName })
+        console.log('Found listings:', listings.map(l => ({ business: l.business, city: l.cities?.name })))
       } else {
         console.log('Supabase listings failed, trying API fallback...', listingsError)
         
@@ -583,6 +587,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
           totalListings = listings.length
           featuredListings = listings.filter((listing: Listing) => listing.featured).length
           console.log('API fallback listings successful:', { totalListings, featuredListings, cityName })
+          console.log('API fallback found listings:', listings.map(l => ({ business: l.business, city: l.cities?.name })))
         }
       }
     } catch (error) {
