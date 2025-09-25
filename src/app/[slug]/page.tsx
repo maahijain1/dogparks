@@ -9,22 +9,6 @@ interface SlugPageProps {
   params: Promise<{ slug: string }>
 }
 
-interface Listing {
-  id: string
-  business: string
-  category: string
-  review_rating: number
-  number_of_reviews: number
-  address: string
-  website: string
-  phone: string
-  email: string
-  city_id: string
-  featured: boolean
-  cities?: {
-    name: string
-  }
-}
 
 interface Article {
   id: string
@@ -237,7 +221,6 @@ export default async function SlugPage({ params }: SlugPageProps) {
   
   // If not an article, check if it's a state or city page
   const parts = slug.split('-')
-  const isLikelyStatePage = parts.length === 1 && !slug.includes('-')
   
   // Handle state pages (format: dog-park-arizona) - show state with cities
   if (slug.includes('-') && parts.length === 2 && parts[0] === 'dog' && parts[1] === 'park') {
@@ -248,7 +231,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
     console.log('State name:', stateName)
     
     // Fetch cities and listings for this state
-    let cities: any[] = []
+    let cities: Array<{id: string, name: string}> = []
     let totalListings = 0
     let featuredListings = 0
     
@@ -267,7 +250,10 @@ export default async function SlugPage({ params }: SlugPageProps) {
         .ilike('states.name', stateName)
       
       if (!citiesError && stateCities) {
-        cities = stateCities
+        cities = stateCities.map(city => ({
+          id: city.id,
+          name: city.name
+        }))
         console.log('Found cities in state:', cities.map(c => c.name))
         
         // Get listings for these cities
@@ -291,7 +277,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
         
         if (!listingsError && stateListings) {
           totalListings = stateListings.length
-          featuredListings = stateListings.filter((listing: any) => listing.featured).length
+          featuredListings = stateListings.filter((listing: {featured: boolean}) => listing.featured).length
           console.log('Found listings in state:', { totalListings, featuredListings })
         }
       }
