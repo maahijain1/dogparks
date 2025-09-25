@@ -248,9 +248,21 @@ export default async function SlugPage({ params }: SlugPageProps) {
   const parts = slug.split('-')
   const isLikelyStatePage = parts.length === 1 && !slug.includes('-')
   
+  // Handle state pages (format: dog-park-arizona) - redirect to proper state URL
+  if (slug.includes('-') && parts.length === 2 && parts[0] === 'dog' && parts[1] === 'park') {
+    // This is a state page like dog-park-arizona
+    const stateName = parts.slice(2).join('-') // Get everything after dog-park
+    console.log('=== REDIRECTING TO STATE PAGE ===')
+    console.log('URL slug:', slug)
+    console.log('State name:', stateName)
+    
+    // Redirect to proper state URL
+    redirect(`/state/${stateName}`)
+  }
+  
   // Handle city pages (format: dog-park-fort-smith) - redirect to proper city URL
-  if (slug.includes('-') && !isLikelyStatePage) {
-    // If not an article and not a state page, treat as city page
+  if (slug.includes('-') && parts.length > 2 && parts[0] === 'dog' && parts[1] === 'park') {
+    // This is a city page like dog-park-fort-smith
     console.log('URL parts:', parts)
     // Remove the first two parts (dog-park) and join the rest to get the full city name
     const cityParts = parts.slice(2) // Remove first two parts (dog-park)
