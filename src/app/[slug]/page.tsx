@@ -123,6 +123,8 @@ export default async function SlugPage({ params }: SlugPageProps) {
       }
     }
     
+    console.log('Article debug:', { article: !!article, articleError, slug })
+    
     if (article && !articleError) {
       // This is an article page
       return (
