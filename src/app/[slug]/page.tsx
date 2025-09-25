@@ -1,21 +1,12 @@
 import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
-import { ArrowLeft, MapPin } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import { siteConfig } from '@/lib/config'
 import { Metadata } from 'next'
 import { supabase } from '@/lib/supabase'
 
 interface SlugPageProps {
   params: Promise<{ slug: string }>
-}
-
-interface City {
-  id: string
-  name: string
-  states?: {
-    name: string
-  }
 }
 
 interface Listing {
