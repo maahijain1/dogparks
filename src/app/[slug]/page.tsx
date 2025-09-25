@@ -223,7 +223,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
   const parts = slug.split('-')
   
   // Handle state pages (format: dog-park-arizona) - show state with cities
-  if (slug.includes('-') && parts.length === 2 && parts[0] === 'dog' && parts[1] === 'park') {
+  if (slug.includes('-') && parts.length >= 3 && parts[0] === 'dog' && parts[1] === 'park') {
     // This is a state page like dog-park-arizona
     const stateName = parts.slice(2).join('-').replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
     console.log('=== STATE PAGE ===')
