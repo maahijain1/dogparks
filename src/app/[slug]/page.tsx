@@ -453,9 +453,12 @@ export default async function SlugPage({ params }: SlugPageProps) {
   if (slug.includes('-')) {
     // If not an article, treat as city page
     const parts = slug.split('-')
+    console.log('URL parts:', parts)
     // Remove the first two parts (dog-park) and join the rest to get the full city name
     const cityParts = parts.slice(2) // Remove first two parts (dog-park)
+    console.log('City parts after removing niche:', cityParts)
     const cityName = cityParts.join(' ').replace(/\b\w/g, l => l.toUpperCase())
+    console.log('Final city name:', cityName)
     
     // Fetch listings from API with fallback
     let listings = []
@@ -481,14 +484,24 @@ export default async function SlugPage({ params }: SlugPageProps) {
         .order('business')
       
       if (!listingsError && allListings) {
+        console.log('All listings from Supabase:', allListings.length)
+        console.log('Looking for city name:', cityName)
+        console.log('Sample listing city names:', allListings.slice(0, 3).map((l: Listing) => l.cities?.name))
+        
         // Filter listings for this city
-        listings = allListings.filter((listing: Listing) => 
-          listing.cities?.name?.toLowerCase() === cityName.toLowerCase()
-        )
+        listings = allListings.filter((listing: Listing) => {
+          const listingCityName = listing.cities?.name?.toLowerCase()
+          const targetCityName = cityName.toLowerCase()
+          const matches = listingCityName === targetCityName
+          if (matches) {
+            console.log('Found matching listing:', listing.business, 'in city:', listing.cities?.name)
+          }
+          return matches
+        })
         
         totalListings = listings.length
         featuredListings = listings.filter((listing: Listing) => listing.featured).length
-        console.log('Supabase listings fetch successful:', { totalListings, featuredListings })
+        console.log('Supabase listings fetch successful:', { totalListings, featuredListings, cityName })
       } else {
         console.log('Supabase listings failed, trying API fallback...', listingsError)
         
@@ -500,14 +513,24 @@ export default async function SlugPage({ params }: SlugPageProps) {
           const responseData = await response.json()
           const apiListings = responseData.value || responseData // Handle both wrapped and direct responses
           
+          console.log('API fallback - All listings:', apiListings.length)
+          console.log('API fallback - Looking for city name:', cityName)
+          console.log('API fallback - Sample listing city names:', apiListings.slice(0, 3).map((l: Listing) => l.cities?.name))
+          
           // Filter listings for this city
-          listings = apiListings.filter((listing: Listing) => 
-            listing.cities?.name?.toLowerCase() === cityName.toLowerCase()
-          )
+          listings = apiListings.filter((listing: Listing) => {
+            const listingCityName = listing.cities?.name?.toLowerCase()
+            const targetCityName = cityName.toLowerCase()
+            const matches = listingCityName === targetCityName
+            if (matches) {
+              console.log('API fallback - Found matching listing:', listing.business, 'in city:', listing.cities?.name)
+            }
+            return matches
+          })
           
           totalListings = listings.length
           featuredListings = listings.filter((listing: Listing) => listing.featured).length
-          console.log('API fallback listings successful:', { totalListings, featuredListings })
+          console.log('API fallback listings successful:', { totalListings, featuredListings, cityName })
         }
       }
     } catch (error) {
