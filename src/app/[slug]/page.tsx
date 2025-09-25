@@ -153,6 +153,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
     console.log('Looking for slug:', slug)
     console.log('Found article:', article)
     console.log('Error:', error)
+    console.log('Supabase connection test:', supabase)
     
     if (article && !error) {
         // This is an article, render it
