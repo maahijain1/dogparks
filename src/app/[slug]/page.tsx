@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { ArrowLeft, MapPin } from 'lucide-react'
@@ -263,12 +263,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
     
     // Redirect to proper city URL
     const citySlug = cityParts.join('-')
-    return {
-      redirect: {
-        destination: `/city/${citySlug}`,
-        permanent: true,
-      },
-    }
+    redirect(`/city/${citySlug}`)
   }
 
   notFound()
