@@ -542,7 +542,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
         totalListings = listings.length
         featuredListings = listings.filter((listing: Listing) => listing.featured).length
         console.log('Supabase listings fetch successful:', { totalListings, featuredListings, cityName })
-        console.log('Found listings:', listings.map(l => ({ business: l.business, city: l.cities?.name })))
+        console.log('Found listings:', listings.map((l: Listing) => ({ business: l.business, city: l.cities?.name })))
       } else {
         console.log('Supabase listings failed, trying API fallback...', listingsError)
         
@@ -587,7 +587,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
           totalListings = listings.length
           featuredListings = listings.filter((listing: Listing) => listing.featured).length
           console.log('API fallback listings successful:', { totalListings, featuredListings, cityName })
-          console.log('API fallback found listings:', listings.map(l => ({ business: l.business, city: l.cities?.name })))
+          console.log('API fallback found listings:', listings.map((l: Listing) => ({ business: l.business, city: l.cities?.name })))
         }
       }
     } catch (error) {
