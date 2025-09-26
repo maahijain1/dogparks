@@ -319,10 +319,10 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 id="hero-heading" className="text-4xl md:text-6xl font-bold mb-6">
-              {siteConfig.content.hero.title.replace('{niche}', siteConfig.niche)}
+              {siteConfig.content.hero.title.replace('{niche}', siteConfig.niche).replace('{country}', siteConfig.country)}
             </h1>
             <p className="text-xl md:text-2xl mb-8 text-gray-600">
-              {siteConfig.content.hero.subtitle.replace('{niche}', siteConfig.niche.toLowerCase())}
+              {siteConfig.content.hero.subtitle.replace('{niche}', siteConfig.niche.toLowerCase()).replace('{country}', siteConfig.country)}
             </p>
             
             {/* Search Bar */}

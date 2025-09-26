@@ -5,8 +5,11 @@ export const siteConfig = {
   // Main niche - change this to update everywhere
   niche: 'Dog Park',
   
+  // Country/Region
+  country: 'USA',
+  
   // Site information
-  siteName: 'Dog Parks Directory',
+  siteName: 'DirectoryHub',
   siteDescription: 'Find the best local dog parks in your area',
   siteUrl: 'https://dogparks.vercel.app',
   
@@ -45,8 +48,8 @@ export const siteConfig = {
   content: {
     // Hero section
     hero: {
-      title: 'Find the Best Local {niche}s',
-      subtitle: 'Discover top-rated {niche}s in your area',
+      title: 'Find the Best Local {niche}s {country}',
+      subtitle: 'Discover top-rated {niche}s in {country}',
       searchPlaceholder: 'Search {niche}s, locations...',
       searchButton: 'Find {niche}s'
     },
