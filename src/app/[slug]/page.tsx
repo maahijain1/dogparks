@@ -155,119 +155,15 @@ export default async function SlugPage({ params }: SlugPageProps) {
     
     
     if (article && !articleError) {
-      // This is an article page
-      try {
-        return (
+      // This is an article page - simplified version
+      return (
         <div className="min-h-screen bg-white">
-          {/* JSON-LD Structured Data */}
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{
-              __html: (() => {
-                try {
-                  return JSON.stringify({
-                    "@context": "https://schema.org",
-                    "@type": "Article",
-                    "headline": article.title || 'Untitled Article',
-                    "description": article.excerpt || (article.content ? article.content.substring(0, 160) : 'No description available'),
-                    "image": article.featured_image || null,
-                    "datePublished": article.created_at || new Date().toISOString(),
-                    "author": {
-                      "@type": "Organization",
-                      "name": siteConfig.siteName
-                    },
-                    "publisher": {
-                      "@type": "Organization",
-                      "name": siteConfig.siteName,
-                      "logo": {
-                        "@type": "ImageObject",
-                        "url": `${siteConfig.siteUrl}/logo.png`
-                      }
-                    }
-                  })
-                } catch (error) {
-                  return '{}'
-                }
-              })()
-            }}
-          />
-          
-          {/* Navigation */}
-          <nav className="bg-white shadow-sm border-b">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="flex justify-between items-center h-16">
-                <Link href="/" className="text-2xl font-bold text-blue-600">
-                  Home
-                </Link>
-                <Link href="/" className="flex items-center text-gray-600 hover:text-blue-600">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back to Home
-                </Link>
-              </div>
-            </div>
-          </nav>
-
-          {/* Article Content */}
-          <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <header className="mb-8">
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-                {article.title}
-              </h1>
-              {article.excerpt && (
-                <p className="text-xl text-gray-600 mb-6">
-                  {article.excerpt}
-                </p>
-              )}
-              {article.featured_image && (
-                <div className="w-full h-64 bg-gray-200 rounded-lg mb-6 overflow-hidden">
-                  <img 
-                    src={article.featured_image} 
-                    alt={article.title}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none'
-                    }}
-                  />
-                </div>
-              )}
-            </header>
-            <div 
-              className="prose prose-lg max-w-none"
-              dangerouslySetInnerHTML={{ __html: article.content || '' }}
-            />
-          </article>
-
-          {/* Back to Home */}
-          <section className="py-16 bg-white">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-              <Link 
-                href="/"
-                className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Homepage
-              </Link>
-            </div>
-          </section>
-        </div>
-        )
-      } catch (renderError) {
-        return (
-          <div className="min-h-screen bg-white flex items-center justify-center">
-            <div className="text-center">
-              <h1 className="text-2xl font-bold text-gray-900 mb-4">Error Loading Article</h1>
-              <p className="text-gray-600 mb-4">There was an error loading this article.</p>
-              <Link 
-                href="/"
-                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Homepage
-              </Link>
-            </div>
+          <div className="max-w-4xl mx-auto px-4 py-12">
+            <h1 className="text-4xl font-bold mb-4">{article.title}</h1>
+            <div dangerouslySetInnerHTML={{ __html: article.content || '' }} />
           </div>
-        )
-      }
+        </div>
+      )
     }
   } catch (error) {
     // Error fetching article
