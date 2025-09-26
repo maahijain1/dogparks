@@ -567,12 +567,6 @@ export default function HomePage() {
             <p className="text-xl text-gray-600 mb-4">
               Explore {siteConfig.niche.toLowerCase()}s in different states
             </p>
-            <button
-              onClick={() => window.location.reload()}
-              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
-            >
-              🔄 Refresh States
-            </button>
           </div>
 
           <div className="flex flex-wrap gap-4 justify-center">
