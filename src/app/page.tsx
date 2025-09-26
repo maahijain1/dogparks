@@ -118,8 +118,8 @@ export default function HomePage() {
           setFeaturedListings(featuredListings)
         }
         setAllListings(allListings)
-        const articlesToSet = Array.isArray(articlesData) ? articlesData.slice(0, 3) : []
-        setLatestArticles(articlesToSet) // Latest 3 articles
+        const articlesToSet = Array.isArray(articlesData) ? articlesData : []
+        setLatestArticles(articlesToSet) // All articles
       } catch (error) {
         console.error('Error fetching data:', error)
         console.error('Error details:', error)
@@ -685,12 +685,12 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Latest Articles */}
+      {/* All Articles */}
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Latest Articles
+              All Articles
             </h2>
             <p className="text-xl text-gray-600">
               Stay updated with our latest insights
