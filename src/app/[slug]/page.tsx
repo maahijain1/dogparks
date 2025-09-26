@@ -137,14 +137,9 @@ export default async function SlugPage({ params }: SlugPageProps) {
     article = data
     articleError = error
     
-    console.log('Looking for slug:', slug)
-    console.log('Found article:', article)
-    console.log('Error:', articleError)
-    console.log('Supabase connection test:', supabase)
     
     // If Supabase fails, try API fallback
     if (error && process.env.NEXT_PUBLIC_SITE_URL) {
-      console.log('Supabase failed, trying API fallback...')
       try {
         const apiResponse = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/articles`, {
           cache: 'no-store'
@@ -153,14 +148,11 @@ export default async function SlugPage({ params }: SlugPageProps) {
           const articles = await apiResponse.json()
           article = articles.find((a: { slug: string }) => a.slug === slug)
           articleError = null
-          console.log('API fallback found article:', article)
         }
       } catch (apiError) {
-        console.log('API fallback also failed:', apiError)
       }
     }
     
-    console.log('Article debug:', { article: !!article, articleError, slug })
     
     if (article && !articleError) {
       // This is an article page
@@ -194,7 +186,6 @@ export default async function SlugPage({ params }: SlugPageProps) {
                     }
                   })
                 } catch (error) {
-                  console.error('JSON-LD serialization error:', error)
                   return '{}'
                 }
               })()
@@ -234,7 +225,6 @@ export default async function SlugPage({ params }: SlugPageProps) {
                     alt={article.title}
                     className="w-full h-full object-cover"
                     onError={(e) => {
-                      console.error('Image failed to load:', article?.featured_image || 'No image URL')
                       e.currentTarget.style.display = 'none'
                     }}
                   />
@@ -262,7 +252,6 @@ export default async function SlugPage({ params }: SlugPageProps) {
         </div>
         )
       } catch (renderError) {
-        console.error('Error rendering article:', renderError)
         return (
           <div className="min-h-screen bg-white flex items-center justify-center">
             <div className="text-center">
@@ -281,7 +270,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
       }
     }
   } catch (error) {
-    console.error('Error fetching article:', error)
+    // Error fetching article
   }
   
   
