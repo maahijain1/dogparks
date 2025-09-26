@@ -6,9 +6,9 @@ export const siteConfig = {
   niche: 'Dog Park',
   
   // Site information
-  siteName: 'YourLogoName',
+  siteName: 'Dog Parks Directory',
   siteDescription: 'Find the best local dog parks in your area',
-  siteUrl: 'https://directoryhub.com',
+  siteUrl: 'https://dogparks.vercel.app',
   
   // SEO templates
   seo: {

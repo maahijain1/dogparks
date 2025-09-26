@@ -131,6 +131,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
       .from('articles')
       .select('*')
       .eq('slug', slug)
+      .eq('published', true)
       .single()
     
     article = data
