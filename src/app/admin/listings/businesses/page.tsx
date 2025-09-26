@@ -25,7 +25,8 @@ export default function BusinessesPage() {
     website: '',
     phone: '',
     email: '',
-    city_id: ''
+    city_id: '',
+    featured: false
   })
   const [importFormData, setImportFormData] = useState({
     city_id: ''
@@ -202,7 +203,8 @@ export default function BusinessesPage() {
       website: '',
       phone: '',
       email: '',
-      city_id: ''
+      city_id: '',
+      featured: false
     })
     setImportFormData({
       city_id: ''
@@ -223,7 +225,8 @@ export default function BusinessesPage() {
       website: listing.website,
       phone: listing.phone,
       email: listing.email || '',
-      city_id: listing.city_id
+      city_id: listing.city_id,
+      featured: listing.featured || false
     })
     setShowForm(true)
   }
@@ -419,7 +422,8 @@ export default function BusinessesPage() {
                       website: '',
                       phone: '',
                       email: '',
-                      city_id: ''
+                      city_id: '',
+                      featured: false
                     })
                   }}
                   className="text-gray-500 hover:text-gray-700"
@@ -562,6 +566,20 @@ export default function BusinessesPage() {
                   </select>
                 </div>
 
+                <div>
+                  <label className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      checked={formData.featured}
+                      onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
+                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                    />
+                    <span className="text-sm font-medium text-gray-700">
+                      Featured Listing (shows in featured section on city pages)
+                    </span>
+                  </label>
+                </div>
+
                 <div className="flex justify-end space-x-3 pt-4">
                   <button
                     type="button"
@@ -577,7 +595,8 @@ export default function BusinessesPage() {
                         website: '',
                         phone: '',
                         email: '',
-                        city_id: ''
+                        city_id: '',
+                        featured: false
                       })
                     }}
                     className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition-colors"
