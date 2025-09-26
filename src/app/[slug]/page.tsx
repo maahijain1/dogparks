@@ -172,7 +172,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
             
             <h1 className="text-4xl font-bold mb-8">{article.title}</h1>
             <div 
-              className="prose prose-lg max-w-none"
+              className="prose prose-lg max-w-none prose-p:mb-6 prose-headings:mb-4 prose-headings:mt-8 prose-h2:text-2xl prose-h3:text-xl prose-h2:font-bold prose-h3:font-semibold prose-strong:font-bold prose-a:text-blue-600 prose-a:underline hover:prose-a:text-blue-800"
               dangerouslySetInnerHTML={{ __html: article.content || '' }}
             />
           </div>
