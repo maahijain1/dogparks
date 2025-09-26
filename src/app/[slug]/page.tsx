@@ -158,33 +158,6 @@ export default async function SlugPage({ params }: SlugPageProps) {
       // This is an article page
       return (
         <div className="min-h-screen bg-white">
-          {/* JSON-LD Structured Data */}
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify({
-                "@context": "https://schema.org",
-                "@type": "Article",
-                "headline": article.title || 'Untitled Article',
-                "description": article.excerpt || (article.content ? article.content.substring(0, 160) : 'No description available'),
-                "image": article.featured_image || null,
-                "datePublished": article.created_at || new Date().toISOString(),
-                "author": {
-                  "@type": "Organization",
-                  "name": siteConfig.siteName
-                },
-                "publisher": {
-                  "@type": "Organization",
-                  "name": siteConfig.siteName,
-                  "logo": {
-                    "@type": "ImageObject",
-                    "url": `${siteConfig.siteUrl}/logo.png`
-                  }
-                }
-              })
-            }}
-          />
-          
           {/* Navigation */}
           <nav className="bg-white shadow-sm border-b">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
