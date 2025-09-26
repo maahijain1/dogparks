@@ -646,38 +646,52 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredListings.map((listing) => (
-              <div key={listing.id} className="bg-white rounded-lg border-2 border-gray-200 hover:border-blue-300 shadow-md hover:shadow-lg transition-all duration-300 p-6">
-                <div className="flex items-start justify-between mb-3">
-                  <h3 className="text-lg font-semibold text-gray-900">{listing.business}</h3>
-                  {listing.review_rating > 0 && (
-                    <div className="flex items-center text-yellow-500">
-                      <Star className="h-4 w-4 fill-current" />
-                      <span className="ml-1 text-sm font-medium">{listing.review_rating}</span>
+              <div key={listing.id} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+                <div className="flex justify-between items-start mb-4">
+                  <h3 className="text-xl font-semibold text-gray-900">{listing.business}</h3>
+                  {listing.featured && (
+                    <span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                      Featured
+                    </span>
+                  )}
+                </div>
+                
+                <div className="space-y-2 text-sm text-gray-600">
+                  {listing.category && (
+                    <p><span className="font-medium">Category:</span> {listing.category}</p>
+                  )}
+                  {listing.address && (
+                    <p><span className="font-medium">Address:</span> {listing.address}</p>
+                  )}
+                  {listing.phone && (
+                    <div className="flex items-center justify-between">
+                      <p><span className="font-medium">Phone:</span> {listing.phone}</p>
+                      <a 
+                        href={`tel:${listing.phone}`}
+                        className="inline-flex items-center px-3 py-1 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors"
+                      >
+                        📞 Call
+                      </a>
                     </div>
                   )}
-                </div>
-                
-                <p className="text-blue-600 font-medium mb-2">{listing.category}</p>
-                <p className="text-gray-600 text-sm mb-3">{listing.address}</p>
-                
-                <div className="flex items-center text-sm text-gray-500 mb-4">
-                  <MapPin className="h-4 w-4 mr-1" />
-                  {listing.cities?.name}, {listing.cities?.states?.name}
-                </div>
-                
-                <div className="flex flex-col space-y-2">
-                  {listing.phone && (
-                    <a href={`tel:${listing.phone}`} className="flex items-center justify-center bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors font-medium text-sm">
-                      <Phone className="h-4 w-4 mr-2" />
-                      <span>Call Now</span>
-                    </a>
-                  )}
                   {listing.website && (
-                    <a href={listing.website} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm">
-                      <Globe className="h-4 w-4 mr-2" />
-                      <span>Visit Website</span>
-                    </a>
+                    <p>
+                      <span className="font-medium">Website:</span>{' '}
+                      <a href={listing.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                        Visit Website
+                      </a>
+                    </p>
                   )}
+                  {listing.review_rating > 0 && (
+                    <p>
+                      <span className="font-medium">Rating:</span> {listing.review_rating}/5 
+                      <span className="ml-1 text-yellow-500">★</span>
+                    </p>
+                  )}
+                  <div className="flex items-center text-sm text-gray-500">
+                    <MapPin className="h-4 w-4 mr-1" />
+                    {listing.cities?.name}, {listing.cities?.states?.name}
+                  </div>
                 </div>
               </div>
             ))}
