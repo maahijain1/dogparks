@@ -164,32 +164,40 @@ export default async function SlugPage({ params }: SlugPageProps) {
     
     if (article && !articleError) {
       // This is an article page
-      return (
+      try {
+        return (
         <div className="min-h-screen bg-white">
           {/* JSON-LD Structured Data */}
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{
-              __html: JSON.stringify({
-                "@context": "https://schema.org",
-                "@type": "Article",
-                "headline": article.title,
-                "description": article.excerpt || (article.content ? article.content.substring(0, 160) : 'No description available'),
-                "image": article.featured_image,
-                "datePublished": article.created_at,
-                "author": {
-                  "@type": "Organization",
-                  "name": siteConfig.siteName
-                },
-                "publisher": {
-                  "@type": "Organization",
-                  "name": siteConfig.siteName,
-                  "logo": {
-                    "@type": "ImageObject",
-                    "url": `${siteConfig.siteUrl}/logo.png`
-                  }
+              __html: (() => {
+                try {
+                  return JSON.stringify({
+                    "@context": "https://schema.org",
+                    "@type": "Article",
+                    "headline": article.title || 'Untitled Article',
+                    "description": article.excerpt || (article.content ? article.content.substring(0, 160) : 'No description available'),
+                    "image": article.featured_image || null,
+                    "datePublished": article.created_at || new Date().toISOString(),
+                    "author": {
+                      "@type": "Organization",
+                      "name": siteConfig.siteName
+                    },
+                    "publisher": {
+                      "@type": "Organization",
+                      "name": siteConfig.siteName,
+                      "logo": {
+                        "@type": "ImageObject",
+                        "url": `${siteConfig.siteUrl}/logo.png`
+                      }
+                    }
+                  })
+                } catch (error) {
+                  console.error('JSON-LD serialization error:', error)
+                  return '{}'
                 }
-              })
+              })()
             }}
           />
           
@@ -252,7 +260,25 @@ export default async function SlugPage({ params }: SlugPageProps) {
             </div>
           </section>
         </div>
-      )
+        )
+      } catch (renderError) {
+        console.error('Error rendering article:', renderError)
+        return (
+          <div className="min-h-screen bg-white flex items-center justify-center">
+            <div className="text-center">
+              <h1 className="text-2xl font-bold text-gray-900 mb-4">Error Loading Article</h1>
+              <p className="text-gray-600 mb-4">There was an error loading this article.</p>
+              <Link 
+                href="/"
+                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Homepage
+              </Link>
+            </div>
+          </div>
+        )
+      }
     }
   } catch (error) {
     console.error('Error fetching article:', error)
