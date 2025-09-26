@@ -24,6 +24,42 @@ interface Article {
 export async function generateMetadata({ params }: SlugPageProps): Promise<Metadata> {
   const { slug } = await params
   
+  // First, check if this is an article
+  try {
+    const { data: article, error: articleError } = await supabase
+      .from('articles')
+      .select('*')
+      .eq('slug', slug)
+      .eq('published', true)
+      .single()
+
+    if (article && !articleError) {
+      return {
+        title: `${article.title} | ${siteConfig.siteName}`,
+        description: article.excerpt || (article.content ? article.content.substring(0, 160) : 'No description available'),
+        keywords: `${siteConfig.niche.toLowerCase()}s, article, ${article.title}`,
+        openGraph: {
+          title: article.title,
+          description: article.excerpt || (article.content ? article.content.substring(0, 160) : 'No description available'),
+          url: `${siteConfig.siteUrl}/${slug}`,
+          siteName: siteConfig.siteName,
+          type: 'article',
+          images: article.featured_image ? [{ url: article.featured_image }] : undefined,
+        },
+        twitter: {
+          card: 'summary_large_image',
+          title: article.title,
+          description: article.excerpt || (article.content ? article.content.substring(0, 160) : 'No description available'),
+        },
+        alternates: {
+          canonical: `${siteConfig.siteUrl}/${slug}`,
+        },
+      }
+    }
+  } catch (error) {
+    console.error('Error fetching article for metadata:', error)
+  }
+  
   // Handle state pages (format: arkansas)
   if (!slug.includes('-')) {
     const stateName = slug.replace(/\b\w/g, l => l.toUpperCase())
@@ -137,7 +173,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
                 "@context": "https://schema.org",
                 "@type": "Article",
                 "headline": article.title,
-                "description": article.excerpt || (article.content ? article.content.substring(0, 160) : ''),
+                "description": article.excerpt || (article.content ? article.content.substring(0, 160) : 'No description available'),
                 "image": article.featured_image,
                 "datePublished": article.created_at,
                 "author": {
