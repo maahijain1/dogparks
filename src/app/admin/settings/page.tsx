@@ -14,14 +14,31 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(false)
   const [saved, setSaved] = useState(false)
 
-  // Load current settings (in a real app, this would come from an API)
+  // Load current settings from API
   useEffect(() => {
-    // For now, we'll use the config values
-    setSettings({
-      siteName: 'DirectoryHub',
-      niche: 'Dog Park', 
-      country: 'USA'
-    })
+    const loadSettings = async () => {
+      try {
+        const response = await fetch('/api/settings')
+        if (response.ok) {
+          const data = await response.json()
+          setSettings({
+            siteName: data.site_name || 'DirectoryHub',
+            niche: data.niche || 'Dog Park',
+            country: data.country || 'USA'
+          })
+        }
+      } catch (error) {
+        console.error('Error loading settings:', error)
+        // Fallback to default values
+        setSettings({
+          siteName: 'DirectoryHub',
+          niche: 'Dog Park',
+          country: 'USA'
+        })
+      }
+    }
+    
+    loadSettings()
   }, [])
 
   const handleSave = async () => {
@@ -29,14 +46,29 @@ export default function SettingsPage() {
     setSaved(false)
     
     try {
-      // In a real app, you would save to a database
-      // For now, we'll just simulate saving
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      setSaved(true)
-      setTimeout(() => setSaved(false), 3000)
+      const response = await fetch('/api/settings', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          site_name: settings.siteName,
+          niche: settings.niche,
+          country: settings.country
+        })
+      })
+
+      if (response.ok) {
+        setSaved(true)
+        setTimeout(() => setSaved(false), 3000)
+      } else {
+        const errorData = await response.json()
+        console.error('Error saving settings:', errorData.error)
+        alert('Failed to save settings. Please try again.')
+      }
     } catch (error) {
       console.error('Error saving settings:', error)
+      alert('Failed to save settings. Please try again.')
     } finally {
       setLoading(false)
     }
