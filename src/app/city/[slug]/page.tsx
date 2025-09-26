@@ -268,9 +268,6 @@ export default async function CityPage({ params }: CityPageProps) {
                       </div>
                       
                       <div className="space-y-2 text-sm text-gray-600">
-                        {listing.category && (
-                          <p><span className="font-medium">Category:</span> {listing.category}</p>
-                        )}
                         {listing.address && (
                           <p><span className="font-medium">Address:</span> {listing.address}</p>
                         )}
@@ -331,9 +328,6 @@ export default async function CityPage({ params }: CityPageProps) {
                   </div>
                   
                   <div className="space-y-2 text-sm text-gray-600">
-                    {listing.category && (
-                      <p><span className="font-medium">Category:</span> {listing.category}</p>
-                    )}
                     {listing.address && (
                       <p><span className="font-medium">Address:</span> {listing.address}</p>
                     )}
