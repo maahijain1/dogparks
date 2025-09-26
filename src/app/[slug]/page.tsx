@@ -155,11 +155,16 @@ export default async function SlugPage({ params }: SlugPageProps) {
     
     
     if (article && !articleError) {
-      // This is an article page - ultra minimal
+      // This is an article page - with basic styling
       return (
-        <div>
-          <h1>{article.title}</h1>
-          <div dangerouslySetInnerHTML={{ __html: article.content || '' }} />
+        <div className="min-h-screen bg-white">
+          <div className="max-w-4xl mx-auto px-4 py-12">
+            <h1 className="text-4xl font-bold mb-8">{article.title}</h1>
+            <div 
+              className="prose prose-lg max-w-none"
+              dangerouslySetInnerHTML={{ __html: article.content || '' }}
+            />
+          </div>
         </div>
       )
     }
