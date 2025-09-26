@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, MapPin } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { siteConfig } from '@/lib/config'
 
@@ -248,14 +248,78 @@ export default async function CityPage({ params }: CityPageProps) {
 
       {/* Listings Section */}
       {listings.length > 0 ? (
-        <section className="py-16 bg-gray-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-center mb-12">
-              {siteConfig.niche}s in {cityName}
-            </h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {listings.map((listing) => (
+        <>
+          {/* Featured Listings Section */}
+          {listings.filter(listing => listing.featured).length > 0 && (
+            <section className="py-16 bg-white">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 className="text-3xl font-bold text-center mb-12">
+                  Featured {siteConfig.niche}s in {cityName}
+                </h2>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {listings.filter(listing => listing.featured).slice(0, 3).map((listing) => (
+                    <div key={listing.id} className="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow border-2 border-yellow-200">
+                      <div className="flex justify-between items-start mb-4">
+                        <h3 className="text-xl font-semibold text-gray-900">{listing.business}</h3>
+                        <span className="bg-yellow-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                          ⭐ Featured
+                        </span>
+                      </div>
+                      
+                      <div className="space-y-2 text-sm text-gray-600">
+                        {listing.category && (
+                          <p><span className="font-medium">Category:</span> {listing.category}</p>
+                        )}
+                        {listing.address && (
+                          <p><span className="font-medium">Address:</span> {listing.address}</p>
+                        )}
+                        {listing.phone && (
+                          <div className="flex items-center justify-between">
+                            <p><span className="font-medium">Phone:</span> {listing.phone}</p>
+                            <a 
+                              href={`tel:${listing.phone}`}
+                              className="inline-flex items-center px-3 py-1 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors"
+                            >
+                              📞 Call
+                            </a>
+                          </div>
+                        )}
+                        {listing.website && (
+                          <p>
+                            <span className="font-medium">Website:</span>{' '}
+                            <a href={listing.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                              Visit Website
+                            </a>
+                          </p>
+                        )}
+                        {listing.review_rating > 0 && (
+                          <p>
+                            <span className="font-medium">Rating:</span> {listing.review_rating}/5 
+                            <span className="ml-1 text-yellow-500">★</span>
+                          </p>
+                        )}
+                        <div className="flex items-center text-sm text-gray-500">
+                          <MapPin className="h-4 w-4 mr-1" />
+                          {listing.cities?.name}, {listing.cities?.states?.name}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* All Listings Section */}
+          <section className="py-16 bg-gray-50">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <h2 className="text-3xl font-bold text-center mb-12">
+                All {siteConfig.niche}s in {cityName}
+              </h2>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {listings.map((listing) => (
                 <div key={listing.id} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
                   <div className="flex justify-between items-start mb-4">
                     <h3 className="text-xl font-semibold text-gray-900">{listing.business}</h3>
@@ -304,6 +368,7 @@ export default async function CityPage({ params }: CityPageProps) {
             </div>
           </div>
         </section>
+        </>
       ) : (
         <section className="py-16 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
