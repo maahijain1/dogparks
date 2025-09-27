@@ -720,15 +720,21 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* All Articles */}
-      <section className="py-16 bg-gray-50">
+      {/* Knowledge Hub */}
+      <section className="py-16 bg-gradient-to-br from-indigo-50 via-white to-cyan-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
+            <div className="inline-flex items-center bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-3 rounded-full shadow-lg mb-4">
+              <svg className="h-6 w-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
+              <span className="font-bold text-lg">KNOWLEDGE HUB</span>
+            </div>
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              All Articles
+              Expert Insights & Guides
             </h2>
-            <p className="text-xl text-gray-600">
-              Stay updated with our latest insights
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Discover expert tips, industry insights, and comprehensive guides to help you make informed decisions
             </p>
           </div>
 
@@ -739,36 +745,65 @@ export default function HomePage() {
                 No articles available
               </div>
             ) : (
-              latestArticles.map((article) => (
-              <article key={article.id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
+              latestArticles.map((article, index) => (
+              <article key={article.id} className={`group bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:-translate-y-2 ${index % 2 === 0 ? 'border-l-4 border-indigo-500' : 'border-l-4 border-purple-500'}`}>
                 {article.featured_image && (
-                  <Image 
-                    src={article.featured_image} 
-                    alt={article.title}
-                    width={400}
-                    height={192}
-                    className="w-full h-48 object-cover"
-                  />
+                  <div className="relative overflow-hidden">
+                    <Image 
+                      src={article.featured_image} 
+                      alt={article.title}
+                      width={400}
+                      height={192}
+                      className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1">
+                      <span className="text-xs font-semibold text-gray-700">
+                        {index === 0 ? '🔥 Trending' : index === 1 ? '⭐ Featured' : '📚 Guide'}
+                      </span>
+                    </div>
+                  </div>
                 )}
                 <div className="p-6">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                    <Link href={`/${article.slug}`} className="hover:text-blue-600">
+                  <div className="flex items-center mb-3">
+                    <div className={`w-2 h-2 rounded-full mr-2 ${index % 2 === 0 ? 'bg-indigo-500' : 'bg-purple-500'}`}></div>
+                    <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                      {new Date(article.created_at).toLocaleDateString('en-US', { 
+                        month: 'short', 
+                        day: 'numeric',
+                        year: 'numeric'
+                      })}
+                    </span>
+                  </div>
+                  
+                  <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-indigo-600 transition-colors">
+                    <Link href={`/${article.slug}`} className="hover:underline">
                       {article.title}
                     </Link>
                   </h3>
-                  <p className="text-gray-600 text-sm mb-4">
-                    {new Date(article.created_at).toLocaleDateString()}
-                  </p>
+                  
                   <div 
-                    className="text-gray-700 text-sm line-clamp-3"
+                    className="text-gray-600 text-sm mb-4 line-clamp-3 leading-relaxed"
                     dangerouslySetInnerHTML={{ __html: article.content.substring(0, 150) + '...' }}
                   />
-                  <Link 
-                    href={`/${article.slug}`}
-                    className="inline-block mt-4 text-blue-600 hover:text-blue-800 font-medium"
-                  >
-                    Read More →
-                  </Link>
+                  
+                  <div className="flex items-center justify-between">
+                    <Link 
+                      href={`/${article.slug}`}
+                      className="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-semibold text-sm group-hover:underline"
+                    >
+                      Read Full Article
+                      <svg className="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </Link>
+                    
+                    <div className="flex items-center text-gray-400">
+                      <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <span className="text-xs">5 min read</span>
+                    </div>
+                  </div>
                 </div>
               </article>
               ))
