@@ -2,51 +2,73 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { siteConfig } from '@/lib/config'
+import { getSiteSettings, generateDynamicContent } from '@/lib/dynamic-config'
 
 const inter = Inter({ subsets: ['latin'] })
 
-export const metadata: Metadata = {
-  title: {
-    default: siteConfig.seo.homepage.title,
-    template: `%s | ${siteConfig.siteName}`
-  },
-  description: siteConfig.seo.homepage.description,
-  keywords: siteConfig.seo.homepage.keywords,
-  authors: [{ name: 'DirectoryHub Team' }],
-  creator: 'DirectoryHub',
-  publisher: 'DirectoryHub',
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
+export async function generateMetadata(): Promise<Metadata> {
+  // Get dynamic settings
+  const settings = await getSiteSettings()
+  
+  // Generate dynamic content
+  const dynamicTitle = generateDynamicContent(siteConfig.seo.homepage.title, {
+    niche: settings.niche || 'Dog Park',
+    country: settings.country || 'USA'
+  })
+  
+  const dynamicDescription = generateDynamicContent(siteConfig.seo.homepage.description, {
+    niche: settings.niche || 'Dog Park',
+    country: settings.country || 'USA'
+  })
+  
+  const dynamicKeywords = generateDynamicContent(siteConfig.seo.homepage.keywords, {
+    niche: settings.niche || 'Dog Park',
+    country: settings.country || 'USA'
+  })
+
+  return {
+    title: {
+      default: dynamicTitle,
+      template: `%s | ${settings.site_name || 'DirectoryHub'}`
+    },
+    description: dynamicDescription,
+    keywords: dynamicKeywords,
+    authors: [{ name: 'DirectoryHub Team' }],
+    creator: settings.site_name || 'DirectoryHub',
+    publisher: settings.site_name || 'DirectoryHub',
+    robots: {
       index: true,
       follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
     },
-  },
-  openGraph: {
-    title: siteConfig.seo.homepage.title,
-    description: siteConfig.seo.homepage.description,
-    url: siteConfig.siteUrl,
-    siteName: siteConfig.siteName,
-    locale: 'en_US',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    site: siteConfig.business.social.twitter,
-    creator: siteConfig.business.social.twitter,
-    title: siteConfig.seo.homepage.title,
-    description: siteConfig.seo.homepage.description,
-  },
-  alternates: {
-    canonical: siteConfig.siteUrl,
-  },
-  verification: {
-    google: 'your-google-verification-code', // Add your Google Search Console verification code
-  },
+    openGraph: {
+      title: dynamicTitle,
+      description: dynamicDescription,
+      url: siteConfig.siteUrl,
+      siteName: settings.site_name || 'DirectoryHub',
+      locale: 'en_US',
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      site: siteConfig.business.social.twitter,
+      creator: siteConfig.business.social.twitter,
+      title: dynamicTitle,
+      description: dynamicDescription,
+    },
+    alternates: {
+      canonical: siteConfig.siteUrl,
+    },
+    verification: {
+      google: 'your-google-verification-code', // Add your Google Search Console verification code
+    },
+  }
 }
 
 export default function RootLayout({

@@ -48,7 +48,7 @@ export const siteConfig = {
   content: {
     // Hero section
     hero: {
-      title: 'Find the Best Local {niche}s {country}',
+      title: 'Find the Best Local {niche}s',
       subtitle: 'Discover top-rated {niche}s in {country}',
       searchPlaceholder: 'Search {niche}s, locations...',
       searchButton: 'Find {niche}s'
