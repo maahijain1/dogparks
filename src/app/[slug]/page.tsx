@@ -102,16 +102,28 @@ export async function generateMetadata({ params }: SlugPageProps): Promise<Metad
   // Handle city pages
   if (slug.includes('-')) {
     const parts = slug.split('-')
-    // Remove the first two parts (dog-park) and join the rest to get the full city name
-    const cityParts = parts.slice(2) // Remove first two parts (dog-park)
+    
+    // Get current niche setting
+    const { data: nicheData } = await supabase
+      .from('site_settings')
+      .select('setting_value')
+      .eq('setting_key', 'niche')
+      .single()
+    
+    const currentNiche = nicheData?.setting_value || 'Dog Park'
+    const nicheSlug = currentNiche.toLowerCase().replace(/\s+/g, '-')
+    const nicheParts = nicheSlug.split('-')
+    
+    // Remove the niche parts and join the rest to get the full city name
+    const cityParts = parts.slice(nicheParts.length)
     const cityName = cityParts.join(' ').replace(/\b\w/g, l => l.toUpperCase())
     return {
-      title: `${siteConfig.niche}s ${cityName} | ${siteConfig.siteName}`,
-      description: `Find the best ${siteConfig.niche.toLowerCase()}s in ${cityName}. Discover top-rated ${siteConfig.niche.toLowerCase()}s, read reviews, and get contact information.`,
-      keywords: `${siteConfig.niche.toLowerCase()}s, ${cityName}, local ${siteConfig.niche.toLowerCase()}s, ${siteConfig.niche.toLowerCase()} directory, ${cityName} ${siteConfig.niche.toLowerCase()}s`,
+      title: `${currentNiche}s ${cityName} | ${siteConfig.siteName}`,
+      description: `Find the best ${currentNiche.toLowerCase()}s in ${cityName}. Discover top-rated ${currentNiche.toLowerCase()}s, read reviews, and get contact information.`,
+      keywords: `${currentNiche.toLowerCase()}s, ${cityName}, local ${currentNiche.toLowerCase()}s, ${currentNiche.toLowerCase()} directory, ${cityName} ${currentNiche.toLowerCase()}s`,
       openGraph: {
-        title: `${siteConfig.niche}s ${cityName}`,
-        description: `Find the best ${siteConfig.niche.toLowerCase()}s in ${cityName}`,
+        title: `${currentNiche}s ${cityName}`,
+        description: `Find the best ${currentNiche.toLowerCase()}s in ${cityName}`,
         url: `${siteConfig.siteUrl}/${slug}`,
         siteName: siteConfig.siteName,
         type: 'website',
@@ -201,10 +213,22 @@ export default async function SlugPage({ params }: SlugPageProps) {
   // If not an article, check if it's a state or city page
   const parts = slug.split('-')
   
-  // Handle state pages (format: dog-park-arizona) - show state with cities
-  if (slug.includes('-') && parts.length >= 3 && parts[0] === 'dog' && parts[1] === 'park') {
-    // This is a state page like dog-park-arizona
-    const stateName = parts.slice(2).join('-').replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+  // Get current niche setting to determine state page pattern
+  const { data: nicheData } = await supabase
+    .from('site_settings')
+    .select('setting_value')
+    .eq('setting_key', 'niche')
+    .single()
+  
+  const currentNiche = nicheData?.setting_value || 'Dog Park'
+  const nicheSlug = currentNiche.toLowerCase().replace(/\s+/g, '-')
+  const nicheParts = nicheSlug.split('-')
+  
+  // Handle state pages (format: {niche}-{state}) - show state with cities
+  if (slug.includes('-') && parts.length >= 3 && 
+      parts.slice(0, nicheParts.length).join('-') === nicheSlug) {
+    // This is a state page like {niche}-{state}
+    const stateName = parts.slice(nicheParts.length).join('-').replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
     console.log('=== STATE PAGE ===')
     console.log('URL slug:', slug)
     console.log('State name:', stateName)
@@ -225,7 +249,24 @@ export default async function SlugPage({ params }: SlugPageProps) {
       
       if (stateError || !stateData) {
         console.log('State not found:', stateName, stateError)
-        return notFound()
+        // Return a 404 page with helpful message
+        return (
+          <div className="min-h-screen bg-white flex items-center justify-center">
+            <div className="text-center">
+              <h1 className="text-4xl font-bold text-gray-900 mb-4">State Not Found</h1>
+              <p className="text-xl text-gray-600 mb-8">
+                The state "{stateName}" could not be found. It may have been removed from the directory.
+              </p>
+              <Link 
+                href="/"
+                className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Homepage
+              </Link>
+            </div>
+          </div>
+        )
       }
       
       console.log('Found state:', stateData)
@@ -366,12 +407,12 @@ export default async function SlugPage({ params }: SlugPageProps) {
     )
   }
   
-  // Handle city pages (format: dog-park-fort-smith) - redirect to proper city URL
-  if (slug.includes('-') && parts.length > 2 && parts[0] === 'dog' && parts[1] === 'park') {
-    // This is a city page like dog-park-fort-smith
+  // Handle city pages (format: {niche}-{city}) - redirect to proper city URL
+  if (slug.includes('-') && parts.length > nicheParts.length) {
+    // This is a city page like {niche}-{city}
     console.log('URL parts:', parts)
-    // Remove the first two parts (dog-park) and join the rest to get the full city name
-    const cityParts = parts.slice(2) // Remove first two parts (dog-park)
+    // Remove the niche parts and join the rest to get the full city name
+    const cityParts = parts.slice(nicheParts.length)
     console.log('City parts after removing niche:', cityParts)
     const cityName = cityParts.join(' ').replace(/\b\w/g, l => l.toUpperCase())
     console.log('Final city name:', cityName)
