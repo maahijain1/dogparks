@@ -56,9 +56,18 @@ export function clearSettingsCache() {
 
 // Helper function to generate dynamic content
 export function generateDynamicContent(template: string, settings: Record<string, string>): string {
+  const niche = settings.niche || 'Dog Park'
+  const nicheLower = niche.toLowerCase()
+  
+  // Smart pluralization - only add 's' if niche doesn't already end with 's'
+  const nichePlural = niche.endsWith('s') ? niche : niche + 's'
+  const nicheLowerPlural = nicheLower.endsWith('s') ? nicheLower : nicheLower + 's'
+  
   return template
     .replace('{site_name}', settings.site_name || 'DirectoryHub')
-    .replace('{niche}', settings.niche || 'Dog Park')
+    .replace('{niche}', niche)
+    .replace('{niche_plural}', nichePlural)
+    .replace('{niche_lower}', nicheLower)
+    .replace('{niche_lower_plural}', nicheLowerPlural)
     .replace('{country}', settings.country || 'USA')
-    .replace('{niche_lower}', (settings.niche || 'Dog Park').toLowerCase())
 }

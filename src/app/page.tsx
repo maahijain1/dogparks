@@ -464,8 +464,8 @@ export default function HomePage() {
                   <Search className="h-5 w-5 mr-2" />
                   <span className="font-medium">
                     {filteredListings.length > 0 
-                      ? `Found ${filteredListings.length} ${dynamicSettings.niche.toLowerCase()}s for "${searchQuery}"`
-                      : `No ${dynamicSettings.niche.toLowerCase()}s found for "${searchQuery}"`
+                      ? `Found ${filteredListings.length} ${dynamicSettings.niche.toLowerCase().endsWith('s') ? dynamicSettings.niche.toLowerCase() : dynamicSettings.niche.toLowerCase() + 's'} for "${searchQuery}"`
+                      : `No ${dynamicSettings.niche.toLowerCase().endsWith('s') ? dynamicSettings.niche.toLowerCase() : dynamicSettings.niche.toLowerCase() + 's'} found for "${searchQuery}"`
                     }
                   </span>
                 </div>
@@ -482,7 +482,7 @@ export default function HomePage() {
               <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
                 <div className="flex items-center justify-center text-blue-800">
                   <MapPin className="h-5 w-5 mr-2" />
-                  <span className="font-medium">Showing {dynamicSettings.niche.toLowerCase()}s near your location</span>
+                  <span className="font-medium">Showing {dynamicSettings.niche.toLowerCase().endsWith('s') ? dynamicSettings.niche.toLowerCase() : dynamicSettings.niche.toLowerCase() + 's'} near your location</span>
                 </div>
                 <p className="text-sm text-blue-600 mt-1">
                   Use the search above to find specific businesses or change the city filter
@@ -511,10 +511,10 @@ export default function HomePage() {
               <span className="font-bold text-lg">PREMIUM FEATURED LISTINGS</span>
             </div>
             <h2 id="featured-listings" className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Featured {dynamicSettings.niche}s
+              Featured {dynamicSettings.niche.endsWith('s') ? dynamicSettings.niche : dynamicSettings.niche + 's'}
             </h2>
             <p className="text-xl text-gray-600">
-              Hand-picked premium {dynamicSettings.niche.toLowerCase()}s that stand out from the crowd
+              Hand-picked premium {dynamicSettings.niche.toLowerCase().endsWith('s') ? dynamicSettings.niche.toLowerCase() : dynamicSettings.niche.toLowerCase() + 's'} that stand out from the crowd
             </p>
           </div>
 
@@ -589,7 +589,7 @@ export default function HomePage() {
               Browse by State
             </h2>
             <p className="text-xl text-gray-600 mb-4">
-              Explore {dynamicSettings.niche.toLowerCase()}s in different states
+              Explore {dynamicSettings.niche.toLowerCase().endsWith('s') ? dynamicSettings.niche.toLowerCase() : dynamicSettings.niche.toLowerCase() + 's'} in different states
             </p>
           </div>
 
@@ -675,7 +675,7 @@ export default function HomePage() {
                 <div className="flex items-center justify-center text-blue-800">
                   <MapPin className="h-5 w-5 mr-2" />
                   <span className="text-sm">
-                    📍 Your location has been detected. Browse our directory or search for specific cities to find {dynamicSettings.niche.toLowerCase()}s.
+                    📍 Your location has been detected. Browse our directory or search for specific cities to find {dynamicSettings.niche.toLowerCase().endsWith('s') ? dynamicSettings.niche.toLowerCase() : dynamicSettings.niche.toLowerCase() + 's'}.
                   </span>
                 </div>
               </div>

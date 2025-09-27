@@ -17,30 +17,30 @@ export const siteConfig = {
   seo: {
     // Homepage
     homepage: {
-      title: 'Find the Best Local {niche}s Near You',
-      description: 'Discover top-rated {niche}s in your area. Find the perfect place for your furry friend to play, exercise, and socialize.',
-      keywords: '{niche}s, local {niche}s, {niche} directory, {niche} finder, {niche} areas, pet-friendly {niche}s'
+      title: 'Find the Best Local {niche_plural} Near You',
+      description: 'Discover top-rated {niche_plural} in your area. Find the perfect place for your furry friend to play, exercise, and socialize.',
+      keywords: '{niche_plural}, local {niche_plural}, {niche} directory, {niche} finder, {niche} areas, pet-friendly {niche_plural}'
     },
     
     // State pages
     state: {
-      title: '{stateName} {niche} Directory | Find {niche}s in {stateName}',
-      description: 'Discover {totalListings} {niche}s across {totalCities} cities in {stateName}. Find the perfect {niche} for your furry friend.',
-      keywords: '{stateName} {niche}s, {niche}s in {stateName}, {stateName} {niche} directory, local {niche}s {stateName}'
+      title: '{stateName} {niche} Directory | Find {niche_plural} in {stateName}',
+      description: 'Discover {totalListings} {niche_plural} across {totalCities} cities in {stateName}. Find the perfect {niche} for your furry friend.',
+      keywords: '{stateName} {niche_plural}, {niche_plural} in {stateName}, {stateName} {niche} directory, local {niche_plural} {stateName}'
     },
     
     // City pages
     city: {
-      title: '{cityName} {niche} Directory | Find {niche}s in {cityName}, {stateName}',
-      description: 'Find {totalListings} {niche}s in {cityName}, {stateName}. Discover the best places for your dog to play and exercise.',
-      keywords: '{cityName} {niche}s, {niche}s in {cityName}, {cityName} {niche} directory, local {niche}s {cityName} {stateName}'
+      title: '{cityName} {niche} Directory | Find {niche_plural} in {cityName}, {stateName}',
+      description: 'Find {totalListings} {niche_plural} in {cityName}, {stateName}. Discover the best places for your dog to play and exercise.',
+      keywords: '{cityName} {niche_plural}, {niche_plural} in {cityName}, {cityName} {niche} directory, local {niche_plural} {cityName} {stateName}'
     },
     
     // Article pages
     article: {
       title: '{articleTitle} | {niche} Directory',
-      description: 'Learn about {niche}s and pet care. Expert tips and information for dog owners.',
-      keywords: '{niche}s, pet care, dog exercise, {niche} tips, pet-friendly areas'
+      description: 'Learn about {niche_plural} and pet care. Expert tips and information for dog owners.',
+      keywords: '{niche_plural}, pet care, dog exercise, {niche} tips, pet-friendly areas'
     }
   },
   
@@ -48,9 +48,9 @@ export const siteConfig = {
   content: {
     // Hero section
     hero: {
-      title: 'Find the Best Local {niche}s',
-      subtitle: 'Discover top-rated {niche}s in {country}',
-      searchPlaceholder: 'Search {niche}s, locations...',
+      title: 'Find the Best Local {niche_plural}',
+      subtitle: 'Discover top-rated {niche_plural} in {country}',
+      searchPlaceholder: 'Search {niche_plural}, locations...',
       searchButton: 'Search'
     },
     
