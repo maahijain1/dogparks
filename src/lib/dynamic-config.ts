@@ -3,11 +3,11 @@ import { supabase } from './supabase'
 // Cache for settings to avoid repeated database calls
 let settingsCache: Record<string, string> | null = null
 let cacheTimestamp: number = 0
-const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
+const CACHE_DURATION = 30 * 1000 // 30 seconds (reduced for faster updates)
 
-export async function getSiteSettings(): Promise<Record<string, string>> {
-  // Return cached settings if still valid
-  if (settingsCache && Date.now() - cacheTimestamp < CACHE_DURATION) {
+export async function getSiteSettings(forceRefresh = false): Promise<Record<string, string>> {
+  // Return cached settings if still valid and not forcing refresh
+  if (!forceRefresh && settingsCache && Date.now() - cacheTimestamp < CACHE_DURATION) {
     return settingsCache
   }
 

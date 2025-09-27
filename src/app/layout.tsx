@@ -7,8 +7,8 @@ import { getSiteSettings, generateDynamicContent } from '@/lib/dynamic-config'
 const inter = Inter({ subsets: ['latin'] })
 
 export async function generateMetadata(): Promise<Metadata> {
-  // Get dynamic settings
-  const settings = await getSiteSettings()
+  // Get dynamic settings (force refresh for meta tags)
+  const settings = await getSiteSettings(true)
   
   // Generate dynamic content
   const dynamicTitle = generateDynamicContent(siteConfig.seo.homepage.title, {

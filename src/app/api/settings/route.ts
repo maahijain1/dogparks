@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
+import { clearSettingsCache } from '@/lib/dynamic-config'
 
 // GET - Read all settings
 export async function GET() {
@@ -55,6 +56,9 @@ export async function PUT(request: Request) {
         return NextResponse.json({ error: 'Failed to update settings' }, { status: 500 })
       }
     }
+
+    // Clear the cache so new settings are fetched immediately
+    clearSettingsCache()
 
     return NextResponse.json({ success: true, message: 'Settings updated successfully' })
   } catch (error) {
