@@ -1,0 +1,85 @@
+<svg width="1200" height="800" viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradient definitions -->
+    <linearGradient id="heroGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:0.1" />
+      <stop offset="50%" style="stop-color:#8B5CF6;stop-opacity:0.05" />
+      <stop offset="100%" style="stop-color:#06B6D4;stop-opacity:0.1" />
+    </linearGradient>
+    
+    <radialGradient id="circleGradient1" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:0.15" />
+      <stop offset="100%" style="stop-color:#3B82F6;stop-opacity:0" />
+    </radialGradient>
+    
+    <radialGradient id="circleGradient2" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#8B5CF6;stop-opacity:0.12" />
+      <stop offset="100%" style="stop-color:#8B5CF6;stop-opacity:0" />
+    </radialGradient>
+    
+    <radialGradient id="circleGradient3" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#06B6D4;stop-opacity:0.1" />
+      <stop offset="100%" style="stop-color:#06B6D4;stop-opacity:0" />
+    </radialGradient>
+    
+    <radialGradient id="circleGradient4" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#10B981;stop-opacity:0.08" />
+      <stop offset="100%" style="stop-color:#10B981;stop-opacity:0" />
+    </radialGradient>
+  </defs>
+  
+  <!-- Background gradient -->
+  <rect width="100%" height="100%" fill="url(#heroGradient)" />
+  
+  <!-- Floating circles for depth -->
+  <circle cx="200" cy="150" r="120" fill="url(#circleGradient1)" />
+  <circle cx="1000" cy="200" r="80" fill="url(#circleGradient2)" />
+  <circle cx="150" cy="600" r="100" fill="url(#circleGradient3)" />
+  <circle cx="1050" cy="650" r="90" fill="url(#circleGradient4)" />
+  <circle cx="600" cy="100" r="60" fill="url(#circleGradient1)" />
+  <circle cx="800" cy="700" r="70" fill="url(#circleGradient2)" />
+  
+  <!-- Subtle geometric patterns -->
+  <g opacity="0.03">
+    <!-- Grid pattern -->
+    <defs>
+      <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#3B82F6" stroke-width="1"/>
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#grid)" />
+  </g>
+  
+  <!-- Abstract shapes for visual interest -->
+  <g opacity="0.05">
+    <path d="M 0,400 Q 300,200 600,400 T 1200,400" stroke="#3B82F6" stroke-width="2" fill="none" />
+    <path d="M 0,600 Q 400,300 800,600 T 1200,600" stroke="#8B5CF6" stroke-width="2" fill="none" />
+    <path d="M 0,200 Q 200,500 400,200 T 800,200 T 1200,200" stroke="#06B6D4" stroke-width="2" fill="none" />
+  </g>
+  
+  <!-- Subtle dots pattern -->
+  <g opacity="0.04">
+    <circle cx="100" cy="100" r="2" fill="#3B82F6" />
+    <circle cx="300" cy="150" r="1.5" fill="#8B5CF6" />
+    <circle cx="500" cy="80" r="2.5" fill="#06B6D4" />
+    <circle cx="700" cy="120" r="1" fill="#10B981" />
+    <circle cx="900" cy="90" r="2" fill="#3B82F6" />
+    <circle cx="1100" cy="140" r="1.5" fill="#8B5CF6" />
+    <circle cx="200" cy="300" r="1" fill="#06B6D4" />
+    <circle cx="400" cy="350" r="2" fill="#10B981" />
+    <circle cx="600" cy="320" r="1.5" fill="#3B82F6" />
+    <circle cx="800" cy="380" r="2.5" fill="#8B5CF6" />
+    <circle cx="1000" cy="300" r="1" fill="#06B6D4" />
+    <circle cx="150" cy="500" r="2" fill="#10B981" />
+    <circle cx="350" cy="550" r="1.5" fill="#3B82F6" />
+    <circle cx="550" cy="520" r="1" fill="#8B5CF6" />
+    <circle cx="750" cy="580" r="2" fill="#06B6D4" />
+    <circle cx="950" cy="500" r="1.5" fill="#10B981" />
+    <circle cx="1150" cy="550" r="2.5" fill="#3B82F6" />
+    <circle cx="250" cy="700" r="1" fill="#8B5CF6" />
+    <circle cx="450" cy="750" r="2" fill="#06B6D4" />
+    <circle cx="650" cy="720" r="1.5" fill="#10B981" />
+    <circle cx="850" cy="680" r="1" fill="#3B82F6" />
+    <circle cx="1050" cy="750" r="2" fill="#8B5CF6" />
+  </g>
+</svg>

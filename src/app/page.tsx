@@ -336,8 +336,18 @@ export default function HomePage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="bg-white text-gray-900 py-20" aria-labelledby="hero-heading">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative bg-white text-gray-900 py-20 overflow-hidden" aria-labelledby="hero-heading">
+        {/* Background Image */}
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/hero-background-simple.svg"
+            alt=""
+            fill
+            className="object-cover opacity-30"
+            priority
+          />
+        </div>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 id="hero-heading" className="text-4xl md:text-6xl font-bold mb-6">
               {generateDynamicContent(siteConfig.content.hero.title, {
