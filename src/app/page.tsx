@@ -8,6 +8,20 @@ import { Listing, Article, City, State } from '@/types/database'
 import { siteConfig } from '@/lib/config'
 import { getSiteSettings, generateDynamicContent } from '@/lib/dynamic-config'
 
+// Function to clean article content and remove empty heading tags
+function cleanArticleContent(content: string): string {
+  if (!content) return ''
+  
+  // Remove empty heading tags (h1, h2, h3, h4, h5, h6) that have no content or only whitespace
+  return content
+    .replace(/<h[1-6][^>]*>\s*<\/h[1-6]>/gi, '') // Remove empty heading tags
+    .replace(/<h[1-6][^>]*>\s*&nbsp;\s*<\/h[1-6]>/gi, '') // Remove heading tags with only &nbsp;
+    .replace(/<h[1-6][^>]*>\s*<br\s*\/?>\s*<\/h[1-6]>/gi, '') // Remove heading tags with only <br>
+    .replace(/<h[1-6][^>]*>\s*<p>\s*<\/p>\s*<\/h[1-6]>/gi, '') // Remove heading tags with empty paragraphs
+    .replace(/\s+/g, ' ') // Clean up multiple spaces
+    .trim()
+}
+
 export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCity, setSelectedCity] = useState('')
@@ -783,7 +797,7 @@ export default function HomePage() {
                   
                   <div 
                     className="text-gray-600 text-sm mb-4 line-clamp-3 leading-relaxed"
-                    dangerouslySetInnerHTML={{ __html: article.content.substring(0, 150) + '...' }}
+                    dangerouslySetInnerHTML={{ __html: cleanArticleContent(article.content.substring(0, 150) + '...') }}
                   />
                   
                   <div className="flex items-center justify-between">

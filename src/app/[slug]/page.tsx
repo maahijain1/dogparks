@@ -5,6 +5,20 @@ import { siteConfig } from '@/lib/config'
 import { Metadata } from 'next'
 import { supabase } from '@/lib/supabase'
 
+// Function to clean article content and remove empty heading tags
+function cleanArticleContent(content: string): string {
+  if (!content) return ''
+  
+  // Remove empty heading tags (h1, h2, h3, h4, h5, h6) that have no content or only whitespace
+  return content
+    .replace(/<h[1-6][^>]*>\s*<\/h[1-6]>/gi, '') // Remove empty heading tags
+    .replace(/<h[1-6][^>]*>\s*&nbsp;\s*<\/h[1-6]>/gi, '') // Remove heading tags with only &nbsp;
+    .replace(/<h[1-6][^>]*>\s*<br\s*\/?>\s*<\/h[1-6]>/gi, '') // Remove heading tags with only <br>
+    .replace(/<h[1-6][^>]*>\s*<p>\s*<\/p>\s*<\/h[1-6]>/gi, '') // Remove heading tags with empty paragraphs
+    .replace(/\s+/g, ' ') // Clean up multiple spaces
+    .trim()
+}
+
 interface SlugPageProps {
   params: Promise<{ slug: string }>
 }
@@ -173,7 +187,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
             <h1 className="text-4xl font-bold mb-8">{article.title}</h1>
             <div 
               className="prose prose-lg max-w-none prose-p:mb-6 prose-headings:mb-4 prose-headings:mt-8 prose-h2:text-2xl prose-h3:text-xl prose-h2:font-bold prose-h3:font-semibold prose-strong:font-bold prose-a:text-blue-600 prose-a:underline hover:prose-a:text-blue-800"
-              dangerouslySetInnerHTML={{ __html: article.content || '' }}
+              dangerouslySetInnerHTML={{ __html: cleanArticleContent(article.content || '') }}
             />
           </div>
         </div>
