@@ -108,7 +108,7 @@ export default function HomePage() {
   }
 
 
-  // Fetch data
+  // Fetch data with error boundaries
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -359,6 +359,8 @@ export default function HomePage() {
             fill
             className="object-cover opacity-50"
             priority
+            sizes="100vw"
+            quality={75}
           />
         </div>
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -769,6 +771,9 @@ export default function HomePage() {
                       width={400}
                       height={192}
                       className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                      loading="lazy"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      quality={80}
                     />
                     <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1">
                       <span className="text-xs font-semibold text-gray-700">

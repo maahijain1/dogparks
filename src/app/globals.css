@@ -25,6 +25,40 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Performance optimizations */
+* {
+  box-sizing: border-box;
+}
+
+/* Prevent layout shift for images */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Optimize animations for performance */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Critical above-the-fold styles */
+.hero-section {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+}
+
+/* Optimize font loading */
+.font-display-swap {
+  font-display: swap;
+}
+
 /* Article typography improvements */
 .prose p {
   margin-bottom: 1.5rem !important;

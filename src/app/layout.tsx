@@ -4,7 +4,12 @@ import './globals.css'
 import { siteConfig } from '@/lib/config'
 import { getSiteSettings, generateDynamicContent } from '@/lib/dynamic-config'
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ 
+  subsets: ['latin'],
+  display: 'swap',
+  preload: true,
+  fallback: ['system-ui', 'arial']
+})
 
 export async function generateMetadata(): Promise<Metadata> {
   // Get dynamic settings (force refresh for meta tags)
@@ -86,6 +91,15 @@ export default function RootLayout({
         <link rel="manifest" href="/site.webmanifest" />
         <meta name="theme-color" content="#2563eb" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        
+        {/* Performance optimizations */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="//fonts.gstatic.com" />
+        
+        {/* Preload critical resources */}
+        <link rel="preload" href="/hero-background-simple.svg" as="image" type="image/svg+xml" />
       </head>
       <body className={inter.className}>
         {children}
