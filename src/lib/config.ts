@@ -17,30 +17,30 @@ export const siteConfig = {
   seo: {
     // Homepage
     homepage: {
-      title: 'Find the Best Local Dog Parks Near You',
-      description: 'Discover top-rated dog parks in your area. Find the perfect place for your furry friend to play, exercise, and socialize.',
-      keywords: 'dog parks, local dog parks, dog park directory, dog park finder, dog exercise areas, pet-friendly parks'
+      title: 'Find the Best Local {niche}s Near You',
+      description: 'Discover top-rated {niche}s in your area. Find the perfect place for your furry friend to play, exercise, and socialize.',
+      keywords: '{niche}s, local {niche}s, {niche} directory, {niche} finder, {niche} areas, pet-friendly {niche}s'
     },
     
     // State pages
     state: {
-      title: '{stateName} Dog Park Directory | Find Dog Parks in {stateName}',
-      description: 'Discover {totalListings} dog parks across {totalCities} cities in {stateName}. Find the perfect dog park for your furry friend.',
-      keywords: '{stateName} dog parks, dog parks in {stateName}, {stateName} dog park directory, local dog parks {stateName}'
+      title: '{stateName} {niche} Directory | Find {niche}s in {stateName}',
+      description: 'Discover {totalListings} {niche}s across {totalCities} cities in {stateName}. Find the perfect {niche} for your furry friend.',
+      keywords: '{stateName} {niche}s, {niche}s in {stateName}, {stateName} {niche} directory, local {niche}s {stateName}'
     },
     
     // City pages
     city: {
-      title: '{cityName} Dog Park Directory | Find Dog Parks in {cityName}, {stateName}',
-      description: 'Find {totalListings} dog parks in {cityName}, {stateName}. Discover the best places for your dog to play and exercise.',
-      keywords: '{cityName} dog parks, dog parks in {cityName}, {cityName} dog park directory, local dog parks {cityName} {stateName}'
+      title: '{cityName} {niche} Directory | Find {niche}s in {cityName}, {stateName}',
+      description: 'Find {totalListings} {niche}s in {cityName}, {stateName}. Discover the best places for your dog to play and exercise.',
+      keywords: '{cityName} {niche}s, {niche}s in {cityName}, {cityName} {niche} directory, local {niche}s {cityName} {stateName}'
     },
     
     // Article pages
     article: {
-      title: '{articleTitle} | Dog Park Directory',
-      description: 'Learn about dog parks and pet care. Expert tips and information for dog owners.',
-      keywords: 'dog parks, pet care, dog exercise, dog park tips, pet-friendly areas'
+      title: '{articleTitle} | {niche} Directory',
+      description: 'Learn about {niche}s and pet care. Expert tips and information for dog owners.',
+      keywords: '{niche}s, pet care, dog exercise, {niche} tips, pet-friendly areas'
     }
   },
   
