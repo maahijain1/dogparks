@@ -336,14 +336,14 @@ export default function HomePage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative bg-white text-gray-900 py-20 overflow-hidden" aria-labelledby="hero-heading">
+      <section className="relative bg-gradient-to-br from-blue-50 to-purple-50 text-gray-900 py-20 overflow-hidden" aria-labelledby="hero-heading">
         {/* Background Image */}
         <div className="absolute inset-0 z-0">
           <Image
             src="/hero-background-simple.svg"
             alt=""
             fill
-            className="object-cover opacity-30"
+            className="object-cover opacity-50"
             priority
           />
         </div>
