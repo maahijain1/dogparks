@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { sendFeaturedListingNotification, sendConfirmationEmail } from '@/lib/email'
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,14 +25,11 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Here you would typically:
-    // 1. Save to database
-    // 2. Send email notification
-    // 3. Integrate with payment processor (Stripe, PayPal, etc.)
-    // 4. Set up subscription management
+    // Generate application ID
+    const applicationId = `FL-${Date.now()}`
 
-    // For now, we'll just log the submission
-    console.log('Featured Listing Application:', {
+    // Create application object
+    const application = {
       businessName,
       contactName,
       email,
@@ -42,19 +40,37 @@ export async function POST(request: NextRequest) {
       state,
       category,
       description,
+      applicationId
+    }
+
+    // Log the submission
+    console.log('Featured Listing Application:', {
+      ...application,
       submittedAt: new Date().toISOString()
     })
 
-    // TODO: Implement actual business logic:
-    // - Save to database
-    // - Send confirmation email
-    // - Create payment link
-    // - Set up subscription
+    // Send email notifications
+    try {
+      // Send notification to admin
+      const adminEmailResult = await sendFeaturedListingNotification(application)
+      if (!adminEmailResult.success) {
+        console.error('Failed to send admin notification:', adminEmailResult.error)
+      }
+
+      // Send confirmation to business owner
+      const confirmationEmailResult = await sendConfirmationEmail(application)
+      if (!confirmationEmailResult.success) {
+        console.error('Failed to send confirmation email:', confirmationEmailResult.error)
+      }
+    } catch (emailError) {
+      console.error('Email service error:', emailError)
+      // Don't fail the request if email fails, just log it
+    }
 
     return NextResponse.json(
       { 
         message: 'Application submitted successfully',
-        applicationId: `FL-${Date.now()}` // Temporary ID
+        applicationId
       },
       { status: 201 }
     )
