@@ -106,7 +106,7 @@ export async function DELETE(
     if (error) throw error
 
     return NextResponse.json({ message: 'Listing deleted successfully' })
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json(
       { error: 'Failed to delete listing' },
       { status: 500 }

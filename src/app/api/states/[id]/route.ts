@@ -26,7 +26,7 @@ export async function PUT(
     if (error) throw error
 
     return NextResponse.json(data)
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json(
       { error: 'Failed to update state' },
       { status: 500 }
@@ -49,7 +49,7 @@ export async function DELETE(
     if (error) throw error
 
     return NextResponse.json({ message: 'State deleted successfully' })
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json(
       { error: 'Failed to delete state' },
       { status: 500 }

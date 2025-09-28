@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
         'Vary': 'Accept-Encoding'
       }
     })
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json(
       { error: 'Failed to fetch listings' },
       { status: 500 }
@@ -135,7 +135,7 @@ export async function POST(request: NextRequest) {
       console.log('Successfully created listing:', data)
       return NextResponse.json(data, { status: 201 })
     }
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json(
       { error: 'Failed to create listing(s)' },
       { status: 500 }

@@ -175,7 +175,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
           article = articles.find((a: { slug: string }) => a.slug === slug)
           articleError = null
         }
-      } catch (apiError) {
+      } catch (_apiError) {
       }
     }
     
@@ -205,7 +205,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
         </div>
       )
     }
-  } catch (error) {
+  } catch (_error) {
     // Error fetching article
   }
   
@@ -255,7 +255,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
             <div className="text-center">
               <h1 className="text-4xl font-bold text-gray-900 mb-4">State Not Found</h1>
               <p className="text-xl text-gray-600 mb-8">
-                The state "{stateName}" could not be found. It may have been removed from the directory.
+                The state &quot;{stateName}&quot; could not be found. It may have been removed from the directory.
               </p>
               <Link 
                 href="/"

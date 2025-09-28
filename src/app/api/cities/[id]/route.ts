@@ -32,7 +32,7 @@ export async function PUT(
     if (error) throw error
 
     return NextResponse.json(data)
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json(
       { error: 'Failed to update city' },
       { status: 500 }
@@ -55,7 +55,7 @@ export async function DELETE(
     if (error) throw error
 
     return NextResponse.json({ message: 'City deleted successfully' })
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json(
       { error: 'Failed to delete city' },
       { status: 500 }
