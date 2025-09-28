@@ -1,5 +1,6 @@
 import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { ArrowLeft } from 'lucide-react'
 import { siteConfig } from '@/lib/config'
 import { Metadata } from 'next'
@@ -197,6 +198,23 @@ export default async function SlugPage({ params }: SlugPageProps) {
             </div>
             
             <h1 className="text-4xl font-bold mb-8">{article.title}</h1>
+            
+            {/* Featured Image */}
+            {article.featured_image && (
+              <div className="mb-8">
+                <Image
+                  src={article.featured_image}
+                  alt={article.title}
+                  width={800}
+                  height={400}
+                  className="w-full h-64 md:h-80 object-cover rounded-lg shadow-lg"
+                  priority
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
+                  quality={90}
+                />
+              </div>
+            )}
+            
             <div 
               className="prose prose-lg max-w-none prose-p:mb-6 prose-headings:mb-4 prose-headings:mt-8 prose-h2:text-2xl prose-h3:text-xl prose-h2:font-bold prose-h3:font-semibold prose-strong:font-bold prose-a:text-blue-600 prose-a:underline hover:prose-a:text-blue-800"
               dangerouslySetInnerHTML={{ __html: cleanArticleContent(article.content || '') }}
