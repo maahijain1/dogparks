@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sendFeaturedListingNotification, sendConfirmationEmail } from '@/lib/email'
 
+export async function GET() {
+  return NextResponse.json({
+    message: 'Email test endpoint - use POST to test email functionality',
+    usage: 'Send a POST request to this endpoint to test email service'
+  })
+}
+
 export async function POST(request: NextRequest) {
   try {
     // Test data
