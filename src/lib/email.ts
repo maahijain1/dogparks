@@ -24,7 +24,7 @@ export async function sendFeaturedListingNotification(application: FeaturedListi
 
   try {
     const { data, error } = await resend.emails.send({
-      from: 'DirectoryHub <noreply@directoryhub.com>', // Replace with your domain
+      from: 'DirectoryHub <onboarding@resend.dev>', // Using Resend's verified domain
       to: [process.env.ADMIN_EMAIL || 'admin@directoryhub.com'], // Your email
       subject: `🌟 New Featured Listing Application - ${application.businessName}`,
       html: `
@@ -102,7 +102,7 @@ export async function sendConfirmationEmail(application: FeaturedListingApplicat
 
   try {
     const { data, error } = await resend.emails.send({
-      from: 'DirectoryHub <noreply@directoryhub.com>', // Replace with your domain
+      from: 'DirectoryHub <onboarding@resend.dev>', // Using Resend's verified domain
       to: [application.email],
       subject: `Thank you for your featured listing application - ${application.businessName}`,
       html: `
