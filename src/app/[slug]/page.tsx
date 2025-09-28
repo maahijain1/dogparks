@@ -199,12 +199,6 @@ export default async function SlugPage({ params }: SlugPageProps) {
             
             <h1 className="text-4xl font-bold mb-8">{article.title}</h1>
             
-            {/* Debug info - remove this after testing */}
-            <div className="mb-4 p-4 bg-gray-100 rounded text-sm">
-              <p><strong>Featured Image URL:</strong> {article.featured_image || 'No image'}</p>
-              <p><strong>Article ID:</strong> {article.id}</p>
-            </div>
-            
             {/* Featured Image */}
             {article.featured_image ? (
               <div className="mb-8">
@@ -217,10 +211,6 @@ export default async function SlugPage({ params }: SlugPageProps) {
                   priority
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
                   quality={90}
-                  onError={(e) => {
-                    console.error('Image failed to load:', article?.featured_image);
-                    console.error('Error:', e);
-                  }}
                 />
               </div>
             ) : (
