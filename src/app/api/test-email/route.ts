@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { sendFeaturedListingNotification, sendConfirmationEmail } from '@/lib/email'
+import { sendFeaturedListingNotification, sendConfirmationEmail, sendBothEmails } from '@/lib/email'
+import { Resend } from 'resend'
+
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
 
 export async function GET() {
   return NextResponse.json({
@@ -29,13 +32,17 @@ export async function POST(request: NextRequest) {
     console.log('RESEND_API_KEY exists:', !!process.env.RESEND_API_KEY)
     console.log('ADMIN_EMAIL:', process.env.ADMIN_EMAIL)
 
-    // Test admin notification
-    console.log('Testing admin notification...')
+    // Test both emails using the new combined function
+    console.log('Testing both admin notification and customer confirmation...')
+    const bothResults = await sendBothEmails(testApplication)
+    console.log('Both emails result:', bothResults)
+
+    // Also test individual functions for detailed results
+    console.log('Testing admin notification individually...')
     const adminResult = await sendFeaturedListingNotification(testApplication)
     console.log('Admin email result:', adminResult)
 
-    // Test confirmation email
-    console.log('Testing confirmation email...')
+    console.log('Testing confirmation email individually...')
     const confirmationResult = await sendConfirmationEmail(testApplication)
     console.log('Confirmation email result:', confirmationResult)
 
@@ -43,12 +50,16 @@ export async function POST(request: NextRequest) {
       success: true,
       message: 'Email test completed',
       results: {
-        adminEmail: adminResult,
-        confirmationEmail: confirmationResult
+        combinedTest: bothResults,
+        individualTests: {
+          adminEmail: adminResult,
+          confirmationEmail: confirmationResult
+        }
       },
       environment: {
         hasResendKey: !!process.env.RESEND_API_KEY,
-        adminEmail: process.env.ADMIN_EMAIL
+        adminEmail: process.env.ADMIN_EMAIL,
+        resendConfigured: !!resend
       }
     })
 

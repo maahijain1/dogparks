@@ -22,10 +22,14 @@ export async function sendFeaturedListingNotification(application: FeaturedListi
     return { success: false, error: 'Email service not configured' }
   }
 
+  if (!process.env.ADMIN_EMAIL) {
+    console.warn('ADMIN_EMAIL not configured - using fallback email')
+  }
+
   try {
     const { data, error } = await resend.emails.send({
       from: 'DirectoryHub <onboarding@resend.dev>', // Using Resend's verified domain
-      to: ['bankonkamalakar@gmail.com'], // Use the verified email from Resend account
+      to: [process.env.ADMIN_EMAIL || 'bankonkamalakar@gmail.com'], // Use the verified email from Resend account
       subject: `🌟 New Featured Listing Application - ${application.businessName}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -100,11 +104,16 @@ export async function sendConfirmationEmail(application: FeaturedListingApplicat
     return { success: false, error: 'Email service not configured' }
   }
 
+  if (!application.email) {
+    console.error('No customer email provided for confirmation')
+    return { success: false, error: 'Customer email is required' }
+  }
+
   try {
     const { data, error } = await resend.emails.send({
       from: 'DirectoryHub <onboarding@resend.dev>', // Using Resend's verified domain
-      to: ['bankonkamalakar@gmail.com'], // Send to admin instead of customer for free tier
-      subject: `Customer Application: ${application.businessName} - ${application.contactName}`,
+      to: [application.email], // Send confirmation to the customer who submitted the form
+      subject: `Thank You! Your Featured Listing Application - ${application.businessName}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
@@ -157,5 +166,18 @@ export async function sendConfirmationEmail(application: FeaturedListingApplicat
   } catch (error) {
     console.error('Error sending confirmation email:', error)
     return { success: false, error }
+  }
+}
+
+export async function sendBothEmails(application: FeaturedListingApplication) {
+  console.log('Sending both admin notification and customer confirmation emails...')
+  
+  const adminResult = await sendFeaturedListingNotification(application)
+  const confirmationResult = await sendConfirmationEmail(application)
+  
+  return {
+    adminEmail: adminResult,
+    confirmationEmail: confirmationResult,
+    allSuccessful: adminResult.success && confirmationResult.success
   }
 }

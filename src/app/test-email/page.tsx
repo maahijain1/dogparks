@@ -55,9 +55,11 @@ export default function TestEmailPage() {
             <ul className="list-disc list-inside space-y-1">
               <li>Checks if RESEND_API_KEY is configured</li>
               <li>Checks if ADMIN_EMAIL is configured</li>
-              <li>Tests sending admin notification email</li>
-              <li>Tests sending confirmation email</li>
+              <li>Tests sending admin notification email (to admin)</li>
+              <li>Tests sending confirmation email (to customer)</li>
+              <li>Tests combined email sending functionality</li>
               <li>Shows detailed error messages if something fails</li>
+              <li>Validates email addresses and configuration</li>
             </ul>
           </div>
         </div>
