@@ -32,17 +32,15 @@ export async function POST(request: NextRequest) {
     console.log('RESEND_API_KEY exists:', !!process.env.RESEND_API_KEY)
     console.log('ADMIN_EMAIL:', process.env.ADMIN_EMAIL)
 
-    // Test both emails using the new combined function
-    console.log('Testing both admin notification and customer confirmation...')
-    const bothResults = await sendBothEmails(testApplication)
-    console.log('Both emails result:', bothResults)
-
-    // Also test individual functions for detailed results
-    console.log('Testing admin notification individually...')
+    // Test only admin notification to avoid rate limiting
+    console.log('Testing admin notification email...')
     const adminResult = await sendFeaturedListingNotification(testApplication)
     console.log('Admin email result:', adminResult)
 
-    console.log('Testing confirmation email individually...')
+    // Add delay to prevent rate limiting
+    await new Promise(resolve => setTimeout(resolve, 2000))
+
+    console.log('Testing confirmation email...')
     const confirmationResult = await sendConfirmationEmail(testApplication)
     console.log('Confirmation email result:', confirmationResult)
 
@@ -50,11 +48,8 @@ export async function POST(request: NextRequest) {
       success: true,
       message: 'Email test completed',
       results: {
-        combinedTest: bothResults,
-        individualTests: {
-          adminEmail: adminResult,
-          confirmationEmail: confirmationResult
-        }
+        adminEmail: adminResult,
+        confirmationEmail: confirmationResult
       },
       environment: {
         hasResendKey: !!process.env.RESEND_API_KEY,

@@ -55,12 +55,21 @@ export default function TestEmailPage() {
             <ul className="list-disc list-inside space-y-1">
               <li>Checks if RESEND_API_KEY is configured</li>
               <li>Checks if ADMIN_EMAIL is configured</li>
-              <li>Tests sending admin notification email (to admin)</li>
-              <li>Tests sending confirmation email (to customer)</li>
-              <li>Tests combined email sending functionality</li>
+              <li>Tests sending admin notification email</li>
+              <li>Tests sending confirmation email</li>
               <li>Shows detailed error messages if something fails</li>
               <li>Validates email addresses and configuration</li>
             </ul>
+            
+            <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <h4 className="font-semibold text-yellow-800 mb-2">⚠️ Resend Free Tier Limitations:</h4>
+              <ul className="list-disc list-inside space-y-1 text-yellow-700">
+                <li>Can only send emails to verified email addresses</li>
+                <li>Rate limited to 2 requests per second</li>
+                <li>For production: verify your domain at resend.com/domains</li>
+                <li>Current test sends to: bankonkamalakar@gmail.com (verified)</li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>

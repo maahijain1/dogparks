@@ -2,6 +2,23 @@ import { Resend } from 'resend'
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
 
+// Helper function to get the appropriate email address based on environment
+const getAdminEmail = () => {
+  // In production with domain verification, use ADMIN_EMAIL
+  // In development/free tier, use verified email
+  return process.env.NODE_ENV === 'production' && process.env.ADMIN_EMAIL 
+    ? process.env.ADMIN_EMAIL 
+    : 'bankonkamalakar@gmail.com'
+}
+
+const getCustomerEmail = (application: FeaturedListingApplication) => {
+  // In production with domain verification, send to customer
+  // In development/free tier, send to verified email
+  return process.env.NODE_ENV === 'production' && process.env.RESEND_DOMAIN_VERIFIED === 'true'
+    ? application.email
+    : 'bankonkamalakar@gmail.com'
+}
+
 export interface FeaturedListingApplication {
   businessName: string
   contactName: string
@@ -22,14 +39,14 @@ export async function sendFeaturedListingNotification(application: FeaturedListi
     return { success: false, error: 'Email service not configured' }
   }
 
-  if (!process.env.ADMIN_EMAIL) {
-    console.warn('ADMIN_EMAIL not configured - using fallback email')
-  }
+  // Note: Resend free tier only allows sending to verified email addresses
+  // For production, verify your own domain at resend.com/domains
+  console.log('Sending admin notification to verified email address')
 
   try {
     const { data, error } = await resend.emails.send({
       from: 'DirectoryHub <onboarding@resend.dev>', // Using Resend's verified domain
-      to: [process.env.ADMIN_EMAIL || 'bankonkamalakar@gmail.com'], // Use the verified email from Resend account
+      to: [getAdminEmail()], // Use appropriate email based on environment
       subject: `🌟 New Featured Listing Application - ${application.businessName}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -104,15 +121,14 @@ export async function sendConfirmationEmail(application: FeaturedListingApplicat
     return { success: false, error: 'Email service not configured' }
   }
 
-  if (!application.email) {
-    console.error('No customer email provided for confirmation')
-    return { success: false, error: 'Customer email is required' }
-  }
+  // Note: Resend free tier limitation - sending to verified email for testing
+  // In production with domain verification, this would go to application.email
+  console.log('Sending confirmation email to verified email address (free tier limitation)')
 
   try {
     const { data, error } = await resend.emails.send({
       from: 'DirectoryHub <onboarding@resend.dev>', // Using Resend's verified domain
-      to: [application.email], // Send confirmation to the customer who submitted the form
+      to: [getCustomerEmail(application)], // Use appropriate email based on environment
       subject: `Thank You! Your Featured Listing Application - ${application.businessName}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
