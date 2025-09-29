@@ -32,7 +32,7 @@ export async function GET() {
 export async function PUT(request: Request) {
   try {
     const body = await request.json()
-    const { site_name, niche, country } = body
+    const { site_name, niche, country, email } = body
 
     // Validate required fields
     if (!site_name || !niche || !country) {
@@ -45,6 +45,11 @@ export async function PUT(request: Request) {
       { setting_key: 'niche', setting_value: niche },
       { setting_key: 'country', setting_value: country }
     ]
+
+    // Add email if provided
+    if (email) {
+      updates.push({ setting_key: 'email', setting_value: email })
+    }
 
     for (const update of updates) {
       const { error } = await supabase

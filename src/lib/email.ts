@@ -172,7 +172,7 @@ export async function sendConfirmationEmail(application: FeaturedListingApplicat
             
             <div style="text-align: center; margin-top: 30px;">
               <p style="color: #666; font-size: 14px;">
-                Questions? Contact us at <a href="mailto:support@directoryhub.com" style="color: #667eea;">support@directoryhub.com</a>
+                Questions? Contact us at <a href="mailto:support@${process.env.ADMIN_EMAIL || 'support@directoryhub.com'}" style="color: #667eea;">${process.env.ADMIN_EMAIL || 'support@directoryhub.com'}</a>
               </p>
             </div>
           </div>

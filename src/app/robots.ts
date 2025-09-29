@@ -1,6 +1,11 @@
 import { MetadataRoute } from 'next'
+import { getSiteSettings } from '@/lib/dynamic-config'
 
-export default function robots(): MetadataRoute.Robots {
+export default async function robots(): Promise<MetadataRoute.Robots> {
+  // Get dynamic site URL from settings
+  const settings = await getSiteSettings()
+  const baseUrl = settings.site_url || 'https://directoryhub.com'
+  
   return {
     rules: {
       userAgent: '*',
@@ -12,7 +17,7 @@ export default function robots(): MetadataRoute.Robots {
         '/static/',
       ],
     },
-    sitemap: 'https://directoryhub.com/sitemap.xml',
+    sitemap: `${baseUrl}/sitemap.xml`,
   }
 }
 

@@ -217,8 +217,8 @@ export default function ContactPage() {
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-1">Email Us</h3>
                     <p className="text-gray-600 mb-2">Send us an email anytime</p>
-                    <a href="mailto:info@directoryhub.com" className="text-blue-600 hover:text-blue-800">
-                      info@directoryhub.com
+                    <a href={`mailto:info@${dynamicSettings.siteName.toLowerCase().replace(/\s+/g, '')}.com`} className="text-blue-600 hover:text-blue-800">
+                      info@{dynamicSettings.siteName.toLowerCase().replace(/\s+/g, '')}.com
                     </a>
                   </div>
                 </div>

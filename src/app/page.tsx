@@ -259,16 +259,16 @@ export default function HomePage() {
     "@type": "WebSite",
     "name": dynamicSettings.siteName,
     "description": `Find local ${dynamicSettings.niche.toLowerCase()}s in ${dynamicSettings.country} with reviews, ratings, and contact information`,
-    "url": "https://directoryhub.com",
+    "url": `https://${dynamicSettings.siteName.toLowerCase().replace(/\s+/g, '')}.com`,
     "potentialAction": {
       "@type": "SearchAction",
-      "target": "https://directoryhub.com/?search={search_term_string}",
+      "target": `https://${dynamicSettings.siteName.toLowerCase().replace(/\s+/g, '')}.com/?search={search_term_string}`,
       "query-input": "required name=search_term_string"
     },
     "publisher": {
       "@type": "Organization",
       "name": dynamicSettings.siteName,
-      "url": "https://directoryhub.com"
+      "url": `https://${dynamicSettings.siteName.toLowerCase().replace(/\s+/g, '')}.com`
     }
   }
 
@@ -876,7 +876,7 @@ export default function HomePage() {
               <div className="space-y-2 text-gray-300">
                 <div className="flex items-center">
                   <Mail className="h-4 w-4 mr-2" />
-                  <span>info@directoryhub.com</span>
+                  <span>info@{dynamicSettings.siteName.toLowerCase().replace(/\s+/g, '')}.com</span>
                 </div>
                 <div className="flex items-center">
                   <Phone className="h-4 w-4 mr-2" />

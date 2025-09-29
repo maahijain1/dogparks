@@ -1,8 +1,11 @@
 import { MetadataRoute } from 'next'
 import { supabase } from '@/lib/supabase'
+import { getSiteSettings } from '@/lib/dynamic-config'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://directoryhub.com'
+  // Get dynamic site URL from settings
+  const settings = await getSiteSettings()
+  const baseUrl = settings.site_url || 'https://directoryhub.com'
   
   try {
     // Get all published articles
