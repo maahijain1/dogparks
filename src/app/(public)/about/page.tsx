@@ -1,12 +1,48 @@
+'use client'
+
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, Users, Target, Award } from 'lucide-react'
-
-export const metadata = {
-  title: 'About Us | DirectoryHub',
-  description: 'Learn about DirectoryHub - your trusted source for finding the best local businesses and services.',
-}
+import { getSiteSettings } from '@/lib/dynamic-config'
 
 export default function AboutPage() {
+  const [dynamicSettings, setDynamicSettings] = useState({
+    siteName: 'DirectoryHub',
+    niche: 'Dog Park',
+    country: 'USA'
+  })
+  const [loading, setLoading] = useState(true)
+
+  // Load dynamic settings
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const settings = await getSiteSettings()
+        setDynamicSettings({
+          siteName: settings.site_name || 'DirectoryHub',
+          niche: settings.niche || 'Dog Park',
+          country: settings.country || 'USA'
+        })
+      } catch (error) {
+        console.error('Error loading dynamic settings:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    loadSettings()
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    )
+  }
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
@@ -14,7 +50,7 @@ export default function AboutPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link href="/" className="text-2xl font-bold text-blue-600">
-              DirectoryHub
+              {dynamicSettings.siteName}
             </Link>
             <Link 
               href="/" 
@@ -31,10 +67,10 @@ export default function AboutPage() {
       <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">
-            About DirectoryHub
+            About {dynamicSettings.siteName}
           </h1>
           <p className="text-xl md:text-2xl text-blue-100">
-            Connecting you with the best local businesses
+            Connecting you with the best local {dynamicSettings.niche.toLowerCase()}s
           </p>
         </div>
       </section>
@@ -45,16 +81,16 @@ export default function AboutPage() {
           <div className="prose prose-lg max-w-none">
             <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Mission</h2>
             <p className="text-lg text-gray-700 mb-8">
-              At DirectoryHub, we believe that finding the right local business should be simple, 
-              reliable, and trustworthy. Our mission is to connect you with the best local services 
+              At {dynamicSettings.siteName}, we believe that finding the right local {dynamicSettings.niche.toLowerCase()} should be simple, 
+              reliable, and trustworthy. Our mission is to connect you with the best local {dynamicSettings.niche.toLowerCase()}s 
               in your area, helping you make informed decisions about where to spend your time and money.
             </p>
 
             <h2 className="text-3xl font-bold text-gray-900 mb-6">What We Do</h2>
             <p className="text-lg text-gray-700 mb-8">
-              We curate and maintain a comprehensive directory of local businesses, complete with 
+              We curate and maintain a comprehensive directory of local {dynamicSettings.niche.toLowerCase()}s, complete with 
               detailed information, reviews, and contact details. Our platform makes it easy to 
-              discover new businesses, compare services, and find exactly what you&apos;re looking for 
+              discover new {dynamicSettings.niche.toLowerCase()}s, compare services, and find exactly what you&apos;re looking for 
               in your local area.
             </p>
 
