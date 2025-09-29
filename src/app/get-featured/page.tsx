@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, Star, Check, CreditCard } from 'lucide-react'
-import { siteConfig } from '@/lib/config'
+import { getSiteSettings } from '@/lib/dynamic-config'
 
 export default function GetFeaturedPage() {
   const [formData, setFormData] = useState({
@@ -19,6 +19,32 @@ export default function GetFeaturedPage() {
     description: ''
   })
   const [formSubmitting, setFormSubmitting] = useState(false)
+  const [dynamicSettings, setDynamicSettings] = useState({
+    siteName: 'DirectoryHub',
+    niche: 'Dog Park',
+    country: 'USA'
+  })
+  const [loading, setLoading] = useState(true)
+
+  // Load dynamic settings
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const settings = await getSiteSettings()
+        setDynamicSettings({
+          siteName: settings.site_name || 'DirectoryHub',
+          niche: settings.niche || 'Dog Park',
+          country: settings.country || 'USA'
+        })
+      } catch (error) {
+        console.error('Error loading dynamic settings:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    loadSettings()
+  }, [])
 
   // Handle featured listing form submission
   const handleFeaturedFormSubmit = async (e: React.FormEvent) => {
@@ -63,6 +89,17 @@ export default function GetFeaturedPage() {
     }
   }
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
@@ -70,7 +107,7 @@ export default function GetFeaturedPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link href="/" className="text-2xl font-bold text-blue-600">
-              {siteConfig.siteName}
+              {dynamicSettings.siteName}
             </Link>
             <Link 
               href="/" 
@@ -88,7 +125,7 @@ export default function GetFeaturedPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              Get Your {siteConfig.niche} Featured!
+              Get Your {dynamicSettings.niche} Featured!
             </h1>
             <p className="text-xl md:text-2xl mb-8 opacity-90">
               Stand out from the crowd with a premium featured listing
@@ -109,7 +146,7 @@ export default function GetFeaturedPage() {
               Featured Listing Plan
             </h2>
             <p className="text-xl text-gray-600">
-              Get premium visibility for your {siteConfig.niche.toLowerCase()} in one city
+              Get premium visibility for your {dynamicSettings.niche.toLowerCase()} in one city
             </p>
           </div>
 
@@ -311,7 +348,7 @@ export default function GetFeaturedPage() {
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder={`e.g., ${siteConfig.niche}, Pet Boarding, etc.`}
+                  placeholder={`e.g., ${dynamicSettings.niche}, Pet Boarding, etc.`}
                   required
                 />
               </div>
@@ -414,13 +451,13 @@ export default function GetFeaturedPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <Link href="/" className="text-2xl font-bold text-blue-400 mb-4 inline-block">
-              {siteConfig.siteName}
+              {dynamicSettings.siteName}
             </Link>
             <p className="text-gray-400 mb-6">
-              Your trusted directory for finding the best {siteConfig.niche.toLowerCase()}s in your area.
+              Your trusted directory for finding the best {dynamicSettings.niche.toLowerCase()}s in your area.
             </p>
             <div className="border-t border-gray-800 pt-6 text-center text-gray-400">
-              <p>&copy; 2024 {siteConfig.siteName}. All rights reserved.</p>
+              <p>&copy; 2024 {dynamicSettings.siteName}. All rights reserved.</p>
             </div>
           </div>
         </div>
