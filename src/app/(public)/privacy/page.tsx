@@ -1,12 +1,48 @@
+'use client'
+
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, Shield, Lock, Eye } from 'lucide-react'
-
-export const metadata = {
-  title: 'Privacy Policy | DirectoryHub',
-  description: 'Learn how DirectoryHub protects your privacy and handles your personal information.',
-}
+import { getSiteSettings } from '@/lib/dynamic-config'
 
 export default function PrivacyPage() {
+  const [dynamicSettings, setDynamicSettings] = useState({
+    siteName: 'DirectoryHub',
+    niche: 'Dog Park',
+    country: 'USA'
+  })
+  const [loading, setLoading] = useState(true)
+
+  // Load dynamic settings
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const settings = await getSiteSettings()
+        setDynamicSettings({
+          siteName: settings.site_name || 'DirectoryHub',
+          niche: settings.niche || 'Dog Park',
+          country: settings.country || 'USA'
+        })
+      } catch (error) {
+        console.error('Error loading dynamic settings:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    loadSettings()
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    )
+  }
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
@@ -14,7 +50,7 @@ export default function PrivacyPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link href="/" className="text-2xl font-bold text-blue-600">
-              DirectoryHub
+              {dynamicSettings.siteName}
             </Link>
             <Link 
               href="/" 
@@ -49,7 +85,7 @@ export default function PrivacyPage() {
 
             <h2 className="text-3xl font-bold text-gray-900 mb-6">Introduction</h2>
             <p className="text-lg text-gray-700 mb-8">
-              DirectoryHub (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) is committed to protecting your privacy. 
+              {dynamicSettings.siteName} (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) is committed to protecting your privacy. 
               This Privacy Policy explains how we collect, use, disclose, and safeguard your 
               information when you visit our website and use our services.
             </p>
