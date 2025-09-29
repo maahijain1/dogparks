@@ -142,6 +142,15 @@ export async function sendConfirmationEmail(application: FeaturedListingApplicat
             <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
               <p><strong>Application ID:</strong> ${application.applicationId}</p>
               <p><strong>Business Name:</strong> ${application.businessName}</p>
+              <p><strong>Contact Name:</strong> ${application.contactName}</p>
+              <p><strong>Email:</strong> <a href="mailto:${application.email}" style="color: #667eea;">${application.email}</a></p>
+              <p><strong>Phone:</strong> <a href="tel:${application.phone}" style="color: #667eea;">${application.phone}</a></p>
+              ${application.website ? `<p><strong>Website:</strong> <a href="${application.website}" target="_blank" style="color: #667eea;">${application.website}</a></p>` : ''}
+              <p><strong>Address:</strong> ${application.address}</p>
+              <p><strong>City:</strong> ${application.city}</p>
+              <p><strong>State:</strong> ${application.state}</p>
+              <p><strong>Category:</strong> ${application.category}</p>
+              ${application.description ? `<p><strong>Description:</strong> ${application.description}</p>` : ''}
               <p><strong>Submitted:</strong> ${new Date().toLocaleDateString()}</p>
             </div>
             
