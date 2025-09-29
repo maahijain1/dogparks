@@ -1,11 +1,31 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Lock, Eye, EyeOff } from 'lucide-react'
+import { getSiteSettings } from '@/lib/dynamic-config'
 
 export default function AdminLogin() {
+  const [dynamicSettings, setDynamicSettings] = useState({
+    siteName: 'DirectoryHub'
+  })
+
+  // Load dynamic settings
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const settings = await getSiteSettings()
+        setDynamicSettings({
+          siteName: settings.site_name || 'DirectoryHub'
+        })
+      } catch (error) {
+        console.error('Error loading dynamic settings:', error)
+      }
+    }
+    
+    loadSettings()
+  }, [])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -50,7 +70,7 @@ export default function AdminLogin() {
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="text-center">
           <Link href="/" className="text-2xl font-bold text-blue-600">
-            DirectoryHub
+            {dynamicSettings.siteName}
           </Link>
           <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
             Admin Login

@@ -38,7 +38,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     description: dynamicDescription,
     keywords: dynamicKeywords,
-    authors: [{ name: 'DirectoryHub Team' }],
+    authors: [{ name: `${settings.site_name || 'DirectoryHub'} Team` }],
     creator: settings.site_name || 'DirectoryHub',
     publisher: settings.site_name || 'DirectoryHub',
     robots: {

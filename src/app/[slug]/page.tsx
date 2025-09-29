@@ -5,6 +5,7 @@ import { ArrowLeft } from 'lucide-react'
 import { siteConfig } from '@/lib/config'
 import { Metadata } from 'next'
 import { supabase } from '@/lib/supabase'
+import { getSiteSettings } from '@/lib/dynamic-config'
 
 // Function to clean article content and remove empty heading tags
 function cleanArticleContent(content: string): string {
@@ -39,6 +40,11 @@ interface Article {
 export async function generateMetadata({ params }: SlugPageProps): Promise<Metadata> {
   const { slug } = await params
   
+  // Get dynamic settings
+  const settings = await getSiteSettings()
+  const siteName = settings.site_name || 'DirectoryHub'
+  const niche = settings.niche || 'Dog Park'
+  
   // First, check if this is an article
   try {
     const { data: article, error: articleError } = await supabase
@@ -50,14 +56,14 @@ export async function generateMetadata({ params }: SlugPageProps): Promise<Metad
 
     if (article && !articleError) {
       return {
-        title: `${article.title} | ${siteConfig.siteName}`,
+        title: `${article.title} | ${siteName}`,
         description: article.excerpt || (article.content ? article.content.substring(0, 160) : 'No description available'),
-        keywords: `${siteConfig.niche.toLowerCase()}s, article, ${article.title}`,
+        keywords: `${niche.toLowerCase()}s, article, ${article.title}`,
         openGraph: {
           title: article.title,
           description: article.excerpt || (article.content ? article.content.substring(0, 160) : 'No description available'),
           url: `${siteConfig.siteUrl}/${slug}`,
-          siteName: siteConfig.siteName,
+          siteName: siteName,
           type: 'article',
           images: article.featured_image ? [{ url: article.featured_image }] : undefined,
         },
@@ -79,20 +85,20 @@ export async function generateMetadata({ params }: SlugPageProps): Promise<Metad
   if (!slug.includes('-')) {
     const stateName = slug.replace(/\b\w/g, l => l.toUpperCase())
     return {
-      title: `${siteConfig.niche}s ${stateName} | ${siteConfig.siteName}`,
-      description: `Find the best ${siteConfig.niche.toLowerCase()}s in ${stateName}. Discover top-rated ${siteConfig.niche.toLowerCase()}s, read reviews, and get contact information.`,
-      keywords: `${siteConfig.niche.toLowerCase()}s, ${stateName}, local ${siteConfig.niche.toLowerCase()}s, ${siteConfig.niche.toLowerCase()} directory, ${stateName} ${siteConfig.niche.toLowerCase()}s`,
+      title: `${niche}s ${stateName} | ${siteName}`,
+      description: `Find the best ${niche.toLowerCase()}s in ${stateName}. Discover top-rated ${niche.toLowerCase()}s, read reviews, and get contact information.`,
+      keywords: `${niche.toLowerCase()}s, ${stateName}, local ${niche.toLowerCase()}s, ${niche.toLowerCase()} directory, ${stateName} ${niche.toLowerCase()}s`,
       openGraph: {
-        title: `${siteConfig.niche}s ${stateName}`,
-        description: `Find the best ${siteConfig.niche.toLowerCase()}s in ${stateName}`,
+        title: `${niche}s ${stateName}`,
+        description: `Find the best ${niche.toLowerCase()}s in ${stateName}`,
         url: `${siteConfig.siteUrl}/${slug}`,
-        siteName: siteConfig.siteName,
+        siteName: siteName,
         type: 'website',
       },
       twitter: {
         card: 'summary_large_image',
-        title: `${siteConfig.niche}s ${stateName}`,
-        description: `Find the best ${siteConfig.niche.toLowerCase()}s in ${stateName}`,
+        title: `${niche}s ${stateName}`,
+        description: `Find the best ${niche.toLowerCase()}s in ${stateName}`,
       },
       alternates: {
         canonical: `${siteConfig.siteUrl}/${slug}`,
@@ -119,20 +125,20 @@ export async function generateMetadata({ params }: SlugPageProps): Promise<Metad
     const cityParts = parts.slice(nicheParts.length)
     const cityName = cityParts.join(' ').replace(/\b\w/g, l => l.toUpperCase())
     return {
-      title: `${currentNiche}s ${cityName} | ${siteConfig.siteName}`,
+      title: `${currentNiche}s ${cityName} | ${siteName}`,
       description: `Find the best ${currentNiche.toLowerCase()}s in ${cityName}. Discover top-rated ${currentNiche.toLowerCase()}s, read reviews, and get contact information.`,
       keywords: `${currentNiche.toLowerCase()}s, ${cityName}, local ${currentNiche.toLowerCase()}s, ${currentNiche.toLowerCase()} directory, ${cityName} ${currentNiche.toLowerCase()}s`,
       openGraph: {
         title: `${currentNiche}s ${cityName}`,
         description: `Find the best ${currentNiche.toLowerCase()}s in ${cityName}`,
         url: `${siteConfig.siteUrl}/${slug}`,
-        siteName: siteConfig.siteName,
+        siteName: siteName,
         type: 'website',
       },
       twitter: {
         card: 'summary_large_image',
-        title: `${siteConfig.niche}s ${cityName}`,
-        description: `Find the best ${siteConfig.niche.toLowerCase()}s in ${cityName}`,
+        title: `${currentNiche}s ${cityName}`,
+        description: `Find the best ${currentNiche.toLowerCase()}s in ${cityName}`,
       },
       alternates: {
         canonical: `${siteConfig.siteUrl}/${slug}`,
@@ -141,13 +147,18 @@ export async function generateMetadata({ params }: SlugPageProps): Promise<Metad
   }
   
   return {
-    title: `${siteConfig.siteName}`,
-    description: siteConfig.siteDescription,
+    title: `${siteName}`,
+    description: `Find the best ${niche.toLowerCase()}s in your area`,
   }
 }
 
 export default async function SlugPage({ params }: SlugPageProps) {
   const { slug } = await params
+  
+  // Get dynamic settings
+  const settings = await getSiteSettings()
+  const siteName = settings.site_name || 'DirectoryHub'
+  const niche = settings.niche || 'Dog Park'
   
   // First check if this is an article by trying to fetch it
   let article: Article | null = null
@@ -358,17 +369,17 @@ export default async function SlugPage({ params }: SlugPageProps) {
         <section className="bg-white text-gray-900 py-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-4">
-              {siteConfig.niche}s {stateName}
+              {niche}s {stateName}
             </h1>
             <p className="text-xl md:text-2xl mb-8 text-gray-600">
-              Discover {totalListings} {siteConfig.niche.toLowerCase()}s in {stateName}
+              Discover {totalListings} {niche.toLowerCase()}s in {stateName}
             </p>
             
             {/* Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto">
               <div className="text-center">
                 <div className="text-3xl font-bold text-blue-600">{totalListings}</div>
-                <div className="text-gray-600">Total {siteConfig.niche}s</div>
+                <div className="text-gray-600">Total {niche}s</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-green-600">{featuredListings}</div>

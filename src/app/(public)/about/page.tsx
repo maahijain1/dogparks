@@ -125,7 +125,7 @@ export default function AboutPage() {
               </div>
             </div>
 
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">Why Choose DirectoryHub?</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-6">Why Choose {dynamicSettings.siteName}?</h2>
             <ul className="text-lg text-gray-700 space-y-4 mb-8">
               <li className="flex items-start">
                 <span className="text-blue-600 font-bold mr-3">•</span>
