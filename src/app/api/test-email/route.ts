@@ -30,7 +30,8 @@ export async function POST(request: NextRequest) {
 
     console.log('Testing email service...')
     console.log('RESEND_API_KEY exists:', !!process.env.RESEND_API_KEY)
-    console.log('ADMIN_EMAIL:', process.env.ADMIN_EMAIL)
+    console.log('ADMIN_EMAIL from env:', process.env.ADMIN_EMAIL)
+    console.log('Using verified email for all tests:', 'bankonkamalakar@gmail.com')
 
     // Test only admin notification to avoid rate limiting
     console.log('Testing admin notification email...')
@@ -54,7 +55,9 @@ export async function POST(request: NextRequest) {
       environment: {
         hasResendKey: !!process.env.RESEND_API_KEY,
         adminEmail: process.env.ADMIN_EMAIL,
-        resendConfigured: !!resend
+        resendConfigured: !!resend,
+        actualRecipient: 'bankonkamalakar@gmail.com (verified)',
+        note: 'All emails sent to verified address due to Resend free tier limitations'
       }
     })
 

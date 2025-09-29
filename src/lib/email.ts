@@ -4,11 +4,9 @@ const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KE
 
 // Helper function to get the appropriate email address based on environment
 const getAdminEmail = () => {
-  // In production with domain verification, use ADMIN_EMAIL
-  // In development/free tier, use verified email
-  return process.env.NODE_ENV === 'production' && process.env.ADMIN_EMAIL 
-    ? process.env.ADMIN_EMAIL 
-    : 'bankonkamalakar@gmail.com'
+  // For now, always use verified email to avoid 403 errors
+  // In production with domain verification, this can be changed
+  return 'bankonkamalakar@gmail.com'
 }
 
 const getCustomerEmail = (application: FeaturedListingApplication) => {
