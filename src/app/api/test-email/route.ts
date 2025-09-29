@@ -13,18 +13,18 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    // Test data
+    // Test data with complete form details
     const testApplication = {
-      businessName: 'Test Business',
-      contactName: 'Test User',
-      email: 'test@example.com',
-      phone: '123-456-7890',
-      website: 'https://test.com',
-      address: '123 Test St',
-      city: 'Test City',
-      state: 'Test State',
-      category: 'Test Category',
-      description: 'This is a test application',
+      businessName: 'Paws & Play Dog Park',
+      contactName: 'John Smith',
+      email: 'john@pawsandplay.com',
+      phone: '(555) 123-4567',
+      website: 'https://pawsandplay.com',
+      address: '123 Dog Park Lane',
+      city: 'Austin',
+      state: 'Texas',
+      category: 'Dog Parks & Recreation',
+      description: 'A beautiful 5-acre dog park with separate areas for large and small dogs, agility equipment, and a dog wash station. Open 6 AM to 10 PM daily.',
       applicationId: 'TEST-' + Date.now()
     }
 

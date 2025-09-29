@@ -48,6 +48,19 @@ export async function POST(request: NextRequest) {
       ...application,
       submittedAt: new Date().toISOString()
     })
+    
+    // Debug: Log each field individually
+    console.log('Form data breakdown:')
+    console.log('- Business Name:', businessName)
+    console.log('- Contact Name:', contactName)
+    console.log('- Email:', email)
+    console.log('- Phone:', phone)
+    console.log('- Website:', website)
+    console.log('- Address:', address)
+    console.log('- City:', city)
+    console.log('- State:', state)
+    console.log('- Category:', category)
+    console.log('- Description:', description)
 
     // Send email notifications
     try {

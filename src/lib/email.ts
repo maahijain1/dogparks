@@ -40,6 +40,7 @@ export async function sendFeaturedListingNotification(application: FeaturedListi
   // Note: Resend free tier only allows sending to verified email addresses
   // For production, verify your own domain at resend.com/domains
   console.log('Sending admin notification to verified email address')
+  console.log('Application data received:', JSON.stringify(application, null, 2))
 
   try {
     const { data, error } = await resend.emails.send({
