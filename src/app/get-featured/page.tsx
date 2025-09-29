@@ -62,29 +62,22 @@ export default function GetFeaturedPage() {
 
       if (response.ok) {
         const result = await response.json()
-        alert(`Thank you for your interest! Your application ID is ${result.applicationId}. We will contact you within 24 hours to complete your featured listing setup.`)
         
-        // Reset form
-        setFormData({
-          businessName: '',
-          contactName: '',
-          email: '',
-          phone: '',
-          website: '',
-          address: '',
-          city: '',
-          state: '',
-          category: '',
-          description: ''
+        // Redirect to thank you page with application details
+        const params = new URLSearchParams({
+          id: result.applicationId,
+          business: formData.businessName
         })
+        
+        window.location.href = `/thank-you?${params.toString()}`
       } else {
         const error = await response.json()
         alert(`Error: ${error.error || 'Failed to submit application'}`)
+        setFormSubmitting(false)
       }
     } catch (error) {
       console.error('Error submitting featured listing application:', error)
       alert('There was an error submitting your request. Please try again.')
-    } finally {
       setFormSubmitting(false)
     }
   }
