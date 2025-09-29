@@ -166,8 +166,8 @@ export async function sendConfirmationEmail(application: FeaturedListingApplicat
             
             <div style="background: #fff3e0; padding: 20px; border-radius: 8px; border-left: 4px solid #ff9800; margin-top: 20px;">
               <h3 style="color: #f57c00; margin-top: 0;">Pricing</h3>
-              <p><strong>Special Launch Offer:</strong> $9/month for the first 3 months</p>
-              <p><strong>Regular Rate:</strong> $19/month after the initial period</p>
+              <p><strong>Featured Listing Price:</strong> $9/month</p>
+              <p><strong>Simple & Affordable:</strong> No hidden fees or price increases</p>
             </div>
             
             <div style="text-align: center; margin-top: 30px;">

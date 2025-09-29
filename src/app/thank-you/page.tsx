@@ -143,12 +143,12 @@ function ThankYouContent() {
             </div>
             <div className="space-y-6">
               <div className="bg-gradient-to-r from-green-50 to-blue-50 p-6 rounded-xl">
-                <h3 className="text-xl font-bold text-gray-900 mb-2">Special Launch Offer</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Featured Listing Price</h3>
                 <div className="flex items-baseline mb-2">
                   <span className="text-3xl font-bold text-green-600">$9</span>
-                  <span className="text-gray-600 ml-2">/month for first 3 months</span>
+                  <span className="text-gray-600 ml-2">/month</span>
                 </div>
-                <p className="text-sm text-gray-600">Then $19/month regular rate</p>
+                <p className="text-sm text-gray-600">Simple, affordable pricing</p>
               </div>
               
               <div className="space-y-3">
