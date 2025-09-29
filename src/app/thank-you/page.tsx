@@ -111,7 +111,7 @@ export default function ThankYouPage() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900">Review Process</h3>
-                  <p className="text-gray-600">We'll review your application within 24 hours</p>
+                  <p className="text-gray-600">We&apos;ll review your application within 24 hours</p>
                 </div>
               </div>
               <div className="flex items-start">
@@ -120,7 +120,7 @@ export default function ThankYouPage() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900">Payment Setup</h3>
-                  <p className="text-gray-600">We'll contact you to discuss payment and setup</p>
+                  <p className="text-gray-600">We&apos;ll contact you to discuss payment and setup</p>
                 </div>
               </div>
               <div className="flex items-start">

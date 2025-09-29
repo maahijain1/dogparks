@@ -52,6 +52,8 @@ export default function GetFeaturedPage() {
     setFormSubmitting(true)
 
     try {
+      console.log('Submitting form with data:', formData)
+      
       const response = await fetch('/api/featured-listing', {
         method: 'POST',
         headers: {
@@ -60,8 +62,12 @@ export default function GetFeaturedPage() {
         body: JSON.stringify(formData),
       })
 
+      console.log('Response status:', response.status)
+      console.log('Response ok:', response.ok)
+
       if (response.ok) {
         const result = await response.json()
+        console.log('Response data:', result)
         
         // Redirect to thank you page with application details
         const params = new URLSearchParams({
@@ -69,9 +75,19 @@ export default function GetFeaturedPage() {
           business: formData.businessName
         })
         
-        window.location.href = `/thank-you?${params.toString()}`
+        console.log('Redirecting to:', `/thank-you?${params.toString()}`)
+        
+        // Try multiple redirect methods
+        try {
+          window.location.href = `/thank-you?${params.toString()}`
+        } catch (redirectError) {
+          console.error('Redirect failed, trying alternative method:', redirectError)
+          // Fallback: use window.location.replace
+          window.location.replace(`/thank-you?${params.toString()}`)
+        }
       } else {
         const error = await response.json()
+        console.error('API Error:', error)
         alert(`Error: ${error.error || 'Failed to submit application'}`)
         setFormSubmitting(false)
       }

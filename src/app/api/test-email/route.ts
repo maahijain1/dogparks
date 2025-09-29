@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { sendFeaturedListingNotification, sendConfirmationEmail, sendBothEmails } from '@/lib/email'
+import { sendFeaturedListingNotification, sendConfirmationEmail } from '@/lib/email'
 import { Resend } from 'resend'
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
@@ -11,7 +11,7 @@ export async function GET() {
   })
 }
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     // Test data with complete form details
     const testApplication = {
