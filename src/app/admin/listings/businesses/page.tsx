@@ -236,6 +236,15 @@ export default function BusinessesPage() {
     try {
       console.log('Toggling featured for listing:', listing.business, 'Current featured:', listing.featured)
       
+      // Optimistically update the UI first
+      setListings(prevListings => 
+        prevListings.map(l => 
+          l.id === listing.id 
+            ? { ...l, featured: !l.featured }
+            : l
+        )
+      )
+      
       const response = await fetch(`/api/listings/${listing.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -247,17 +256,37 @@ export default function BusinessesPage() {
 
       console.log('Response status:', response.status)
       
-        if (response.ok) {
-          console.log('Successfully toggled featured status')
-          // Refresh the listings to show the new order
-          await fetchListings()
-        } else {
+      if (response.ok) {
+        console.log('Successfully toggled featured status')
+        // Refresh the listings to ensure consistency
+        await fetchListings()
+      } else {
         const errorData = await response.json()
         console.error('API Error:', errorData)
+        
+        // Revert the optimistic update
+        setListings(prevListings => 
+          prevListings.map(l => 
+            l.id === listing.id 
+              ? { ...l, featured: listing.featured }
+              : l
+          )
+        )
+        
         alert(`Error: ${errorData.error || 'Failed to update featured status'}`)
       }
     } catch (error) {
       console.error('Error toggling featured status:', error)
+      
+      // Revert the optimistic update
+      setListings(prevListings => 
+        prevListings.map(l => 
+          l.id === listing.id 
+            ? { ...l, featured: listing.featured }
+            : l
+        )
+      )
+      
       alert('Error updating featured status. Please check console for details.')
     }
   }
