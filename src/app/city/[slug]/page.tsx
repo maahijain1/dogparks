@@ -96,21 +96,21 @@ export default async function CityPage({ params }: CityPageProps) {
         // Now get listings for this specific city ID
         const { data: cityListings, error: listingsError } = await supabase
           .from('listings')
-          .select(`
-            *,
-            cities (
-              id,
-              name,
-              states (
-                id,
-                name
-              )
-            )
-          `)
+      .select(`
+        *,
+        cities (
+          id,
+          name,
+          states (
+            id,
+            name
+          )
+        )
+      `)
           .eq('city_id', cityByName.id)
-          .order('featured', { ascending: false })
-          .order('business')
-        
+      .order('featured', { ascending: false })
+      .order('business')
+    
         if (!listingsError && cityListings) {
           listings = cityListings
           totalListings = listings.length
@@ -154,7 +154,7 @@ export default async function CityPage({ params }: CityPageProps) {
   } catch (error) {
     console.error('Error fetching city data:', error)
   }
-  
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -163,7 +163,7 @@ export default async function CityPage({ params }: CityPageProps) {
           <div className="text-center">
             <h1 className="text-4xl font-bold text-gray-900 mb-2">
               {cityData?.name || cityName} {niche}s
-            </h1>
+          </h1>
             {stateData && (
               <p className="text-xl text-gray-600 mb-4">
                 {cityData?.name}, {stateData.name}
@@ -173,11 +173,11 @@ export default async function CityPage({ params }: CityPageProps) {
               <div className="flex items-center">
                 <MapPin className="h-4 w-4 mr-1" />
                 {totalListings} {totalListings === 1 ? 'Business' : 'Businesses'}
-              </div>
+            </div>
               <div className="flex items-center">
                 <Star className="h-4 w-4 mr-1" />
                 {featuredListings} Featured
-              </div>
+            </div>
             </div>
           </div>
         </div>
@@ -190,7 +190,7 @@ export default async function CityPage({ params }: CityPageProps) {
             <div className="bg-white rounded-lg shadow-sm p-8">
               <h2 className="text-2xl font-semibold text-gray-900 mb-4">
                 No {niche.toLowerCase()}s found in {cityData?.name || cityName}
-              </h2>
+                </h2>
               <p className="text-gray-600 mb-6">
                 We don&apos;t have any {niche.toLowerCase()}s listed for {cityData?.name || cityName} yet.
               </p>
@@ -211,34 +211,35 @@ export default async function CityPage({ params }: CityPageProps) {
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                   {listings
                     .filter(listing => listing.featured)
+                    .slice(0, 3)
                     .map((listing) => (
                       <div key={listing.id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                         <div className="p-6">
                           <div className="flex items-start justify-between mb-4">
-                            <h3 className="text-xl font-semibold text-gray-900">{listing.business}</h3>
+                        <h3 className="text-xl font-semibold text-gray-900">{listing.business}</h3>
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
                               Featured
-                            </span>
-                          </div>
-                          
+                        </span>
+                      </div>
+                      
                           <div className="space-y-3">
-                            {listing.address && (
+                        {listing.address && (
                               <div className="flex items-start">
                                 <MapPin className="h-4 w-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" />
                                 <span className="text-sm text-gray-600">{listing.address}</span>
                               </div>
-                            )}
+                        )}
                             
-                            {listing.phone && (
+                        {listing.phone && (
                               <div className="flex items-center">
                                 <Phone className="h-4 w-4 text-gray-400 mr-2" />
                                 <a href={`tel:${listing.phone}`} className="text-sm text-blue-600 hover:text-blue-800">
                                   {listing.phone}
-                                </a>
-                              </div>
-                            )}
+                            </a>
+                          </div>
+                        )}
                             
-                            {listing.website && (
+                        {listing.website && (
                               <div className="flex items-center">
                                 <Globe className="h-4 w-4 text-gray-400 mr-2" />
                                 <a 
@@ -247,8 +248,8 @@ export default async function CityPage({ params }: CityPageProps) {
                                   rel="noopener noreferrer"
                                   className="text-sm text-blue-600 hover:text-blue-800"
                                 >
-                                  Visit Website
-                                </a>
+                              Visit Website
+                            </a>
                               </div>
                             )}
                             
@@ -274,9 +275,9 @@ export default async function CityPage({ params }: CityPageProps) {
                               <span className="text-sm text-gray-500">{listing.category}</span>
                             </div>
                           </div>
-                        </div>
                       </div>
-                    ))}
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
@@ -291,32 +292,32 @@ export default async function CityPage({ params }: CityPageProps) {
                   <div key={listing.id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                     <div className="p-6">
                       <div className="flex items-start justify-between mb-4">
-                        <h3 className="text-xl font-semibold text-gray-900">{listing.business}</h3>
-                        {listing.featured && (
+                    <h3 className="text-xl font-semibold text-gray-900">{listing.business}</h3>
+                    {listing.featured && (
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                            Featured
-                          </span>
-                        )}
-                      </div>
-                      
+                        Featured
+                      </span>
+                    )}
+                  </div>
+                  
                       <div className="space-y-3">
-                        {listing.address && (
+                    {listing.address && (
                           <div className="flex items-start">
                             <MapPin className="h-4 w-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" />
                             <span className="text-sm text-gray-600">{listing.address}</span>
                           </div>
-                        )}
+                    )}
                         
-                        {listing.phone && (
+                    {listing.phone && (
                           <div className="flex items-center">
                             <Phone className="h-4 w-4 text-gray-400 mr-2" />
                             <a href={`tel:${listing.phone}`} className="text-sm text-blue-600 hover:text-blue-800">
                               {listing.phone}
-                            </a>
-                          </div>
-                        )}
+                        </a>
+                      </div>
+                    )}
                         
-                        {listing.website && (
+                    {listing.website && (
                           <div className="flex items-center">
                             <Globe className="h-4 w-4 text-gray-400 mr-2" />
                             <a 
@@ -325,8 +326,8 @@ export default async function CityPage({ params }: CityPageProps) {
                               rel="noopener noreferrer"
                               className="text-sm text-blue-600 hover:text-blue-800"
                             >
-                              Visit Website
-                            </a>
+                          Visit Website
+                        </a>
                           </div>
                         )}
                         
@@ -355,11 +356,11 @@ export default async function CityPage({ params }: CityPageProps) {
                     </div>
                   </div>
                 ))}
-              </div>
+                </div>
             </div>
           </div>
         )}
-      </div>
+        </div>
     </div>
   )
 }
