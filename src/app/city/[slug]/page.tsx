@@ -195,79 +195,91 @@ export default async function CityPage({ params }: CityPageProps) {
             {/* Featured Listings */}
             {featuredListings > 0 && (
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Featured {niche}</h2>
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                <div className="text-center mb-8">
+                  <div className="inline-flex items-center bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-6 py-3 rounded-full shadow-lg mb-4">
+                    <Star className="h-6 w-6 mr-2 fill-current" />
+                    <span className="font-bold text-lg">PREMIUM FEATURED {niche.toUpperCase()}S</span>
+                  </div>
+                  <h2 className="text-3xl font-bold text-gray-900 mb-2">Featured {niche}s in {cityData?.name || cityName}</h2>
+                  <p className="text-gray-600">Hand-picked premium businesses that stand out from the crowd</p>
+                </div>
+                <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
                   {listings
                     .filter(listing => listing.featured)
                     .slice(0, 3)
                     .map((listing) => (
-                      <div key={listing.id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                        <div className="p-6">
-                          <div className="flex items-start justify-between mb-4">
-                        <h3 className="text-xl font-semibold text-gray-900">{listing.business}</h3>
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                              Featured
-                        </span>
-                      </div>
+                      <div key={listing.id} className="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-lg shadow-lg p-6 hover:shadow-xl transition-all duration-300 border-2 border-yellow-200 transform hover:-translate-y-1">
+                        <div className="flex justify-between items-start mb-4">
+                          <h3 className="text-xl font-bold text-gray-900">{listing.business}</h3>
+                          <span className="bg-yellow-500 text-white text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap">
+                            ⭐ Featured
+                          </span>
+                        </div>
                       
-                      <div className="space-y-3">
-                        {listing.address && (
-                          <div className="flex items-start">
-                            <MapPin className="h-4 w-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" />
-                            <span className="text-sm text-gray-600">{listing.address}</span>
-                          </div>
-                        )}
+                        <div className="space-y-3 text-sm">
+                          {listing.address && (
+                            <div className="flex items-start">
+                              <MapPin className="h-4 w-4 text-orange-500 mt-0.5 mr-2 flex-shrink-0" />
+                              <span className="text-gray-700">{listing.address}</span>
+                            </div>
+                          )}
                             
-                        {listing.phone && (
-                          <div className="flex items-center justify-between">
-                            <p><span className="font-medium">Phone:</span> {listing.phone}</p>
-                            <a 
-                              href={`tel:${listing.phone}`}
-                              className="inline-flex items-center px-3 py-1 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors"
-                            >
-                              📞 Call
-                            </a>
-                          </div>
-                        )}
-                            
-                        {listing.website && (
+                          {listing.phone && (
+                            <div className="flex items-center justify-between bg-white/60 rounded-lg p-2 -mx-2">
                               <div className="flex items-center">
-                                <Globe className="h-4 w-4 text-gray-400 mr-2" />
-                                <a 
-                                  href={listing.website.startsWith('http') ? listing.website : `https://${listing.website}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-sm text-blue-600 hover:text-blue-800"
-                                >
-                              Visit Website
-                            </a>
+                                <Phone className="h-4 w-4 text-orange-500 mr-2" />
+                                <span className="text-gray-700 font-medium">{listing.phone}</span>
                               </div>
-                            )}
+                              <a 
+                                href={`tel:${listing.phone}`}
+                                className="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 transition-colors shadow-md"
+                              >
+                                📞 Call Now
+                              </a>
+                            </div>
+                          )}
                             
-                            {listing.email && (
-                              <div className="flex items-center">
-                                <Mail className="h-4 w-4 text-gray-400 mr-2" />
-                                <a href={`mailto:${listing.email}`} className="text-sm text-blue-600 hover:text-blue-800">
-                                  {listing.email}
-                                </a>
-                              </div>
-                            )}
+                          {listing.website && (
+                            <div className="flex items-center">
+                              <Globe className="h-4 w-4 text-orange-500 mr-2" />
+                              <a 
+                                href={listing.website.startsWith('http') ? listing.website : `https://${listing.website}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-600 hover:text-blue-800 font-medium hover:underline"
+                              >
+                                Visit Website
+                              </a>
+                            </div>
+                          )}
                             
-                            <div className="flex items-center justify-between pt-2">
-                              <div className="flex items-center">
-                                <Star className="h-4 w-4 text-yellow-400 mr-1" />
-                                <span className="text-sm font-medium text-gray-900">
-                                  {listing.review_rating || 0}
-                                </span>
-                                <span className="text-sm text-gray-500 ml-1">
-                                  ({listing.number_of_reviews || 0} reviews)
-                                </span>
-                              </div>
-                              <span className="text-sm text-gray-500">{listing.category}</span>
+                          {listing.email && (
+                            <div className="flex items-center">
+                              <Mail className="h-4 w-4 text-orange-500 mr-2" />
+                              <a href={`mailto:${listing.email}`} className="text-blue-600 hover:text-blue-800 hover:underline">
+                                {listing.email}
+                              </a>
+                            </div>
+                          )}
+                            
+                          <div className="flex items-center justify-between pt-3 border-t border-yellow-200">
+                            <div className="flex items-center">
+                              <Star className="h-5 w-5 text-yellow-500 fill-current mr-1" />
+                              <span className="text-base font-bold text-gray-900">
+                                {listing.review_rating || 0}
+                              </span>
+                              <span className="text-sm text-gray-600 ml-1">
+                                ({listing.number_of_reviews || 0} reviews)
+                              </span>
                             </div>
                           </div>
+                          {listing.category && (
+                            <div className="bg-orange-100 text-orange-800 text-xs font-semibold px-3 py-1 rounded-full inline-block">
+                              {listing.category}
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
                   ))}
                 </div>
               </div>
