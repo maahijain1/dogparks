@@ -48,8 +48,13 @@ export default async function CityPage({ params }: CityPageProps) {
   let stateData: { id: string; name: string; slug: string } | null = null
   
   try {
-    // First, get the city by slug to get the proper city ID
-    const { data: cityResult, error: cityError } = await supabase
+    // Try multiple methods to find the city dynamically
+    let foundCity = null
+    let foundState = null
+    
+    // Method 1: Try by slug first
+    console.log('Trying to find city by slug:', slug)
+    const { data: cityBySlug, error: slugError } = await supabase
       .from('cities')
       .select(`
         id,
@@ -64,10 +69,15 @@ export default async function CityPage({ params }: CityPageProps) {
       .eq('slug', slug)
       .single()
 
-    if (cityError || !cityResult) {
-      console.log('City not found by slug, trying name matching...')
-      // Fallback: try to find city by name (exact match first)
-      let { data: cityByName, error: cityByNameError } = await supabase
+    if (!slugError && cityBySlug) {
+      foundCity = cityBySlug
+      foundState = Array.isArray(cityBySlug.states) ? cityBySlug.states[0] : cityBySlug.states
+      console.log('✅ Found city by slug:', cityBySlug.name, 'ID:', cityBySlug.id)
+    } else {
+      console.log('❌ City not found by slug, trying by name...')
+      
+      // Method 2: Try by exact name match
+      const { data: cityByName, error: nameError } = await supabase
         .from('cities')
         .select(`
           id,
@@ -82,10 +92,15 @@ export default async function CityPage({ params }: CityPageProps) {
         .eq('name', cityName)
         .single()
 
-      // If exact match fails, try case-insensitive partial match
-      if (cityByNameError || !cityByName) {
-        console.log('Exact name match failed, trying case-insensitive...')
-        const { data: cityByPartial, error: cityByPartialError } = await supabase
+      if (!nameError && cityByName) {
+        foundCity = cityByName
+        foundState = Array.isArray(cityByName.states) ? cityByName.states[0] : cityByName.states
+        console.log('✅ Found city by exact name:', cityByName.name, 'ID:', cityByName.id)
+      } else {
+        console.log('❌ City not found by exact name, trying case-insensitive...')
+        
+        // Method 3: Try case-insensitive partial match
+        const { data: cityByPartial, error: partialError } = await supabase
           .from('cities')
           .select(`
             id,
@@ -100,53 +115,23 @@ export default async function CityPage({ params }: CityPageProps) {
           .ilike('name', `%${cityName}%`)
           .limit(1)
           .single()
-        
-        cityByName = cityByPartial
-        cityByNameError = cityByPartialError
-      }
 
-      if (cityByNameError || !cityByName) {
-        console.log('City not found by name either:', cityName)
-        listings = []
-        totalListings = 0
-        featuredListings = 0
-      } else {
-        cityData = cityByName
-        stateData = Array.isArray(cityByName.states) ? cityByName.states[0] : cityByName.states
-        console.log('Found city by name:', cityByName.name, 'ID:', cityByName.id)
-        
-        // Now get listings for this specific city ID
-        const { data: cityListings, error: listingsError } = await supabase
-          .from('listings')
-      .select(`
-        *,
-        cities (
-          id,
-          name,
-          states (
-            id,
-            name
-          )
-        )
-      `)
-          .eq('city_id', cityByName.id)
-      .order('featured', { ascending: false })
-      .order('business')
-    
-        if (!listingsError && cityListings) {
-          listings = cityListings
-          totalListings = listings.length
-          featuredListings = listings.filter((listing: Listing) => listing.featured).length
-          console.log('Found listings for city ID:', cityByName.id, { totalListings, featuredListings })
+        if (!partialError && cityByPartial) {
+          foundCity = cityByPartial
+          foundState = Array.isArray(cityByPartial.states) ? cityByPartial.states[0] : cityByPartial.states
+          console.log('✅ Found city by partial match:', cityByPartial.name, 'ID:', cityByPartial.id)
+        } else {
+          console.log('❌ City not found by any method:', cityName)
         }
       }
-    } else {
-      // Use the city found by slug
-      cityData = cityResult
-      stateData = Array.isArray(cityResult.states) ? cityResult.states[0] : cityResult.states
-      console.log('Found city by slug:', cityResult.name, 'ID:', cityResult.id)
+    }
+
+    // If we found a city, get its listings
+    if (foundCity) {
+      cityData = foundCity
+      stateData = foundState
       
-      // Get listings for this specific city ID
+      console.log('Getting listings for city ID:', foundCity.id)
       const { data: cityListings, error: listingsError } = await supabase
         .from('listings')
         .select(`
@@ -160,7 +145,7 @@ export default async function CityPage({ params }: CityPageProps) {
             )
           )
         `)
-        .eq('city_id', cityResult.id)
+        .eq('city_id', foundCity.id)
         .order('featured', { ascending: false })
         .order('business')
       
@@ -168,10 +153,18 @@ export default async function CityPage({ params }: CityPageProps) {
         listings = cityListings
         totalListings = listings.length
         featuredListings = listings.filter((listing: Listing) => listing.featured).length
-        console.log('Found listings for city ID:', cityResult.id, { totalListings, featuredListings })
+        console.log('✅ Found listings for city:', foundCity.name, { totalListings, featuredListings })
       } else {
-        console.log('Error fetching listings:', listingsError)
+        console.log('❌ Error fetching listings:', listingsError)
+        listings = []
+        totalListings = 0
+        featuredListings = 0
       }
+    } else {
+      console.log('❌ No city found, showing empty state')
+      listings = []
+      totalListings = 0
+      featuredListings = 0
     }
   } catch (error) {
     console.error('Error fetching city data:', error)
