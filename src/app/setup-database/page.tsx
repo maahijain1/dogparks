@@ -58,7 +58,7 @@ export default function SetupDatabasePage() {
         <div className="bg-white rounded-lg shadow p-6 mb-6">
           <h2 className="text-xl font-semibold mb-4">Setup Featured Column</h2>
           <p className="text-gray-600 mb-4">
-            This will add the 'featured' column to your listings table if it doesn't exist.
+            This will add the &apos;featured&apos; column to your listings table if it doesn&apos;t exist.
           </p>
           <button
             onClick={setupDatabase}

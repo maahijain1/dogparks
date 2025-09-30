@@ -55,7 +55,7 @@ export default function FixDatabasePage() {
 
       setStatus(prev => prev + `\n\nFound ${listings?.length || 0} listings. Sample data:`)
       listings?.forEach(listing => {
-        setStatus(prev => prev + `\n- ${listing.business} (Featured: ${listing.featured}) in ${listing.cities?.name}`)
+        setStatus(prev => prev + `\n- ${listing.business} (Featured: ${listing.featured}) in ${(listing.cities as { name?: string })?.name || 'Unknown'}`)
       })
 
       // Check cities data
@@ -71,7 +71,7 @@ export default function FixDatabasePage() {
 
       setStatus(prev => prev + `\n\nFound ${cities?.length || 0} cities. Sample data:`)
       cities?.forEach(city => {
-        setStatus(prev => prev + `\n- ${city.name}, ${city.states?.name}`)
+        setStatus(prev => prev + `\n- ${city.name}, ${(city.states as { name?: string })?.name || 'Unknown'}`)
       })
 
     } catch (error) {
