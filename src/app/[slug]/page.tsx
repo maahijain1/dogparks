@@ -264,30 +264,20 @@ export default async function SlugPage({ params }: SlugPageProps) {
     console.log('Parts:', parts)
     console.log('Parts length:', parts.length)
     
-    // UNIVERSAL FIX: Handle any pattern ending with known cities
-    const knownCities = [
-      'albury', 'sydney', 'melbourne', 'brisbane', 'perth', 'adelaide', 'hobart', 'darwin', 'canberra',
-      'newcastle', 'wollongong', 'geelong', 'gold-coast', 'sunshine-coast', 'cairns', 'townsville',
-      'toowoomba', 'ballarat', 'bendigo', 'launceston', 'mackay', 'rockhampton', 'bunbury', 'geraldton',
-      'albany', 'kalgoorlie', 'broome', 'karratha', 'port-hedland', 'coffs-harbour', 'wagga-wagga',
-      'orange', 'tamworth', 'grafton', 'lismore', 'nowra', 'bathurst', 'albury', 'armidale'
-    ]
-    
-    const lastPart = parts[parts.length - 1].toLowerCase()
-    
-    if (knownCities.includes(lastPart)) {
-      console.log('=== CITY PAGE DETECTED ===')
-      console.log('City:', lastPart)
-      redirect(`/city/${lastPart}`)
-    }
-    
-    // FALLBACK: If it's a 2-part URL and second part looks like a city name
+    // UNIVERSAL FIX: If it's a 2-part URL (niche-city), redirect to /city/{city}
+    // This makes ALL cities work automatically without hardcoding
     if (parts.length === 2) {
       const potentialCity = parts[1].toLowerCase()
-      // Check if it contains common city name patterns
-      if (potentialCity.length > 2 && !potentialCity.includes('state') && !potentialCity.includes('nsw') && !potentialCity.includes('vic')) {
-        console.log('=== FALLBACK CITY DETECTION ===')
-        console.log('Potential city:', potentialCity)
+      console.log('=== UNIVERSAL CITY DETECTION ===')
+      console.log('URL parts:', parts)
+      console.log('Potential city:', potentialCity)
+      
+      // Exclude state abbreviations and other non-city patterns
+      const excludedPatterns = ['nsw', 'vic', 'qld', 'sa', 'wa', 'tas', 'nt', 'act', 'state', 'states']
+      const isExcluded = excludedPatterns.some(pattern => potentialCity.includes(pattern))
+      
+      if (!isExcluded && potentialCity.length > 2) {
+        console.log('✅ Redirecting to city page')
         redirect(`/city/${potentialCity}`)
       }
     }
