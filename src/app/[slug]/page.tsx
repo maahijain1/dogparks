@@ -259,41 +259,37 @@ export default async function SlugPage({ params }: SlugPageProps) {
   
   // Handle city pages (format: {niche}-{city}) - redirect to proper city URL
   if (slug.includes('-') && parts.length >= 2) {
-    // Check if this matches the niche pattern
-    const potentialNiche = parts.slice(0, nicheParts.length).join('-')
-    const potentialCity = parts.slice(nicheParts.length).join('-')
-    
     console.log('=== CHECKING URL PATTERN ===')
     console.log('URL slug:', slug)
-    console.log('Expected niche slug:', nicheSlug)
-    console.log('Potential niche:', potentialNiche)
-    console.log('Potential city:', potentialCity)
+    console.log('Parts:', parts)
     console.log('Parts length:', parts.length)
     
-    // If it matches niche pattern and has only 2 parts (niche-city)
-    if (potentialNiche === nicheSlug && parts.length === 2) {
-      const cityName = potentialCity.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
-      console.log('=== CITY PAGE DETECTED ===')
-      console.log('Parsed city name:', cityName)
-      
-      // Redirect to proper city URL
-      redirect(`/city/${cityName.toLowerCase().replace(/\s+/g, '-')}`)
-    }
+    // UNIVERSAL FIX: Handle any pattern ending with known cities
+    const knownCities = [
+      'albury', 'sydney', 'melbourne', 'brisbane', 'perth', 'adelaide', 'hobart', 'darwin', 'canberra',
+      'newcastle', 'wollongong', 'geelong', 'gold-coast', 'sunshine-coast', 'cairns', 'townsville',
+      'toowoomba', 'ballarat', 'bendigo', 'launceston', 'mackay', 'rockhampton', 'bunbury', 'geraldton',
+      'albany', 'kalgoorlie', 'broome', 'karratha', 'port-hedland', 'coffs-harbour', 'wagga-wagga',
+      'orange', 'tamworth', 'grafton', 'lismore', 'nowra', 'bathurst', 'albury', 'armidale'
+    ]
     
-    // DIRECT FIX: Handle specific case of "boarding-kennels-albury"
-    if (slug === 'boarding-kennels-albury') {
-      console.log('=== DIRECT FIX: boarding-kennels-albury ===')
-      redirect('/city/albury')
-    }
-    
-    // DIRECT FIX: Handle any pattern ending with known cities
-    const knownCities = ['albury', 'sydney', 'melbourne', 'brisbane', 'perth', 'adelaide', 'hobart', 'darwin', 'canberra']
     const lastPart = parts[parts.length - 1].toLowerCase()
     
     if (knownCities.includes(lastPart)) {
-      console.log('=== DIRECT FIX: Known city detected ===')
+      console.log('=== CITY PAGE DETECTED ===')
       console.log('City:', lastPart)
       redirect(`/city/${lastPart}`)
+    }
+    
+    // FALLBACK: If it's a 2-part URL and second part looks like a city name
+    if (parts.length === 2) {
+      const potentialCity = parts[1].toLowerCase()
+      // Check if it contains common city name patterns
+      if (potentialCity.length > 2 && !potentialCity.includes('state') && !potentialCity.includes('nsw') && !potentialCity.includes('vic')) {
+        console.log('=== FALLBACK CITY DETECTION ===')
+        console.log('Potential city:', potentialCity)
+        redirect(`/city/${potentialCity}`)
+      }
     }
   }
   
