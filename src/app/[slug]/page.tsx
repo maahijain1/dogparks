@@ -1,7 +1,7 @@
 import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, MapPin, Star, Phone, Globe } from 'lucide-react'
 import { siteConfig } from '@/lib/config'
 import { Metadata } from 'next'
 import { supabase } from '@/lib/supabase'
@@ -429,9 +429,161 @@ export default async function SlugPage({ params }: SlugPageProps) {
           </div>
         </section>
 
+        {/* Featured Listings Section */}
+        {stateListings && stateListings.length > 0 && (
+          <section className="py-16 bg-gray-50">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <h2 className="text-3xl font-bold text-center mb-12">
+                Featured {niche}s in {stateName}
+              </h2>
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {stateListings
+                  .filter(listing => listing.featured)
+                  .map((listing) => (
+                    <div key={listing.id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                      <div className="p-6">
+                        <div className="flex items-start justify-between mb-4">
+                          <h3 className="text-xl font-semibold text-gray-900">{listing.business}</h3>
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                            Featured
+                          </span>
+                        </div>
+                        
+                        <div className="space-y-3">
+                          {listing.address && (
+                            <div className="flex items-start">
+                              <MapPin className="h-4 w-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" />
+                              <span className="text-sm text-gray-600">{listing.address}</span>
+                            </div>
+                          )}
+                          
+                          {listing.phone && (
+                            <div className="flex items-center">
+                              <Phone className="h-4 w-4 text-gray-400 mr-2" />
+                              <a href={`tel:${listing.phone}`} className="text-sm text-blue-600 hover:text-blue-800">
+                                {listing.phone}
+                              </a>
+                            </div>
+                          )}
+                          
+                          {listing.website && (
+                            <div className="flex items-center">
+                              <Globe className="h-4 w-4 text-gray-400 mr-2" />
+                              <a 
+                                href={listing.website.startsWith('http') ? listing.website : `https://${listing.website}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-sm text-blue-600 hover:text-blue-800"
+                              >
+                                Visit Website
+                              </a>
+                            </div>
+                          )}
+                          
+                          <div className="flex items-center justify-between pt-2">
+                            <div className="flex items-center">
+                              <Star className="h-4 w-4 text-yellow-400 mr-1" />
+                              <span className="text-sm font-medium text-gray-900">
+                                {listing.review_rating || 0}
+                              </span>
+                              <span className="text-sm text-gray-500 ml-1">
+                                ({listing.number_of_reviews || 0} reviews)
+                              </span>
+                            </div>
+                            <span className="text-sm text-gray-500">{listing.category}</span>
+                          </div>
+                          
+                          <div className="text-sm text-gray-500">
+                            📍 {listing.cities?.name}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* All Listings Section */}
+        {stateListings && stateListings.length > 0 && (
+          <section className="py-16 bg-white">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <h2 className="text-3xl font-bold text-center mb-12">
+                All {niche}s in {stateName}
+              </h2>
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {stateListings.map((listing) => (
+                  <div key={listing.id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                    <div className="p-6">
+                      <div className="flex items-start justify-between mb-4">
+                        <h3 className="text-xl font-semibold text-gray-900">{listing.business}</h3>
+                        {listing.featured && (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                            Featured
+                          </span>
+                        )}
+                      </div>
+                      
+                      <div className="space-y-3">
+                        {listing.address && (
+                          <div className="flex items-start">
+                            <MapPin className="h-4 w-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" />
+                            <span className="text-sm text-gray-600">{listing.address}</span>
+                          </div>
+                        )}
+                        
+                        {listing.phone && (
+                          <div className="flex items-center">
+                            <Phone className="h-4 w-4 text-gray-400 mr-2" />
+                            <a href={`tel:${listing.phone}`} className="text-sm text-blue-600 hover:text-blue-800">
+                              {listing.phone}
+                            </a>
+                          </div>
+                        )}
+                        
+                        {listing.website && (
+                          <div className="flex items-center">
+                            <Globe className="h-4 w-4 text-gray-400 mr-2" />
+                            <a 
+                              href={listing.website.startsWith('http') ? listing.website : `https://${listing.website}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-sm text-blue-600 hover:text-blue-800"
+                            >
+                              Visit Website
+                            </a>
+                          </div>
+                        )}
+                        
+                        <div className="flex items-center justify-between pt-2">
+                          <div className="flex items-center">
+                            <Star className="h-4 w-4 text-yellow-400 mr-1" />
+                            <span className="text-sm font-medium text-gray-900">
+                              {listing.review_rating || 0}
+                            </span>
+                            <span className="text-sm text-gray-500 ml-1">
+                              ({listing.number_of_reviews || 0} reviews)
+                            </span>
+                          </div>
+                          <span className="text-sm text-gray-500">{listing.category}</span>
+                        </div>
+                        
+                        <div className="text-sm text-gray-500">
+                          📍 {listing.cities?.name}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
         {/* Cities Section */}
         {cities.length > 0 ? (
-          <section className="py-16 bg-white">
+          <section className="py-16 bg-gray-50">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <h2 className="text-3xl font-bold text-center mb-12">
                 Cities in {stateName}
@@ -450,7 +602,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
             </div>
           </section>
         ) : (
-          <section className="py-16 bg-white">
+          <section className="py-16 bg-gray-50">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
               <h2 className="text-3xl font-bold mb-8">No Cities Yet</h2>
               <p className="text-xl text-gray-600 mb-8">

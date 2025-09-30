@@ -281,12 +281,16 @@ export default function BusinessesPage() {
         console.log('✅ Successfully toggled featured status')
         console.log('API response:', result)
         
-        // Don't refresh immediately - let the optimistic update stay
-        // Only refresh after a short delay to show the change
-        setTimeout(async () => {
-          console.log('Refreshing listings after successful update...')
-          await fetchListings()
-        }, 1000)
+        // Update the specific listing with the actual result from the database
+        setListings(prevListings => 
+          prevListings.map(l => 
+            l.id === listing.id 
+              ? { ...l, featured: result.featured }
+              : l
+          )
+        )
+        
+        console.log('✅ UI updated with actual database value:', result.featured)
         
       } else {
         const errorData = await response.json()
