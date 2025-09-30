@@ -274,6 +274,27 @@ export default async function SlugPage({ params }: SlugPageProps) {
     
     // Fetch cities and listings for this state
     let cities: Array<{id: string, name: string}> = []
+    let stateListings: Array<{
+      id: string
+      business: string
+      category: string
+      address?: string
+      phone?: string
+      website?: string
+      email?: string
+      review_rating?: number
+      number_of_reviews?: number
+      featured: boolean
+      city_id: string
+      cities?: {
+        id: string
+        name: string
+        states?: {
+          id: string
+          name: string
+        }
+      }
+    }> = []
     let totalListings = 0
     let featuredListings = 0
     
@@ -357,7 +378,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
         
         // Get listings for these cities
         const cityIds = cities.map(c => c.id)
-        const { data: stateListings, error: listingsError } = await supabase
+        const { data: listingsData, error: listingsError } = await supabase
           .from('listings')
           .select(`
             *,
@@ -374,7 +395,8 @@ export default async function SlugPage({ params }: SlugPageProps) {
           .order('featured', { ascending: false })
           .order('business')
         
-        if (!listingsError && stateListings) {
+        if (!listingsError && listingsData) {
+          stateListings = listingsData
           totalListings = stateListings.length
           featuredListings = stateListings.filter((listing: {featured: boolean}) => listing.featured).length
           console.log('Found listings in state:', { totalListings, featuredListings })
