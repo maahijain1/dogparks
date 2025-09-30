@@ -23,7 +23,8 @@ export default function BusinessesPage() {
     website: '',
     phone: '',
     email: '',
-    city_id: ''
+    city_id: '',
+    featured: false
   })
   const [importFormData, setImportFormData] = useState({
     city_id: ''
@@ -145,7 +146,8 @@ export default function BusinessesPage() {
       website: '',
       phone: '',
       email: '',
-      city_id: ''
+      city_id: '',
+      featured: false
     })
     setImportFormData({
       city_id: ''
@@ -166,7 +168,8 @@ export default function BusinessesPage() {
       website: listing.website,
       phone: listing.phone,
       email: listing.email || '',
-      city_id: listing.city_id
+      city_id: listing.city_id,
+      featured: listing.featured || false
     })
     setShowForm(true)
   }
@@ -365,6 +368,20 @@ export default function BusinessesPage() {
                       ))}
                     </select>
                   </div>
+                </div>
+
+                {/* Featured Checkbox */}
+                <div className="flex items-center space-x-3 pt-4">
+                  <input
+                    type="checkbox"
+                    id="featured"
+                    checked={formData.featured}
+                    onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <label htmlFor="featured" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Mark as Featured Listing
+                  </label>
                 </div>
 
                 <div className="flex gap-4 pt-4">

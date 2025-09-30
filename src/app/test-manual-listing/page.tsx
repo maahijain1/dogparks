@@ -12,7 +12,8 @@ export default function TestManualListingPage() {
     website: '',
     phone: '',
     email: '',
-    city_id: ''
+    city_id: '',
+    featured: false
   })
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<{ success: boolean; message: string; data?: unknown; status?: number; ok?: boolean } | null>(null)
@@ -139,6 +140,19 @@ export default function TestManualListingPage() {
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
           />
+        </div>
+        
+        <div className="flex items-center space-x-3">
+          <input
+            type="checkbox"
+            id="featured"
+            checked={formData.featured}
+            onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
+            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+          />
+          <label htmlFor="featured" className="text-sm font-medium text-gray-700">
+            Mark as Featured Listing
+          </label>
         </div>
         
         <button
