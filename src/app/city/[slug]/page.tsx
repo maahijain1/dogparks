@@ -150,7 +150,7 @@ export default async function CityPage({ params }: CityPageProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
             <h1 className="text-4xl font-bold text-gray-900 mb-2">
-              {cityData?.name || cityName} {niche}s
+              {niche} {cityData?.name || cityName}
           </h1>
             {stateData && (
               <p className="text-xl text-gray-600 mb-4">
@@ -177,10 +177,10 @@ export default async function CityPage({ params }: CityPageProps) {
           <div className="text-center py-12">
             <div className="bg-white rounded-lg shadow-sm p-8">
               <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-                No {niche.toLowerCase()}s found in {cityData?.name || cityName}
+                No {niche} found in {cityData?.name || cityName}
                 </h2>
               <p className="text-gray-600 mb-6">
-                We don&apos;t have any {niche.toLowerCase()}s listed for {cityData?.name || cityName} yet.
+                We don&apos;t have any {niche} listed for {cityData?.name || cityName} yet.
               </p>
               <Link
                 href="/get-featured"
@@ -195,7 +195,7 @@ export default async function CityPage({ params }: CityPageProps) {
             {/* Featured Listings */}
             {featuredListings > 0 && (
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Featured {niche}s</h2>
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Featured {niche}</h2>
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                   {listings
                     .filter(listing => listing.featured)
@@ -273,7 +273,7 @@ export default async function CityPage({ params }: CityPageProps) {
             {/* All Listings */}
             <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                All {niche}s in {cityData?.name || cityName}
+                All {niche} in {cityData?.name || cityName}
               </h2>
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {listings.map((listing) => (
