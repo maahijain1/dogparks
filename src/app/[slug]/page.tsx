@@ -408,7 +408,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
                 {cities.map((city) => (
                   <Link
                     key={city.id}
-                    href={`/city/${city.name.toLowerCase().replace(/\s+/g, '-')}`}
+                    href={`/${niche.toLowerCase().replace(/\s+/g, '-')}-${city.name.toLowerCase().replace(/\s+/g, '-')}`}
                     className="bg-blue-50 hover:bg-blue-100 text-blue-800 px-4 py-3 rounded-lg text-center transition-colors"
                   >
                     {city.name}
