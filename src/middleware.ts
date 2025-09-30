@@ -13,8 +13,14 @@ export function middleware(request: NextRequest) {
     // Remove the niche prefix
     const citySlug = slug.replace(/^boarding-kennels-/, '')
     
-    // Redirect to the city page
-    return NextResponse.redirect(new URL(`/city/${citySlug}`, request.url))
+    // EXCLUDE state patterns (contains state abbreviations or "state" keyword)
+    const statePatterns = ['nsw', 'vic', 'qld', 'sa', 'wa', 'tas', 'nt', 'act', 'state', 'new-south-wales', 'victoria', 'queensland', 'south-australia', 'western-australia', 'tasmania']
+    const isState = statePatterns.some(pattern => citySlug.toLowerCase().includes(pattern))
+    
+    // Only redirect if it's NOT a state
+    if (!isState) {
+      return NextResponse.redirect(new URL(`/city/${citySlug}`, request.url))
+    }
   }
   
   return NextResponse.next()
