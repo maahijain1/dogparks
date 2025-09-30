@@ -240,36 +240,58 @@ export default function BusinessesPage() {
 
   // Handle toggle featured
   const handleToggleFeatured = async (listing: Listing) => {
+    const newFeaturedStatus = !listing.featured
+    
+    console.log('=== TOGGLE FEATURED DEBUG ===')
+    console.log('Listing ID:', listing.id)
+    console.log('Business:', listing.business)
+    console.log('Current featured:', listing.featured)
+    console.log('New featured status:', newFeaturedStatus)
+    
     try {
-      console.log('Toggling featured for listing:', listing.business, 'Current featured:', listing.featured)
-      
       // Optimistically update the UI first
       setListings(prevListings => 
         prevListings.map(l => 
           l.id === listing.id 
-            ? { ...l, featured: !l.featured }
+            ? { ...l, featured: newFeaturedStatus }
             : l
         )
       )
       
+      console.log('Optimistic update applied')
+      
+      const requestBody = {
+        id: listing.id,
+        featured: newFeaturedStatus
+      }
+      
+      console.log('Sending request body:', requestBody)
+      
       const response = await fetch(`/api/listings/${listing.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: listing.id,
-          featured: !listing.featured
-        })
+        body: JSON.stringify(requestBody)
       })
 
       console.log('Response status:', response.status)
+      console.log('Response ok:', response.ok)
       
       if (response.ok) {
-        console.log('Successfully toggled featured status')
-        // Refresh the listings to ensure consistency
-        await fetchListings()
+        const result = await response.json()
+        console.log('✅ Successfully toggled featured status')
+        console.log('API response:', result)
+        
+        // Don't refresh immediately - let the optimistic update stay
+        // Only refresh after a short delay to show the change
+        setTimeout(async () => {
+          console.log('Refreshing listings after successful update...')
+          await fetchListings()
+        }, 1000)
+        
       } else {
         const errorData = await response.json()
-        console.error('API Error:', errorData)
+        console.error('❌ API Error:', errorData)
+        console.error('Error details:', errorData)
         
         // Revert the optimistic update
         setListings(prevListings => 
@@ -280,10 +302,10 @@ export default function BusinessesPage() {
           )
         )
         
-        alert(`Error: ${errorData.error || 'Failed to update featured status'}`)
+        alert(`Error: ${errorData.error || 'Failed to update featured status'}\n\nCheck console for details.`)
       }
     } catch (error) {
-      console.error('Error toggling featured status:', error)
+      console.error('❌ Network/Other Error:', error)
       
       // Revert the optimistic update
       setListings(prevListings => 
@@ -294,7 +316,7 @@ export default function BusinessesPage() {
         )
       )
       
-      alert('Error updating featured status. Please check console for details.')
+      alert(`Network Error: ${error instanceof Error ? error.message : 'Unknown error'}\n\nCheck console for details.`)
     }
   }
 
