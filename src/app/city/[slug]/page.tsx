@@ -44,85 +44,58 @@ export default async function CityPage({ params }: CityPageProps) {
   let listings: Listing[] = []
   let totalListings = 0
   let featuredListings = 0
-  let cityData: { id: string; name: string; slug: string } | null = null
-  let stateData: { id: string; name: string; slug: string } | null = null
+  let cityData: { id: string; name: string } | null = null
+  let stateData: { id: string; name: string } | null = null
   
   try {
-    // Try multiple methods to find the city dynamically
-    let foundCity = null
-    let foundState = null
+    // Find city by name (the way it was working yesterday)
+    console.log('Looking for city:', cityName)
     
-    // Method 1: Try by slug first
-    console.log('Trying to find city by slug:', slug)
-    const { data: cityBySlug, error: slugError } = await supabase
+    // Try exact name match first
+    const { data: cityByName, error: nameError } = await supabase
       .from('cities')
       .select(`
         id,
         name,
-        slug,
         states (
           id,
-          name,
-          slug
+          name
         )
       `)
-      .eq('slug', slug)
+      .eq('name', cityName)
       .single()
 
-    if (!slugError && cityBySlug) {
-      foundCity = cityBySlug
-      foundState = Array.isArray(cityBySlug.states) ? cityBySlug.states[0] : cityBySlug.states
-      console.log('✅ Found city by slug:', cityBySlug.name, 'ID:', cityBySlug.id)
+    let foundCity = null
+    let foundState = null
+
+    if (!nameError && cityByName) {
+      foundCity = cityByName
+      foundState = Array.isArray(cityByName.states) ? cityByName.states[0] : cityByName.states
+      console.log('✅ Found city by exact name:', cityByName.name, 'ID:', cityByName.id)
     } else {
-      console.log('❌ City not found by slug, trying by name...')
+      console.log('❌ City not found by exact name, trying case-insensitive...')
       
-      // Method 2: Try by exact name match
-      const { data: cityByName, error: nameError } = await supabase
+      // Try case-insensitive partial match
+      const { data: cityByPartial, error: partialError } = await supabase
         .from('cities')
         .select(`
           id,
           name,
-          slug,
           states (
             id,
-            name,
-            slug
+            name
           )
         `)
-        .eq('name', cityName)
+        .ilike('name', `%${cityName}%`)
+        .limit(1)
         .single()
 
-      if (!nameError && cityByName) {
-        foundCity = cityByName
-        foundState = Array.isArray(cityByName.states) ? cityByName.states[0] : cityByName.states
-        console.log('✅ Found city by exact name:', cityByName.name, 'ID:', cityByName.id)
+      if (!partialError && cityByPartial) {
+        foundCity = cityByPartial
+        foundState = Array.isArray(cityByPartial.states) ? cityByPartial.states[0] : cityByPartial.states
+        console.log('✅ Found city by partial match:', cityByPartial.name, 'ID:', cityByPartial.id)
       } else {
-        console.log('❌ City not found by exact name, trying case-insensitive...')
-        
-        // Method 3: Try case-insensitive partial match
-        const { data: cityByPartial, error: partialError } = await supabase
-          .from('cities')
-          .select(`
-            id,
-            name,
-            slug,
-            states (
-              id,
-              name,
-              slug
-            )
-          `)
-          .ilike('name', `%${cityName}%`)
-          .limit(1)
-          .single()
-
-        if (!partialError && cityByPartial) {
-          foundCity = cityByPartial
-          foundState = Array.isArray(cityByPartial.states) ? cityByPartial.states[0] : cityByPartial.states
-          console.log('✅ Found city by partial match:', cityByPartial.name, 'ID:', cityByPartial.id)
-        } else {
-          console.log('❌ City not found by any method:', cityName)
-        }
+        console.log('❌ City not found by any method:', cityName)
       }
     }
 
