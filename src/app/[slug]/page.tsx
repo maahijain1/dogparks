@@ -261,15 +261,22 @@ export default async function SlugPage({ params }: SlugPageProps) {
   if (slug.includes('-') && parts.length >= 2) {
     console.log('=== CHECKING URL PATTERN ===')
     console.log('URL slug:', slug)
-    console.log('Parts:', parts)
+    console.log('Niche slug:', nicheSlug)
+    console.log('Niche parts length:', nicheParts.length)
+    console.log('URL parts:', parts)
     console.log('Parts length:', parts.length)
     
-    // UNIVERSAL FIX: If it's a 2-part URL (niche-city), redirect to /city/{city}
-    // This makes ALL cities work automatically without hardcoding
-    if (parts.length === 2) {
-      const potentialCity = parts[1].toLowerCase()
+    // Check if this starts with the niche
+    const potentialNiche = parts.slice(0, nicheParts.length).join('-')
+    console.log('Potential niche:', potentialNiche)
+    
+    // UNIVERSAL FIX: If URL starts with niche and has more parts, treat rest as city
+    if (potentialNiche === nicheSlug && parts.length > nicheParts.length) {
+      const cityParts = parts.slice(nicheParts.length)
+      const potentialCity = cityParts.join('-').toLowerCase()
+      
       console.log('=== UNIVERSAL CITY DETECTION ===')
-      console.log('URL parts:', parts)
+      console.log('City parts:', cityParts)
       console.log('Potential city:', potentialCity)
       
       // Exclude state abbreviations and other non-city patterns
@@ -277,7 +284,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
       const isExcluded = excludedPatterns.some(pattern => potentialCity.includes(pattern))
       
       if (!isExcluded && potentialCity.length > 2) {
-        console.log('✅ Redirecting to city page')
+        console.log('✅ Redirecting to city page:', `/city/${potentialCity}`)
         redirect(`/city/${potentialCity}`)
       }
     }
