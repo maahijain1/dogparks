@@ -34,6 +34,19 @@ const nextConfig = {
   //   enabled: process.env.ANALYZE === 'true',
   // },
   
+  // Redirects for city pages - simple approach that always works
+  async redirects() {
+    return [
+      // Redirect all boarding-kennels-{city} to /city/{city}
+      // EXCEPT state pages (they have more than 2 parts or contain state names)
+      {
+        source: '/boarding-kennels-:city((?!.*(?:nsw|vic|qld|state|new-south-wales|victoria|queensland|south-australia|western-australia|tasmania)).*)',
+        destination: '/city/:city',
+        permanent: false
+      }
+    ]
+  },
+
   // Headers for performance
   async headers() {
     return [
