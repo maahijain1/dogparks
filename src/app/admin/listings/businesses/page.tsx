@@ -215,8 +215,12 @@ export default function BusinessesPage() {
 
   // Handle edit
   const handleEdit = (listing: Listing) => {
+    console.log('=== EDIT LISTING DEBUG ===')
+    console.log('Listing data:', listing)
+    console.log('Featured value:', listing.featured)
+    
     setEditingListing(listing)
-    setFormData({
+    const newFormData = {
       business: listing.business,
       category: listing.category,
       review_rating: listing.review_rating.toString(),
@@ -227,7 +231,10 @@ export default function BusinessesPage() {
       email: listing.email || '',
       city_id: listing.city_id,
       featured: listing.featured || false
-    })
+    }
+    
+    console.log('Setting form data:', newFormData)
+    setFormData(newFormData)
     setShowForm(true)
   }
 
@@ -595,17 +602,30 @@ export default function BusinessesPage() {
                   </select>
                 </div>
 
-                <div>
-                  <label className="flex items-center space-x-2">
+                {/* Featured Listing Checkbox - Always Visible */}
+                <div className={`border rounded-lg p-4 ${formData.featured ? 'bg-yellow-50 border-yellow-300' : 'bg-gray-50 border-gray-200'}`}>
+                  <label className="flex items-center space-x-3">
                     <input
                       type="checkbox"
+                      id="featured-listing"
                       checked={formData.featured}
-                      onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
-                      className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                      onChange={(e) => {
+                        console.log('Featured checkbox changed:', e.target.checked)
+                        setFormData({ ...formData, featured: e.target.checked })
+                      }}
+                      className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
                     />
-                    <span className="text-sm font-medium text-gray-700">
-                      Featured Listing (shows in featured section on city pages)
-                    </span>
+                    <div>
+                      <span className={`text-sm font-medium ${formData.featured ? 'text-yellow-800' : 'text-gray-700'}`}>
+                        ⭐ Featured Listing {formData.featured ? '(ENABLED)' : '(DISABLED)'}
+                      </span>
+                      <p className="text-xs text-gray-500 mt-1">
+                        This listing will appear in the featured section on city pages and homepage
+                      </p>
+                      <p className="text-xs text-blue-600 mt-1">
+                        Current state: {formData.featured ? 'true' : 'false'}
+                      </p>
+                    </div>
                   </label>
                 </div>
 
