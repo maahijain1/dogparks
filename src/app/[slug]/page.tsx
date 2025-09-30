@@ -279,6 +279,22 @@ export default async function SlugPage({ params }: SlugPageProps) {
       // Redirect to proper city URL
       redirect(`/city/${cityName.toLowerCase().replace(/\s+/g, '-')}`)
     }
+    
+    // DIRECT FIX: Handle specific case of "boarding-kennels-albury"
+    if (slug === 'boarding-kennels-albury') {
+      console.log('=== DIRECT FIX: boarding-kennels-albury ===')
+      redirect('/city/albury')
+    }
+    
+    // DIRECT FIX: Handle any pattern ending with known cities
+    const knownCities = ['albury', 'sydney', 'melbourne', 'brisbane', 'perth', 'adelaide', 'hobart', 'darwin', 'canberra']
+    const lastPart = parts[parts.length - 1].toLowerCase()
+    
+    if (knownCities.includes(lastPart)) {
+      console.log('=== DIRECT FIX: Known city detected ===')
+      console.log('City:', lastPart)
+      redirect(`/city/${lastPart}`)
+    }
   }
   
   // Handle state pages (format: {niche}-{state}) - show state with cities
