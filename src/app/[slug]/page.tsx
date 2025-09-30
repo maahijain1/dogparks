@@ -257,6 +257,30 @@ export default async function SlugPage({ params }: SlugPageProps) {
   const nicheSlug = currentNiche.toLowerCase().replace(/\s+/g, '-')
   const nicheParts = nicheSlug.split('-')
   
+  // Handle city pages (format: {niche}-{city}) - redirect to proper city URL
+  if (slug.includes('-') && parts.length >= 2) {
+    // Check if this matches the niche pattern
+    const potentialNiche = parts.slice(0, nicheParts.length).join('-')
+    const potentialCity = parts.slice(nicheParts.length).join('-')
+    
+    console.log('=== CHECKING URL PATTERN ===')
+    console.log('URL slug:', slug)
+    console.log('Expected niche slug:', nicheSlug)
+    console.log('Potential niche:', potentialNiche)
+    console.log('Potential city:', potentialCity)
+    console.log('Parts length:', parts.length)
+    
+    // If it matches niche pattern and has only 2 parts (niche-city)
+    if (potentialNiche === nicheSlug && parts.length === 2) {
+      const cityName = potentialCity.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+      console.log('=== CITY PAGE DETECTED ===')
+      console.log('Parsed city name:', cityName)
+      
+      // Redirect to proper city URL
+      redirect(`/city/${cityName.toLowerCase().replace(/\s+/g, '-')}`)
+    }
+  }
+  
   // Handle state pages (format: {niche}-{state}) - show state with cities
   if (slug.includes('-') && parts.length >= 3 && 
       parts.slice(0, nicheParts.length).join('-') === nicheSlug) {
