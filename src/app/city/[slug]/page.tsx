@@ -66,8 +66,8 @@ export default async function CityPage({ params }: CityPageProps) {
 
     if (cityError || !cityResult) {
       console.log('City not found by slug, trying name matching...')
-      // Fallback: try to find city by name
-      const { data: cityByName, error: cityByNameError } = await supabase
+      // Fallback: try to find city by name (exact match first)
+      let { data: cityByName, error: cityByNameError } = await supabase
         .from('cities')
         .select(`
           id,
@@ -79,9 +79,31 @@ export default async function CityPage({ params }: CityPageProps) {
             slug
           )
         `)
-        .ilike('name', `%${cityName}%`)
-        .limit(1)
+        .eq('name', cityName)
         .single()
+
+      // If exact match fails, try case-insensitive partial match
+      if (cityByNameError || !cityByName) {
+        console.log('Exact name match failed, trying case-insensitive...')
+        const { data: cityByPartial, error: cityByPartialError } = await supabase
+          .from('cities')
+          .select(`
+            id,
+            name,
+            slug,
+            states (
+              id,
+              name,
+              slug
+            )
+          `)
+          .ilike('name', `%${cityName}%`)
+          .limit(1)
+          .single()
+        
+        cityByName = cityByPartial
+        cityByNameError = cityByPartialError
+      }
 
       if (cityByNameError || !cityByName) {
         console.log('City not found by name either:', cityName)
