@@ -279,17 +279,12 @@ export default async function CityPage({ params }: CityPageProps) {
                 All {niche} in {cityData?.name || cityName}
               </h2>
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {listings.map((listing) => (
+                {listings
+                  .filter(listing => !listing.featured)
+                  .map((listing) => (
                   <div key={listing.id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                     <div className="p-6">
-                      <div className="flex items-start justify-between mb-4">
-                    <h3 className="text-xl font-semibold text-gray-900">{listing.business}</h3>
-                    {listing.featured && (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                        Featured
-                      </span>
-                    )}
-                  </div>
+                      <h3 className="text-xl font-semibold text-gray-900 mb-4">{listing.business}</h3>
                   
                       <div className="space-y-3">
                     {listing.address && (

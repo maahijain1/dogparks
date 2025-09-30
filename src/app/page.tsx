@@ -685,16 +685,11 @@ export default function HomePage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredListings.map((listing) => (
+            {filteredListings
+              .filter(listing => !listing.featured)
+              .map((listing) => (
               <div key={listing.id} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-                <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-xl font-semibold text-gray-900">{listing.business}</h3>
-                  {listing.featured && (
-                    <span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                      Featured
-                    </span>
-                  )}
-                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">{listing.business}</h3>
                 
                 <div className="space-y-2 text-sm text-gray-600">
                   {listing.address && (
