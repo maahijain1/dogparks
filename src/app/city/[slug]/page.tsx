@@ -210,19 +210,22 @@ export default async function CityPage({ params }: CityPageProps) {
                         </span>
                       </div>
                       
-                          <div className="space-y-3">
+                      <div className="space-y-3">
                         {listing.address && (
-                              <div className="flex items-start">
-                                <MapPin className="h-4 w-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" />
-                                <span className="text-sm text-gray-600">{listing.address}</span>
-                              </div>
+                          <div className="flex items-start">
+                            <MapPin className="h-4 w-4 text-gray-400 mt-0.5 mr-2 flex-shrink-0" />
+                            <span className="text-sm text-gray-600">{listing.address}</span>
+                          </div>
                         )}
                             
                         {listing.phone && (
-                              <div className="flex items-center">
-                                <Phone className="h-4 w-4 text-gray-400 mr-2" />
-                                <a href={`tel:${listing.phone}`} className="text-sm text-blue-600 hover:text-blue-800">
-                                  {listing.phone}
+                          <div className="flex items-center justify-between">
+                            <p><span className="font-medium">Phone:</span> {listing.phone}</p>
+                            <a 
+                              href={`tel:${listing.phone}`}
+                              className="inline-flex items-center px-3 py-1 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors"
+                            >
+                              📞 Call
                             </a>
                           </div>
                         )}
@@ -297,13 +300,16 @@ export default async function CityPage({ params }: CityPageProps) {
                     )}
                         
                     {listing.phone && (
-                          <div className="flex items-center">
-                            <Phone className="h-4 w-4 text-gray-400 mr-2" />
-                            <a href={`tel:${listing.phone}`} className="text-sm text-blue-600 hover:text-blue-800">
-                              {listing.phone}
-                        </a>
-                      </div>
-                    )}
+                          <div className="flex items-center justify-between">
+                            <p><span className="font-medium">Phone:</span> {listing.phone}</p>
+                            <a 
+                              href={`tel:${listing.phone}`}
+                              className="inline-flex items-center px-3 py-1 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors"
+                            >
+                              📞 Call
+                            </a>
+                          </div>
+                        )}
                         
                     {listing.website && (
                           <div className="flex items-center">

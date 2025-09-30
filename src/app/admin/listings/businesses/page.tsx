@@ -32,6 +32,7 @@ export default function BusinessesPage() {
     city_id: ''
   })
   const [cityListingCounts, setCityListingCounts] = useState<{[key: string]: number}>({})
+  const [selectedCityFilter, setSelectedCityFilter] = useState<string>('')
 
   // Calculate listing counts per city
   const calculateCityCounts = (listings: (Listing & { cities: City & { states: State } })[]) => {
@@ -42,6 +43,11 @@ export default function BusinessesPage() {
     })
     setCityListingCounts(counts)
   }
+
+  // Filter listings by selected city
+  const filteredListings = selectedCityFilter 
+    ? listings.filter(listing => listing.city_id === selectedCityFilter)
+    : listings
 
   // Fetch listings and cities
   const fetchListings = useCallback(async () => {
@@ -433,29 +439,59 @@ export default function BusinessesPage() {
           </div>
         </div>
 
-        {/* City Breakdown */}
+        {/* City Filter Buttons */}
         {Object.keys(cityListingCounts).length > 0 && (
           <div className="mb-8 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Listings by City</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Filter by City</h3>
+              {selectedCityFilter && (
+                <button
+                  onClick={() => setSelectedCityFilter('')}
+                  className="text-sm px-3 py-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors"
+                >
+                  Clear Filter
+                </button>
+              )}
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {cities
                 .filter(city => cityListingCounts[city.id] > 0)
                 .sort((a, b) => (cityListingCounts[b.id] || 0) - (cityListingCounts[a.id] || 0))
                 .map((city) => (
-                  <div key={city.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                    <div>
-                      <p className="font-medium text-gray-900 dark:text-white">{city.name}</p>
-                      <p className="text-sm text-gray-600 dark:text-gray-300">{city.states?.name}</p>
+                  <button
+                    key={city.id}
+                    onClick={() => setSelectedCityFilter(city.id)}
+                    className={`flex items-center justify-between p-3 rounded-lg transition-all ${
+                      selectedCityFilter === city.id 
+                        ? 'bg-blue-600 text-white shadow-lg scale-105' 
+                        : 'bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600'
+                    }`}
+                  >
+                    <div className="text-left">
+                      <p className={`font-medium ${selectedCityFilter === city.id ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
+                        {city.name}
+                      </p>
+                      <p className={`text-sm ${selectedCityFilter === city.id ? 'text-blue-100' : 'text-gray-600 dark:text-gray-300'}`}>
+                        {city.states?.name}
+                      </p>
                     </div>
                     <div className="text-right">
-                      <div className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-3 py-1 rounded-full text-sm font-medium mb-1">
+                      <div className={`px-3 py-1 rounded-full text-sm font-medium mb-1 ${
+                        selectedCityFilter === city.id 
+                          ? 'bg-blue-500 text-white' 
+                          : 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200'
+                      }`}>
                         {cityListingCounts[city.id]} listings
                       </div>
-                      <div className="bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 px-2 py-1 rounded-full text-xs font-medium">
+                      <div className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        selectedCityFilter === city.id 
+                          ? 'bg-purple-500 text-white' 
+                          : 'bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200'
+                      }`}>
                         {listings.filter(l => l.city_id === city.id && l.featured).length}/3 featured
                       </div>
                     </div>
-                  </div>
+                  </button>
                 ))}
             </div>
           </div>
@@ -807,9 +843,25 @@ export default function BusinessesPage() {
               )}
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50 dark:bg-gray-700">
+            <>
+              {selectedCityFilter && (
+                <div className="bg-blue-50 dark:bg-blue-900/20 border-b border-blue-200 dark:border-blue-800 px-6 py-3">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                      Showing {filteredListings.length} listings for {cities.find(c => c.id === selectedCityFilter)?.name}
+                    </p>
+                    <button
+                      onClick={() => setSelectedCityFilter('')}
+                      className="text-sm text-blue-700 dark:text-blue-300 hover:text-blue-900 dark:hover:text-blue-100 font-medium"
+                    >
+                      ✕ Clear Filter
+                    </button>
+                  </div>
+                </div>
+              )}
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50 dark:bg-gray-700">
                   <tr>
                     <th className="px-6 py-4 text-left text-sm font-medium text-gray-900 dark:text-white">
                       Business
@@ -832,7 +884,17 @@ export default function BusinessesPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                  {listings.map((listing) => (
+                  {filteredListings.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
+                        {selectedCityFilter 
+                          ? `No listings found for ${cities.find(c => c.id === selectedCityFilter)?.name}. Clear the filter or add listings.`
+                          : 'No listings found. Add your first listing above.'
+                        }
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredListings.map((listing) => (
                     <tr key={listing.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                       <td className="px-6 py-4">
                         <div className="flex items-center">
@@ -895,10 +957,12 @@ export default function BusinessesPage() {
                         </div>
                       </td>
                     </tr>
-                  ))}
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
+            </>
           )}
         </div>
       </div>
