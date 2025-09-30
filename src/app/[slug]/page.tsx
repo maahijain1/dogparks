@@ -261,10 +261,15 @@ export default async function SlugPage({ params }: SlugPageProps) {
   if (slug.includes('-') && parts.length >= 3 && 
       parts.slice(0, nicheParts.length).join('-') === nicheSlug) {
     // This is a state page like {niche}-{state}
-    const stateName = parts.slice(nicheParts.length).join('-').replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+    let stateName = parts.slice(nicheParts.length).join('-').replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+    
+    // Clean up parentheses and extra spaces
+    stateName = stateName.replace(/\s*\([^)]*\)\s*/g, '').trim()
+    
     console.log('=== STATE PAGE ===')
     console.log('URL slug:', slug)
-    console.log('State name:', stateName)
+    console.log('Original state name:', parts.slice(nicheParts.length).join('-'))
+    console.log('Cleaned state name:', stateName)
     console.log('Looking for cities in state:', stateName)
     
     // Fetch cities and listings for this state
@@ -273,23 +278,54 @@ export default async function SlugPage({ params }: SlugPageProps) {
     let featuredListings = 0
     
     try {
-      // First, get the state ID
-      const { data: stateData, error: stateError } = await supabase
+      // First, try exact match
+      let { data: stateData, error: stateError } = await supabase
         .from('states')
         .select('id, name')
         .eq('name', stateName)
         .single()
       
+      // If exact match fails, try case-insensitive partial match
+      if (stateError || !stateData) {
+        console.log('Exact match failed, trying case-insensitive search...')
+        const { data: stateDataCI, error: stateErrorCI } = await supabase
+          .from('states')
+          .select('id, name')
+          .ilike('name', `%${stateName}%`)
+          .limit(1)
+          .single()
+        
+        if (!stateErrorCI && stateDataCI) {
+          stateData = stateDataCI
+          stateError = null
+          console.log('Found state with case-insensitive search:', stateData.name)
+        }
+      }
+      
       if (stateError || !stateData) {
         console.log('State not found:', stateName, stateError)
-        // Return a 404 page with helpful message
+        
+        // Show all available states for debugging
+        const { data: allStates } = await supabase
+          .from('states')
+          .select('name')
+          .order('name')
+        
         return (
           <div className="min-h-screen bg-white flex items-center justify-center">
             <div className="text-center">
               <h1 className="text-4xl font-bold text-gray-900 mb-4">State Not Found</h1>
-              <p className="text-xl text-gray-600 mb-8">
+              <p className="text-xl text-gray-600 mb-4">
                 The state &quot;{stateName}&quot; could not be found. It may have been removed from the directory.
               </p>
+              {allStates && allStates.length > 0 && (
+                <div className="mb-6">
+                  <p className="text-sm text-gray-500 mb-2">Available states:</p>
+                  <div className="text-sm text-gray-600">
+                    {allStates.map(state => state.name).join(', ')}
+                  </div>
+                </div>
+              )}
               <Link 
                 href="/"
                 className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
