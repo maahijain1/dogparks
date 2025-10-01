@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from "next/link";
-import { ArrowLeft, Plus, Edit, Trash2, Eye, EyeOff, FileText } from "lucide-react";
+import { ArrowLeft, Plus, Edit, Trash2, FileText, X } from "lucide-react";
 import { Article } from '@/types/database'
 import ArticleEditor from '@/components/ArticleEditor'
 
