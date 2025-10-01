@@ -693,7 +693,7 @@ export default function HomePage() {
                 <div className="p-6">
                   <div className="flex justify-between items-start mb-4">
                     <h3 className="text-xl font-bold text-gray-900 leading-tight">{listing.business}</h3>
-                    {listing.review_rating && parseFloat(listing.review_rating) >= 4.0 && (
+                    {listing.review_rating && Number(listing.review_rating) >= 4.0 && (
                       <span className="bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded-full whitespace-nowrap">
                         ⭐ {listing.review_rating}
                       </span>
