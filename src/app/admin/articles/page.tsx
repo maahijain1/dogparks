@@ -406,7 +406,7 @@ export default function ArticlesPage() {
             </div>
 
             {/* Pagination Controls */}
-            {!showForm && articles.length > itemsPerPage && (
+            {articles.length > itemsPerPage && (
               <div className="mt-6 flex items-center justify-center gap-4">
                 {/* Previous Button */}
                 <button
@@ -476,7 +476,7 @@ export default function ArticlesPage() {
             )}
 
             {/* Pagination Info */}
-            {!showForm && articles.length > 0 && (
+            {articles.length > 0 && (
               <div className="text-center mt-4 text-sm text-gray-600">
                 Showing {startIndex + 1} - {Math.min(endIndex, articles.length)} of {articles.length} articles
                 {totalPages > 1 && ` (Page ${currentPage} of ${totalPages})`}
