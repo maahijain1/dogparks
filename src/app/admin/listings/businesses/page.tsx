@@ -342,10 +342,18 @@ export default function BusinessesPage() {
       })
 
       if (response.ok) {
-        await fetchListings()
+        // Optimistic update - remove from UI immediately without refetching
+        setListings(prevListings => {
+          const updatedListings = prevListings.filter(listing => listing.id !== id)
+          calculateCityCounts(updatedListings)
+          return updatedListings
+        })
+      } else {
+        alert('Failed to delete listing')
       }
     } catch (error) {
       console.error('Error deleting listing:', error)
+      alert('Error deleting listing. Please try again.')
     }
   }
 

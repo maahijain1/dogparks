@@ -114,10 +114,14 @@ export default function ArticlesPage() {
       })
 
       if (response.ok) {
-        await fetchArticles()
+        // Optimistic update - remove from UI immediately without refetching
+        setArticles(prevArticles => prevArticles.filter(article => article.id !== id))
+      } else {
+        alert('Failed to delete article')
       }
     } catch (error) {
       console.error('Error deleting article:', error)
+      alert('Error deleting article. Please try again.')
     }
   }
 

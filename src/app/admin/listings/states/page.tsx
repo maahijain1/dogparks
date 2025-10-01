@@ -81,10 +81,14 @@ export default function StatesPage() {
       })
 
       if (response.ok) {
-        await fetchStates()
+        // Optimistic update - remove from UI immediately without refetching
+        setStates(prevStates => prevStates.filter(state => state.id !== id))
+      } else {
+        alert('Failed to delete state')
       }
     } catch (error) {
       console.error('Error deleting state:', error)
+      alert('Error deleting state. Please try again.')
     }
   }
 

@@ -93,10 +93,14 @@ export default function CitiesPage() {
       })
 
       if (response.ok) {
-        await fetchCities()
+        // Optimistic update - remove from UI immediately without refetching
+        setCities(prevCities => prevCities.filter(city => city.id !== id))
+      } else {
+        alert('Failed to delete city')
       }
     } catch (error) {
       console.error('Error deleting city:', error)
+      alert('Error deleting city. Please try again.')
     }
   }
 
