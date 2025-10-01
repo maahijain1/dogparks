@@ -13,6 +13,7 @@ export default function ArticlesPage() {
   const [editingArticle, setEditingArticle] = useState<Article | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage] = useState(20) // 20 articles per page
+  const [submitting, setSubmitting] = useState(false)
 
   const [formData, setFormData] = useState({
     title: '',
@@ -63,6 +64,7 @@ export default function ArticlesPage() {
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setSubmitting(true)
     
     try {
       const url = editingArticle ? `/api/articles/${editingArticle.id}` : '/api/articles'
@@ -80,6 +82,8 @@ export default function ArticlesPage() {
       }
     } catch (error) {
       console.error('Error saving article:', error)
+    } finally {
+      setSubmitting(false)
     }
   }
 
