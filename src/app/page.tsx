@@ -33,6 +33,8 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true)
   const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null)
   const [locationLoading, setLocationLoading] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage] = useState(30) // 30 listings per page
   const [dynamicSettings, setDynamicSettings] = useState({
     siteName: 'DirectoryHub',
     niche: 'Dog Park',
@@ -105,7 +107,13 @@ export default function HomePage() {
   const clearSearch = () => {
     setSearchQuery('')
     setSelectedCity('')
+    setCurrentPage(1) // Reset to first page
   }
+
+  // Reset page when search or city filter changes
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [searchQuery, selectedCity])
 
 
   // Fetch data with error boundaries
@@ -684,59 +692,161 @@ export default function HomePage() {
             )}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredListings
-              .filter(listing => !listing.featured && listing.phone) // Only show listings with phone numbers
-              .map((listing) => (
-              <div key={listing.id} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">{listing.business}</h3>
-                
-                <div className="space-y-2 text-sm text-gray-600">
-                  {listing.address && (
-                    <p><span className="font-medium">Address:</span> {listing.address}</p>
-                  )}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            {(() => {
+              const listingsToShow = filteredListings.filter(listing => !listing.featured && listing.phone)
+              const totalPages = Math.ceil(listingsToShow.length / itemsPerPage)
+              const startIndex = (currentPage - 1) * itemsPerPage
+              const endIndex = startIndex + itemsPerPage
+              const paginatedListings = listingsToShow.slice(startIndex, endIndex)
+              
+              return paginatedListings.map((listing) => (
+                <div key={listing.id} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-4">{listing.business}</h3>
                   
-                  {listing.phone && (
-                    <div className="flex items-center justify-between">
-                      <p><span className="font-medium">Phone:</span> {listing.phone}</p>
-                      <a 
-                        href={`tel:${listing.phone}`}
-                        className="inline-flex items-center px-3 py-1 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors"
-                      >
-                        📞 Call
-                      </a>
+                  <div className="space-y-2 text-sm text-gray-600">
+                    {listing.address && (
+                      <p><span className="font-medium">Address:</span> {listing.address}</p>
+                    )}
+                    
+                    {listing.phone && (
+                      <div className="flex items-center justify-between">
+                        <p><span className="font-medium">Phone:</span> {listing.phone}</p>
+                        <a 
+                          href={`tel:${listing.phone}`}
+                          className="inline-flex items-center px-3 py-1 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors"
+                        >
+                          📞 Call
+                        </a>
+                      </div>
+                    )}
+                    
+                    {listing.website && (
+                      <p>
+                        <span className="font-medium">Website:</span>{' '}
+                        <a 
+                          href={listing.website.startsWith('http') ? listing.website : `https://${listing.website}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:underline"
+                        >
+                          Visit Website
+                        </a>
+                      </p>
+                    )}
+                    
+                    {listing.review_rating && Number(listing.review_rating) > 0 && (
+                      <p>
+                        <span className="font-medium">Rating:</span> {listing.review_rating}/5 
+                        <span className="ml-1 text-yellow-500">★</span>
+                      </p>
+                    )}
+                    
+                    <div className="flex items-center text-sm text-gray-500">
+                      <MapPin className="h-4 w-4 mr-1" />
+                      {listing.cities?.name}, {listing.cities?.states?.name}
                     </div>
-                  )}
-                  
-                  {listing.website && (
-                    <p>
-                      <span className="font-medium">Website:</span>{' '}
-                      <a 
-                        href={listing.website.startsWith('http') ? listing.website : `https://${listing.website}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline"
-                      >
-                        Visit Website
-                      </a>
-                    </p>
-                  )}
-                  
-                  {listing.review_rating && Number(listing.review_rating) > 0 && (
-                    <p>
-                      <span className="font-medium">Rating:</span> {listing.review_rating}/5 
-                      <span className="ml-1 text-yellow-500">★</span>
-                    </p>
-                  )}
-                  
-                  <div className="flex items-center text-sm text-gray-500">
-                    <MapPin className="h-4 w-4 mr-1" />
-                    {listing.cities?.name}, {listing.cities?.states?.name}
                   </div>
                 </div>
-              </div>
-            ))}
+              ))
+            })()}
           </div>
+
+          {/* Pagination Controls */}
+          {(() => {
+            const listingsToShow = filteredListings.filter(listing => !listing.featured && listing.phone)
+            const totalPages = Math.ceil(listingsToShow.length / itemsPerPage)
+            
+            if (totalPages <= 1) return null
+            
+            return (
+              <div className="flex justify-center items-center space-x-2 mt-8">
+                {/* Previous Button */}
+                <button
+                  onClick={() => {
+                    setCurrentPage(prev => Math.max(1, prev - 1))
+                    window.scrollTo({ top: 0, behavior: 'smooth' })
+                  }}
+                  disabled={currentPage === 1}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                    currentPage === 1
+                      ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                      : 'bg-blue-600 text-white hover:bg-blue-700'
+                  }`}
+                >
+                  Previous
+                </button>
+
+                {/* Page Numbers */}
+                <div className="flex space-x-1">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => {
+                    // Show first page, last page, current page, and pages around current
+                    if (
+                      pageNum === 1 ||
+                      pageNum === totalPages ||
+                      (pageNum >= currentPage - 2 && pageNum <= currentPage + 2)
+                    ) {
+                      return (
+                        <button
+                          key={pageNum}
+                          onClick={() => {
+                            setCurrentPage(pageNum)
+                            window.scrollTo({ top: 0, behavior: 'smooth' })
+                          }}
+                          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                            currentPage === pageNum
+                              ? 'bg-blue-600 text-white'
+                              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                          }`}
+                        >
+                          {pageNum}
+                        </button>
+                      )
+                    } else if (
+                      pageNum === currentPage - 3 ||
+                      pageNum === currentPage + 3
+                    ) {
+                      return <span key={pageNum} className="px-2 py-2 text-gray-500">...</span>
+                    }
+                    return null
+                  })}
+                </div>
+
+                {/* Next Button */}
+                <button
+                  onClick={() => {
+                    setCurrentPage(prev => Math.min(totalPages, prev + 1))
+                    window.scrollTo({ top: 0, behavior: 'smooth' })
+                  }}
+                  disabled={currentPage === totalPages}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                    currentPage === totalPages
+                      ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                      : 'bg-blue-600 text-white hover:bg-blue-700'
+                  }`}
+                >
+                  Next
+                </button>
+              </div>
+            )
+          })()}
+
+          {/* Pagination Info */}
+          {(() => {
+            const listingsToShow = filteredListings.filter(listing => !listing.featured && listing.phone)
+            const totalPages = Math.ceil(listingsToShow.length / itemsPerPage)
+            const startIndex = (currentPage - 1) * itemsPerPage
+            const endIndex = Math.min(startIndex + itemsPerPage, listingsToShow.length)
+            
+            if (listingsToShow.length === 0) return null
+            
+            return (
+              <div className="text-center mt-4 text-sm text-gray-600">
+                Showing {startIndex + 1} - {endIndex} of {listingsToShow.length} listings
+                {totalPages > 1 && ` (Page ${currentPage} of ${totalPages})`}
+              </div>
+            )
+          })()}
         </div>
       </section>
 
