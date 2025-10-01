@@ -822,7 +822,7 @@ export default function HomePage() {
                   className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                     currentPage === totalPages
                       ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                      : 'bg-blue-600 text-white hover:bg-blue-700'
+                      : 'bg-blue-600 text-white hover:bg-blue-700 cursor-pointer'
                   }`}
                 >
                   Next

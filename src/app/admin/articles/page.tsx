@@ -11,6 +11,8 @@ export default function ArticlesPage() {
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingArticle, setEditingArticle] = useState<Article | null>(null)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage] = useState(20) // 20 articles per page
 
   const [formData, setFormData] = useState({
     title: '',
@@ -19,6 +21,12 @@ export default function ArticlesPage() {
     featured_image: '',
     published: false
   })
+
+  // Pagination calculations
+  const totalPages = Math.ceil(articles.length / itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
+  const paginatedArticles = articles.slice(startIndex, endIndex)
 
   // Fetch articles
   const fetchArticles = async () => {
@@ -338,7 +346,7 @@ export default function ArticlesPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                  {articles.map((article) => (
+                  {paginatedArticles.map((article) => (
                     <tr key={article.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                       <td className="px-6 py-4">
                         <div className="flex items-center">
@@ -396,6 +404,84 @@ export default function ArticlesPage() {
                 </tbody>
               </table>
             </div>
+
+            {/* Pagination Controls */}
+            {!showForm && articles.length > itemsPerPage && (
+              <div className="mt-6 flex items-center justify-center gap-4">
+                {/* Previous Button */}
+                <button
+                  onClick={() => {
+                    setCurrentPage(prev => Math.max(1, prev - 1))
+                    window.scrollTo({ top: 0, behavior: 'smooth' })
+                  }}
+                  disabled={currentPage === 1}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                    currentPage === 1
+                      ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                      : 'bg-blue-600 text-white hover:bg-blue-700 cursor-pointer'
+                  }`}
+                >
+                  Previous
+                </button>
+
+                {/* Page Numbers */}
+                <div className="flex items-center gap-2">
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    let pageNum
+                    if (totalPages <= 5) {
+                      pageNum = i + 1
+                    } else if (currentPage <= 3) {
+                      pageNum = i + 1
+                    } else if (currentPage >= totalPages - 2) {
+                      pageNum = totalPages - 4 + i
+                    } else {
+                      pageNum = currentPage - 2 + i
+                    }
+                    
+                    return (
+                      <button
+                        key={pageNum}
+                        onClick={() => {
+                          setCurrentPage(pageNum)
+                          window.scrollTo({ top: 0, behavior: 'smooth' })
+                        }}
+                        className={`px-3 py-1 rounded-lg font-medium transition-colors cursor-pointer ${
+                          currentPage === pageNum
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                        }`}
+                      >
+                        {pageNum}
+                      </button>
+                    )
+                  })}
+                </div>
+
+                {/* Next Button */}
+                <button
+                  onClick={() => {
+                    setCurrentPage(prev => Math.min(totalPages, prev + 1))
+                    window.scrollTo({ top: 0, behavior: 'smooth' })
+                  }}
+                  disabled={currentPage === totalPages}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                    currentPage === totalPages
+                      ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                      : 'bg-blue-600 text-white hover:bg-blue-700 cursor-pointer'
+                  }`}
+                >
+                  Next
+                </button>
+              </div>
+            )}
+
+            {/* Pagination Info */}
+            {!showForm && articles.length > 0 && (
+              <div className="text-center mt-4 text-sm text-gray-600">
+                Showing {startIndex + 1} - {Math.min(endIndex, articles.length)} of {articles.length} articles
+                {totalPages > 1 && ` (Page ${currentPage} of ${totalPages})`}
+              </div>
+            )}
           )}
         </div>
       </div>

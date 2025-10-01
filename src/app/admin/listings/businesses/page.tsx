@@ -33,6 +33,8 @@ export default function BusinessesPage() {
   })
   const [cityListingCounts, setCityListingCounts] = useState<{[key: string]: number}>({})
   const [selectedCityFilter, setSelectedCityFilter] = useState<string>('')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage] = useState(50) // 50 listings per page
 
   // Calculate listing counts per city
   const calculateCityCounts = (listings: (Listing & { cities: City & { states: State } })[]) => {
@@ -48,6 +50,12 @@ export default function BusinessesPage() {
   const filteredListings = selectedCityFilter 
     ? listings.filter(listing => listing.city_id === selectedCityFilter)
     : listings
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredListings.length / itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
+  const paginatedListings = filteredListings.slice(startIndex, endIndex)
 
   // Fetch listings and cities
   const fetchListings = useCallback(async () => {
@@ -454,7 +462,10 @@ export default function BusinessesPage() {
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Filter by City</h3>
               {selectedCityFilter && (
                 <button
-                  onClick={() => setSelectedCityFilter('')}
+                  onClick={() => {
+                    setSelectedCityFilter('')
+                    setCurrentPage(1)
+                  }}
                   className="text-sm px-3 py-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors"
                 >
                   Clear Filter
@@ -468,7 +479,10 @@ export default function BusinessesPage() {
                 .map((city) => (
                   <button
                     key={city.id}
-                    onClick={() => setSelectedCityFilter(city.id)}
+                    onClick={() => {
+                      setSelectedCityFilter(city.id)
+                      setCurrentPage(1)
+                    }}
                     className={`flex items-center justify-between p-3 rounded-lg transition-all ${
                       selectedCityFilter === city.id 
                         ? 'bg-blue-600 text-white shadow-lg scale-105' 
@@ -859,7 +873,10 @@ export default function BusinessesPage() {
                       Showing {filteredListings.length} listings for {cities.find(c => c.id === selectedCityFilter)?.name}
                     </p>
                     <button
-                      onClick={() => setSelectedCityFilter('')}
+                      onClick={() => {
+                        setSelectedCityFilter('')
+                        setCurrentPage(1)
+                      }}
                       className="text-sm text-blue-700 dark:text-blue-300 hover:text-blue-900 dark:hover:text-blue-100 font-medium"
                     >
                       ✕ Clear Filter
@@ -902,7 +919,7 @@ export default function BusinessesPage() {
                       </td>
                     </tr>
                   ) : (
-                    filteredListings.map((listing) => (
+                    paginatedListings.map((listing) => (
                     <tr key={listing.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                       <td className="px-6 py-4">
                         <div className="flex items-center">
@@ -970,6 +987,84 @@ export default function BusinessesPage() {
                 </tbody>
               </table>
             </div>
+
+            {/* Pagination Controls */}
+            {filteredListings.length > itemsPerPage && (
+              <div className="mt-6 flex items-center justify-center gap-4">
+                {/* Previous Button */}
+                <button
+                  onClick={() => {
+                    setCurrentPage(prev => Math.max(1, prev - 1))
+                    window.scrollTo({ top: 0, behavior: 'smooth' })
+                  }}
+                  disabled={currentPage === 1}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                    currentPage === 1
+                      ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                      : 'bg-green-600 text-white hover:bg-green-700 cursor-pointer'
+                  }`}
+                >
+                  Previous
+                </button>
+
+                {/* Page Numbers */}
+                <div className="flex items-center gap-2">
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    let pageNum
+                    if (totalPages <= 5) {
+                      pageNum = i + 1
+                    } else if (currentPage <= 3) {
+                      pageNum = i + 1
+                    } else if (currentPage >= totalPages - 2) {
+                      pageNum = totalPages - 4 + i
+                    } else {
+                      pageNum = currentPage - 2 + i
+                    }
+                    
+                    return (
+                      <button
+                        key={pageNum}
+                        onClick={() => {
+                          setCurrentPage(pageNum)
+                          window.scrollTo({ top: 0, behavior: 'smooth' })
+                        }}
+                        className={`px-3 py-1 rounded-lg font-medium transition-colors cursor-pointer ${
+                          currentPage === pageNum
+                            ? 'bg-green-600 text-white'
+                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                        }`}
+                      >
+                        {pageNum}
+                      </button>
+                    )
+                  })}
+                </div>
+
+                {/* Next Button */}
+                <button
+                  onClick={() => {
+                    setCurrentPage(prev => Math.min(totalPages, prev + 1))
+                    window.scrollTo({ top: 0, behavior: 'smooth' })
+                  }}
+                  disabled={currentPage === totalPages}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                    currentPage === totalPages
+                      ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                      : 'bg-green-600 text-white hover:bg-green-700 cursor-pointer'
+                  }`}
+                >
+                  Next
+                </button>
+              </div>
+            )}
+
+            {/* Pagination Info */}
+            {filteredListings.length > 0 && (
+              <div className="text-center mt-4 text-sm text-gray-600">
+                Showing {startIndex + 1} - {Math.min(endIndex, filteredListings.length)} of {filteredListings.length} listings
+                {totalPages > 1 && ` (Page ${currentPage} of ${totalPages})`}
+              </div>
+            )}
             </>
           )}
         </div>
