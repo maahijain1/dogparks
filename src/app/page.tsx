@@ -688,71 +688,50 @@ export default function HomePage() {
             {filteredListings
               .filter(listing => !listing.featured && listing.phone) // Only show listings with phone numbers
               .map((listing) => (
-              <div key={listing.id} className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-                <div className="bg-gradient-to-r from-blue-500 to-blue-600 h-2"></div>
-                <div className="p-6">
-                  <div className="flex justify-between items-start mb-4">
-                    <h3 className="text-xl font-bold text-gray-900 leading-tight">{listing.business}</h3>
-                    {listing.review_rating && Number(listing.review_rating) >= 4.0 && (
-                      <span className="bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded-full whitespace-nowrap">
-                        ⭐ {listing.review_rating}
-                      </span>
-                    )}
-                  </div>
+              <div key={listing.id} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">{listing.business}</h3>
+                
+                <div className="space-y-2 text-sm text-gray-600">
+                  {listing.address && (
+                    <p><span className="font-medium">Address:</span> {listing.address}</p>
+                  )}
                   
-                  <div className="space-y-3">
-                    {listing.address && (
-                      <div className="flex items-start bg-gray-50 rounded-lg p-3">
-                        <MapPin className="h-5 w-5 text-blue-500 mt-0.5 mr-2 flex-shrink-0" />
-                        <span className="text-sm text-gray-700 font-medium">{listing.address}</span>
-                      </div>
-                    )}
-                    
-                    {listing.phone && (
-                      <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-3 border border-green-200">
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center">
-                            <Phone className="h-5 w-5 text-green-600 mr-2" />
-                            <span className="text-gray-900 font-bold">{listing.phone}</span>
-                          </div>
-                        </div>
-                        <a 
-                          href={`tel:${listing.phone}`}
-                          className="w-full inline-flex items-center justify-center px-4 py-2.5 bg-green-600 text-white text-sm font-bold rounded-lg hover:bg-green-700 transition-colors shadow-md hover:shadow-lg"
-                        >
-                          📞 Call Now
-                        </a>
-                      </div>
-                    )}
-                    
-                    {listing.website && (
+                  {listing.phone && (
+                    <div className="flex items-center justify-between">
+                      <p><span className="font-medium">Phone:</span> {listing.phone}</p>
+                      <a 
+                        href={`tel:${listing.phone}`}
+                        className="inline-flex items-center px-3 py-1 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors"
+                      >
+                        📞 Call
+                      </a>
+                    </div>
+                  )}
+                  
+                  {listing.website && (
+                    <p>
+                      <span className="font-medium">Website:</span>{' '}
                       <a 
                         href={listing.website.startsWith('http') ? listing.website : `https://${listing.website}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="w-full inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+                        className="text-blue-600 hover:underline"
                       >
-                        <Globe className="h-4 w-4 mr-2" />
                         Visit Website
                       </a>
-                    )}
-                    
-                    <div className="flex items-center justify-between pt-3 border-t border-gray-200">
-                      <div className="flex items-center">
-                        <Star className="h-5 w-5 text-yellow-400 fill-current mr-1" />
-                        <span className="text-base font-bold text-gray-900">
-                          {listing.review_rating || 'N/A'}
-                        </span>
-                        <span className="text-sm text-gray-600 ml-1">
-                          ({listing.number_of_reviews || 0} reviews)
-                        </span>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center text-sm text-gray-600 bg-blue-50 rounded-lg p-2">
-                      <MapPin className="h-4 w-4 mr-1 text-blue-600" />
-                      <span className="font-medium">{listing.cities?.name}, {listing.cities?.states?.name}</span>
-                    </div>
+                    </p>
+                  )}
+                  
+                  {listing.review_rating && Number(listing.review_rating) > 0 && (
+                    <p>
+                      <span className="font-medium">Rating:</span> {listing.review_rating}/5 
+                      <span className="ml-1 text-yellow-500">★</span>
+                    </p>
+                  )}
+                  
+                  <div className="flex items-center text-sm text-gray-500">
+                    <MapPin className="h-4 w-4 mr-1" />
+                    {listing.cities?.name}, {listing.cities?.states?.name}
                   </div>
                 </div>
               </div>
@@ -780,63 +759,59 @@ export default function HomePage() {
           </div>
 
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {latestArticles.length === 0 ? (
               <div className="col-span-full text-center text-gray-500">
                 No articles available
               </div>
             ) : (
               latestArticles.map((article, index) => (
-              <article key={article.id} className={`group bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:-translate-y-2 ${index % 2 === 0 ? 'border-l-4 border-indigo-500' : 'border-l-4 border-purple-500'}`}>
+              <article key={article.id} className="group bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-200">
                 {article.featured_image && (
                   <div className="relative overflow-hidden">
                     <Image 
                       src={article.featured_image} 
                       alt={article.title}
                       width={400}
-                      height={192}
-                      className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                      height={150}
+                      className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300"
                       loading="lazy"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      quality={80}
+                      quality={75}
                     />
-                    <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1">
-                      <span className="text-xs font-semibold text-gray-700">
-                        {index === 0 ? '🔥 Trending' : index === 1 ? '⭐ Featured' : '📚 Guide'}
-                      </span>
-                    </div>
                   </div>
                 )}
-                <div className="p-6">
-                  <div className="flex items-center mb-3">
-                    <div className={`w-2 h-2 rounded-full mr-2 ${index % 2 === 0 ? 'bg-indigo-500' : 'bg-purple-500'}`}></div>
-                    <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                <div className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-medium text-gray-500">
                       {new Date(article.created_at).toLocaleDateString('en-US', { 
                         month: 'short', 
-                        day: 'numeric',
-                        year: 'numeric'
+                        day: 'numeric'
                       })}
+                    </span>
+                    <span className="text-xs font-semibold text-indigo-600">
+                      {index === 0 ? '🔥 Trending' : index === 1 ? '⭐ Featured' : '📚 Guide'}
                     </span>
                   </div>
                   
-                  <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-indigo-600 transition-colors">
+                  <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-indigo-600 transition-colors line-clamp-2">
                     <Link href={`/${article.slug}`} className="hover:underline">
                       {article.title}
                     </Link>
                   </h3>
                   
                   <div 
-                    className="text-gray-600 text-sm mb-4 line-clamp-3 leading-relaxed"
-                    dangerouslySetInnerHTML={{ __html: cleanArticleContent(article.content.substring(0, 150) + '...') }}
+                    className="text-gray-600 text-sm mb-3 line-clamp-2 leading-relaxed"
+                    dangerouslySetInnerHTML={{ __html: cleanArticleContent(article.content.substring(0, 100) + '...') }}
                   />
                   
                   <div className="flex items-center justify-between">
                     <Link 
                       href={`/${article.slug}`}
-                      className="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-semibold text-sm group-hover:underline"
+                      className="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-semibold text-sm"
                     >
-                      Read Full Article
-                      <svg className="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      Read More
+                      <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
                     </Link>

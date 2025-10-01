@@ -152,6 +152,19 @@ export default async function CityPage({ params }: CityPageProps) {
       {/* Header */}
       <div className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Back to Home Button */}
+          <div className="mb-6">
+            <Link 
+              href="/"
+              className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium transition-colors"
+            >
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              Back to Home
+            </Link>
+          </div>
+          
           <div className="text-center">
             <h1 className="text-4xl font-bold text-gray-900 mb-2">
               {niche} {cityData?.name || cityName}
@@ -291,92 +304,53 @@ export default async function CityPage({ params }: CityPageProps) {
 
             {/* All Listings */}
             <div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">
                 All {niche} in {cityData?.name || cityName}
               </h2>
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {listings
                   .filter(listing => !listing.featured && listing.phone) // Only show listings with phone numbers
                   .map((listing) => (
-                  <div key={listing.id} className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-                    <div className="bg-gradient-to-r from-blue-500 to-blue-600 h-2"></div>
-                    <div className="p-6">
-                      <div className="flex justify-between items-start mb-4">
-                        <h3 className="text-xl font-bold text-gray-900 leading-tight">{listing.business}</h3>
-                        {listing.review_rating && Number(listing.review_rating) >= 4.0 && (
-                          <span className="bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded-full whitespace-nowrap">
-                            ⭐ {listing.review_rating}
-                          </span>
-                        )}
-                      </div>
+                  <div key={listing.id} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+                    <h3 className="text-xl font-semibold text-gray-900 mb-4">{listing.business}</h3>
                   
-                      <div className="space-y-3">
-                        {listing.address && (
-                          <div className="flex items-start bg-gray-50 rounded-lg p-3">
-                            <MapPin className="h-5 w-5 text-blue-500 mt-0.5 mr-2 flex-shrink-0" />
-                            <span className="text-sm text-gray-700 font-medium">{listing.address}</span>
-                          </div>
-                        )}
-                        
-                        {listing.phone && (
-                          <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-3 border border-green-200">
-                            <div className="flex items-center justify-between mb-2">
-                              <div className="flex items-center">
-                                <Phone className="h-5 w-5 text-green-600 mr-2" />
-                                <span className="text-gray-900 font-bold">{listing.phone}</span>
-                              </div>
-                            </div>
-                            <a 
-                              href={`tel:${listing.phone}`}
-                              className="w-full inline-flex items-center justify-center px-4 py-2.5 bg-green-600 text-white text-sm font-bold rounded-lg hover:bg-green-700 transition-colors shadow-md hover:shadow-lg"
-                            >
-                              📞 Call Now
-                            </a>
-                          </div>
-                        )}
-                        
-                        <div className="flex flex-wrap gap-2">
-                          {listing.website && (
-                            <a 
-                              href={listing.website.startsWith('http') ? listing.website : `https://${listing.website}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex-1 inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors"
-                            >
-                              <Globe className="h-4 w-4 mr-2" />
-                              Website
-                            </a>
-                          )}
-                          
-                          {listing.email && (
-                            <a 
-                              href={`mailto:${listing.email}`}
-                              className="flex-1 inline-flex items-center justify-center px-4 py-2 bg-gray-600 text-white text-sm font-semibold rounded-lg hover:bg-gray-700 transition-colors"
-                            >
-                              <Mail className="h-4 w-4 mr-2" />
-                              Email
-                            </a>
-                          )}
+                    <div className="space-y-2 text-sm text-gray-600">
+                      {listing.address && (
+                        <p><span className="font-medium">Address:</span> {listing.address}</p>
+                      )}
+                      
+                      {listing.phone && (
+                        <div className="flex items-center justify-between">
+                          <p><span className="font-medium">Phone:</span> {listing.phone}</p>
+                          <a 
+                            href={`tel:${listing.phone}`}
+                            className="inline-flex items-center px-3 py-1 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors"
+                          >
+                            📞 Call
+                          </a>
                         </div>
-                        
-                        <div className="flex items-center justify-between pt-3 border-t border-gray-200">
-                          <div className="flex items-center">
-                            <Star className="h-5 w-5 text-yellow-400 fill-current mr-1" />
-                            <span className="text-base font-bold text-gray-900">
-                              {listing.review_rating || 'N/A'}
-                            </span>
-                            <span className="text-sm text-gray-600 ml-1">
-                              ({listing.number_of_reviews || 0} reviews)
-                            </span>
-                          </div>
-                        </div>
-                        
-                        {listing.category && (
-                          <div className="bg-blue-50 text-blue-800 text-xs font-semibold px-3 py-1.5 rounded-full inline-block">
-                            {listing.category}
-                          </div>
-                        )}
-                      </div>
+                      )}
+                      
+                      {listing.website && (
+                        <p>
+                          <span className="font-medium">Website:</span>{' '}
+                          <a 
+                            href={listing.website.startsWith('http') ? listing.website : `https://${listing.website}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:underline"
+                          >
+                            Visit Website
+                          </a>
+                        </p>
+                      )}
+                      
+                      {listing.review_rating && Number(listing.review_rating) > 0 && (
+                        <p>
+                          <span className="font-medium">Rating:</span> {listing.review_rating}/5 
+                          <span className="ml-1 text-yellow-500">★</span>
+                        </p>
+                      )}
                     </div>
                   </div>
                 ))}
