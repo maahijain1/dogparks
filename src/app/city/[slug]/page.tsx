@@ -18,12 +18,16 @@ export async function generateMetadata({ params }: CityPageProps): Promise<Metad
   const siteName = settings.site_name || 'DirectoryHub'
   const niche = settings.niche || 'Dog Park'
   
+  // Format: "Niche City | Site Name"
+  const title = `${niche} ${cityName}`
+  const description = `Find the best ${niche.toLowerCase()} in ${cityName}. Browse reviews, ratings, and contact information for local businesses.`
+  
   return {
-    title: `${cityName} ${niche}s | ${siteName}`,
-    description: `Find the best ${niche.toLowerCase()}s in ${cityName}. Browse reviews, ratings, and contact information for local businesses.`,
+    title: title,
+    description: description,
     openGraph: {
-      title: `${cityName} ${niche}s | ${siteName}`,
-      description: `Find the best ${niche.toLowerCase()}s in ${cityName}. Browse reviews, ratings, and contact information for local businesses.`,
+      title: title,
+      description: description,
     },
   }
 }

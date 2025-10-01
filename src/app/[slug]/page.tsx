@@ -84,21 +84,25 @@ export async function generateMetadata({ params }: SlugPageProps): Promise<Metad
   // Handle state pages (format: arkansas)
   if (!slug.includes('-')) {
     const stateName = slug.replace(/\b\w/g, l => l.toUpperCase())
+    // Format: "Niche State"
+    const title = `${niche} ${stateName}`
+    const description = `Find the best ${niche.toLowerCase()} in ${stateName}. Discover top-rated ${niche.toLowerCase()}, read reviews, and get contact information.`
+    
     return {
-      title: `${niche}s ${stateName} | ${siteName}`,
-      description: `Find the best ${niche.toLowerCase()}s in ${stateName}. Discover top-rated ${niche.toLowerCase()}s, read reviews, and get contact information.`,
-      keywords: `${niche.toLowerCase()}s, ${stateName}, local ${niche.toLowerCase()}s, ${niche.toLowerCase()} directory, ${stateName} ${niche.toLowerCase()}s`,
+      title: title,
+      description: description,
+      keywords: `${niche.toLowerCase()}, ${stateName}, local ${niche.toLowerCase()}, ${niche.toLowerCase()} directory, ${stateName} ${niche.toLowerCase()}`,
       openGraph: {
-        title: `${niche}s ${stateName}`,
-        description: `Find the best ${niche.toLowerCase()}s in ${stateName}`,
+        title: title,
+        description: description,
         url: `${siteConfig.siteUrl}/${slug}`,
         siteName: siteName,
         type: 'website',
       },
       twitter: {
         card: 'summary_large_image',
-        title: `${niche}s ${stateName}`,
-        description: `Find the best ${niche.toLowerCase()}s in ${stateName}`,
+        title: title,
+        description: description,
       },
       alternates: {
         canonical: `${siteConfig.siteUrl}/${slug}`,

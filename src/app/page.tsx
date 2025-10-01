@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Search, MapPin, Star, Phone, Mail, Menu, X } from 'lucide-react'
+import { Search, MapPin, Star, Phone, Mail, Menu, X, Globe } from 'lucide-react'
 import { Listing, Article, City, State } from '@/types/database'
 import { siteConfig } from '@/lib/config'
 import { getSiteSettings, generateDynamicContent } from '@/lib/dynamic-config'
