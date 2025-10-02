@@ -256,6 +256,7 @@ export default function BusinessesPage() {
         message += `• Imported: ${stats.imported} listings\n`
         message += `• Cities created: ${stats.citiesCreated}\n`
         message += `• Cities matched: ${stats.citiesMatched}\n`
+        message += `• Filtered out: ${stats.filtered || 0} (no phone/website)\n`
         message += `• Skipped: ${stats.skipped} rows\n`
         
         if (stats.errors.length > 0) {
@@ -1195,12 +1196,15 @@ export default function BusinessesPage() {
                     required
                   />
                   <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                    <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">📋 Required CSV Format:</h4>
+                    <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">📋 CSV Format (SAME as Individual City Import):</h4>
                     <p className="text-sm text-blue-800 dark:text-blue-200 mb-2">
-                      <strong>Required columns:</strong> Business, Address
+                      <strong>Required:</strong> Business, Address
                     </p>
                     <p className="text-sm text-blue-800 dark:text-blue-200 mb-2">
-                      <strong>Optional columns:</strong> Category, Review Rating, Number of Reviews, Website, Phone, Email, Featured
+                      <strong>Optional:</strong> Category, Review Ra, Number o, Website, Phone, Email, Featured
+                    </p>
+                    <p className="text-xs text-blue-600 dark:text-blue-400 mb-2">
+                      <strong>⚠️ Important:</strong> Use EXACT same Excel file format as individual city imports
                     </p>
                     <p className="text-xs text-blue-600 dark:text-blue-400">
                       <strong>Address examples:</strong> &quot;123 Main St, Birmingham, AL 35203&quot; or &quot;456 Oak Ave, Mobile, Alabama&quot;

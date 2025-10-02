@@ -111,12 +111,26 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Parse CSV
+    // Parse CSV with the same header mapping as individual city import
     const csvText = await file.text()
     const parseResult = Papa.parse(csvText, {
       header: true,
       skipEmptyLines: true,
-      transformHeader: (header: string) => header.trim()
+      transformHeader: (header) => {
+        // Map CSV headers to our database fields (EXACT SAME as individual city import)
+        const headerMap: { [key: string]: string } = {
+          'Business': 'business',
+          'Category': 'category',
+          'Review Ra': 'review_rating',
+          'Number o': 'number_of_reviews',
+          'Address': 'address',
+          'Website': 'website',
+          'Phone': 'phone',
+          'Email': 'email',
+          'Featured': 'featured'
+        }
+        return headerMap[header] || header.toLowerCase().replace(/\s+/g, '_')
+      }
     })
 
     if (parseResult.errors.length > 0) {
@@ -158,9 +172,10 @@ export async function POST(request: NextRequest) {
       stats.processed++
 
       try {
-        // Extract basic listing data
-        const business = String(row.Business || row.business || row.Name || row.name || '')
-        const address = String(row.Address || row.address || row.Location || row.location || '')
+        // Extract basic listing data using mapped field names
+        const typedRow = row as Record<string, string>
+        const business = typedRow.business || ''
+        const address = typedRow.address || ''
         
         if (!business.trim()) {
           stats.skipped++
@@ -195,17 +210,17 @@ export async function POST(request: NextRequest) {
           continue
         }
 
-        // Prepare listing data
+        // Prepare listing data using mapped field names (EXACT SAME as individual city import)
         const listingData = {
           business: business.trim(),
-          category: String(row.Category || row.category || 'Business').trim(),
-          review_rating: parseFloat(String(row['Review Rating'] || row.review_rating || row.rating || '0')) || 0,
-          number_of_reviews: parseInt(String(row['Number of Reviews'] || row.number_of_reviews || row.reviews || '0')) || 0,
+          category: typedRow.category || 'Business',
+          review_rating: parseFloat(typedRow.review_rating) || 0,
+          number_of_reviews: parseInt(typedRow.number_of_reviews) || 0,
           address: address.trim(),
-          website: String(row.Website || row.website || row.url || '').trim(),
-          phone: String(row.Phone || row.phone || row.telephone || '').trim(),
-          email: String(row.Email || row.email || '').trim(),
-          featured: ['true', '1', 'yes', 'featured'].includes(String(row.Featured || row.featured || '').toLowerCase()),
+          website: typedRow.website || '',
+          phone: typedRow.phone || '',
+          email: typedRow.email || '',
+          featured: typedRow.featured === 'true' || typedRow.featured === '1' || typedRow.featured === 'yes' || false,
           extractedCity: normalizedCityName,
           originalRow: index + 1
         }
@@ -249,12 +264,12 @@ export async function POST(request: NextRequest) {
       console.log(`Successfully created ${stats.citiesCreated} cities`)
     }
 
-    // Third pass: Import listings with correct city_ids
-    const validListings = []
+    // Third pass: Import listings with correct city_ids and apply same filtering as individual city import
+    const allValidListings = []
     for (const listing of listingsToImport) {
       const cityId = cityMap.get(listing.extractedCity)
       if (cityId) {
-        validListings.push({
+        allValidListings.push({
           business: listing.business,
           category: listing.category,
           review_rating: listing.review_rating,
@@ -270,6 +285,18 @@ export async function POST(request: NextRequest) {
         stats.skipped++
         stats.errors.push(`Row ${listing.originalRow}: City "${listing.extractedCity}" still not found after processing`)
       }
+    }
+
+    // Filter out listings that don't have either phone or website (SAME AS individual city import)
+    const validListings = allValidListings.filter((listing) => {
+      const hasPhone = listing.phone && listing.phone.trim() !== ''
+      const hasWebsite = listing.website && listing.website.trim() !== ''
+      return hasPhone || hasWebsite
+    })
+
+    const filteredCount = allValidListings.length - validListings.length
+    if (filteredCount > 0) {
+      console.log(`Filtered out ${filteredCount} listings without phone/website`)
     }
 
     // Import all valid listings
@@ -298,7 +325,8 @@ export async function POST(request: NextRequest) {
       stats: {
         ...stats,
         state: stateData.name,
-        totalCities: cityMap.size
+        totalCities: cityMap.size,
+        filtered: filteredCount
       }
     }, { status: 200 })
 
