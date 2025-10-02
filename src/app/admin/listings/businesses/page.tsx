@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from "next/link";
-import { ArrowLeft, Plus, Edit, Trash2, Upload, Building2, X } from "lucide-react";
+import { ArrowLeft, Plus, Edit, Trash2, Upload, Building2, X, Star, StarOff } from "lucide-react";
 
 // Cache settings are handled by admin layout
 import { Listing, City, State } from '@/types/database'
@@ -40,6 +40,7 @@ export default function BusinessesPage() {
   })
   const stateFileInputRef = useRef<HTMLInputElement>(null)
   const [states, setStates] = useState<State[]>([])
+  const [autoFeaturedProcessing, setAutoFeaturedProcessing] = useState(false)
   const [cityListingCounts, setCityListingCounts] = useState<{[key: string]: number}>({})
   const [selectedCityFilter, setSelectedCityFilter] = useState<string>('')
   const [currentPage, setCurrentPage] = useState(1)
@@ -461,6 +462,62 @@ export default function BusinessesPage() {
     }
   }
 
+  // Handle auto-featured selection
+  const handleAutoFeatured = async (action: 'select' | 'clear', cityId?: string, stateId?: string) => {
+    const actionText = action === 'select' ? 'selecting' : 'clearing'
+    const scopeText = cityId ? 'city' : stateId ? 'state' : 'all cities'
+    
+    const confirmed = window.confirm(
+      `Are you sure you want to ${action === 'select' ? 'auto-select 3 random featured listings' : 'clear all featured listings'} for ${scopeText}?\n\n` +
+      `This will ${action === 'select' ? 'make listings featured' : 'remove featured status from listings'} automatically.`
+    )
+    
+    if (!confirmed) return
+
+    setAutoFeaturedProcessing(true)
+    
+    try {
+      const response = await fetch('/api/listings/auto-featured', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, cityId, stateId })
+      })
+
+      if (response.ok) {
+        const result = await response.json()
+        const stats = result.stats
+        
+        let message = `🎉 Auto-Featured ${action === 'select' ? 'Selection' : 'Clearing'} Completed!\n\n`
+        message += `📊 SUMMARY:\n`
+        message += `• Cities processed: ${stats.citiesProcessed}\n`
+        message += `• Listings updated: ${stats.listingsUpdated}\n`
+        message += `• Cities with listings: ${stats.citiesWithListings}\n`
+        message += `• Cities without listings: ${stats.citiesWithoutListings}\n`
+        
+        if (stats.errors.length > 0) {
+          message += `\n⚠️ ISSUES (first 3):\n`
+          stats.errors.slice(0, 3).forEach((error: string) => {
+            message += `• ${error}\n`
+          })
+          if (stats.errors.length > 3) {
+            message += `• ... and ${stats.errors.length - 3} more issues\n`
+          }
+        }
+        
+        alert(message)
+        await fetchListings() // Refresh the listings
+      } else {
+        const error = await response.json()
+        alert(`Auto-featured ${actionText} failed: ${error.error}\n\nDetails: ${error.details || 'Unknown error'}`)
+      }
+    } catch (error) {
+      console.error(`Error ${actionText} auto-featured:`, error)
+      alert(`Auto-featured ${actionText} failed. Please try again.`)
+    } finally {
+      setAutoFeaturedProcessing(false)
+    }
+  }
+
   // Handle delete
   const handleDelete = async (id: string) => {
     console.log('Delete button clicked for listing ID:', id)
@@ -559,8 +616,132 @@ export default function BusinessesPage() {
               </button>
             </div>
           </div>
+          
+          {/* Auto-Featured Controls */}
+          <div className="mt-4 flex flex-wrap gap-3 justify-center">
+            <button
+              onClick={() => handleAutoFeatured('select')}
+              disabled={autoFeaturedProcessing}
+              className="inline-flex items-center px-4 py-2 bg-yellow-600 text-white font-medium rounded-lg hover:bg-yellow-700 disabled:opacity-50 transition-colors cursor-pointer"
+            >
+              <Star className="w-4 h-4 mr-2" />
+              {autoFeaturedProcessing ? 'Processing...' : '⭐ Auto-Select Featured (All Cities)'}
+            </button>
+            <button
+              onClick={() => handleAutoFeatured('clear')}
+              disabled={autoFeaturedProcessing}
+              className="inline-flex items-center px-4 py-2 bg-gray-600 text-white font-medium rounded-lg hover:bg-gray-700 disabled:opacity-50 transition-colors cursor-pointer"
+            >
+              <StarOff className="w-4 h-4 mr-2" />
+              {autoFeaturedProcessing ? 'Processing...' : '🚫 Clear All Featured'}
+            </button>
+          </div>
         </div>
 
+        {/* Search and Controls */}
+        <div className="mb-8 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+          <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+            <div className="flex-1 max-w-md">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Search Listings
+              </label>
+              <input
+                type="text"
+                placeholder="Search by business name, category, phone, city, or state..."
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value)
+                  setCurrentPage(1) // Reset to first page when searching
+                }}
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              />
+            </div>
+            <div className="flex gap-4 items-end">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Items per page
+                </label>
+                <select
+                  value={itemsPerPage}
+                  onChange={(e) => {
+                    setItemsPerPage(Number(e.target.value))
+                    setCurrentPage(1) // Reset to first page when changing items per page
+                  }}
+                  className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white cursor-pointer"
+                >
+                  <option value={10}>10</option>
+                  <option value={25}>25</option>
+                  <option value={50}>50</option>
+                  <option value={100}>100</option>
+                </select>
+              </div>
+              {(searchTerm || selectedCityFilter) && (
+                <button
+                  onClick={() => {
+                    setSearchTerm('')
+                    setSelectedCityFilter('')
+                    setCurrentPage(1)
+                  }}
+                  className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors cursor-pointer"
+                >
+                  Clear All Filters
+                </button>
+              )}
+            </div>
+          </div>
+          {(searchTerm || selectedCityFilter) && (
+            <div className="mt-4 text-sm text-gray-600 dark:text-gray-400">
+              {filteredListings.length} of {listings.length} listings match your filters
+              {searchTerm && <span className="ml-2 px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded">Search: &quot;{searchTerm}&quot;</span>}
+              {selectedCityFilter && <span className="ml-2 px-2 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded">City: {cities.find(c => c.id === selectedCityFilter)?.name}</span>}
+            </div>
+          )}
+        </div>
+
+        {/* Summary Stats */}
+        <div className="mb-8 grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <div className="flex items-center">
+              <Building2 className="h-8 w-8 text-blue-600 mr-3" />
+              <div>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Listings</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{listings.length}</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <div className="flex items-center">
+              <Building2 className="h-8 w-8 text-green-600 mr-3" />
+              <div>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Cities with Listings</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{Object.keys(cityListingCounts).length}</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <div className="flex items-center">
+              <Building2 className="h-8 w-8 text-purple-600 mr-3" />
+              <div>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Featured Listings</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {listings.filter(listing => listing.featured).length}
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <div className="flex items-center">
+              <Building2 className="h-8 w-8 text-orange-600 mr-3" />
+              <div>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Max Featured per City</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">3</p>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* Search and Controls */}
         <div className="mb-8 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">

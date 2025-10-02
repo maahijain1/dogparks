@@ -2,6 +2,20 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 import Papa from 'papaparse'
 
+interface ListingData {
+  business: string
+  category: string
+  review_rating: number
+  number_of_reviews: number
+  address: string
+  website: string
+  phone: string
+  email: string
+  featured: boolean
+  extractedCity: string
+  originalRow: number
+}
+
 // City name variations and corrections
 const CITY_CORRECTIONS: { [key: string]: string } = {
   // Common abbreviations and variations
@@ -112,7 +126,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const rows = parseResult.data as any[]
+    const rows = parseResult.data as Record<string, unknown>[]
     console.log(`Processing ${rows.length} rows from CSV for state: ${stateData.name}`)
 
     // Get existing cities for this state
@@ -137,7 +151,7 @@ export async function POST(request: NextRequest) {
     }
 
     const newCities = new Set<string>() // Track cities we need to create
-    const listingsToImport: any[] = []
+    const listingsToImport: ListingData[] = []
 
     // First pass: analyze all rows and collect city information
     for (const [index, row] of rows.entries()) {
@@ -145,8 +159,8 @@ export async function POST(request: NextRequest) {
 
       try {
         // Extract basic listing data
-        const business = row.Business || row.business || row.Name || row.name || ''
-        const address = row.Address || row.address || row.Location || row.location || ''
+        const business = String(row.Business || row.business || row.Name || row.name || '')
+        const address = String(row.Address || row.address || row.Location || row.location || '')
         
         if (!business.trim()) {
           stats.skipped++
@@ -184,13 +198,13 @@ export async function POST(request: NextRequest) {
         // Prepare listing data
         const listingData = {
           business: business.trim(),
-          category: (row.Category || row.category || 'Business').trim(),
-          review_rating: parseFloat(row['Review Rating'] || row.review_rating || row.rating || '0') || 0,
-          number_of_reviews: parseInt(row['Number of Reviews'] || row.number_of_reviews || row.reviews || '0') || 0,
+          category: String(row.Category || row.category || 'Business').trim(),
+          review_rating: parseFloat(String(row['Review Rating'] || row.review_rating || row.rating || '0')) || 0,
+          number_of_reviews: parseInt(String(row['Number of Reviews'] || row.number_of_reviews || row.reviews || '0')) || 0,
           address: address.trim(),
-          website: (row.Website || row.website || row.url || '').trim(),
-          phone: (row.Phone || row.phone || row.telephone || '').trim(),
-          email: (row.Email || row.email || '').trim(),
+          website: String(row.Website || row.website || row.url || '').trim(),
+          phone: String(row.Phone || row.phone || row.telephone || '').trim(),
+          email: String(row.Email || row.email || '').trim(),
           featured: ['true', '1', 'yes', 'featured'].includes(String(row.Featured || row.featured || '').toLowerCase()),
           extractedCity: normalizedCityName,
           originalRow: index + 1
