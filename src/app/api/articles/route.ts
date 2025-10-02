@@ -55,8 +55,8 @@ export async function POST(request: NextRequest) {
     if (error) throw error
 
     return NextResponse.json(data, { status: 201 })
-  } catch (_error) {
-    console.error('Error creating article:', _error)
+  } catch (error) {
+    console.error('Error creating article:', error)
     return NextResponse.json(
       { error: 'Failed to create article' },
       { status: 500 }

@@ -26,7 +26,8 @@ export async function PUT(
     if (error) throw error
 
     return NextResponse.json(data)
-  } catch (_error) {
+  } catch (error) {
+    console.error('Error updating state:', error)
     return NextResponse.json(
       { error: 'Failed to update state' },
       { status: 500 }
