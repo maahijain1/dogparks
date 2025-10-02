@@ -36,22 +36,6 @@ export default async function CityPage({ params }: CityPageProps) {
   const { slug } = await params
   const cityName = slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
   
-  // Check if this slug is actually a state name that should redirect
-  const { data: stateCheck } = await supabase
-    .from('states')
-    .select('name')
-    .ilike('name', cityName)
-    .single()
-  
-  if (stateCheck) {
-    // This is a state, not a city - redirect to proper state URL
-    const settings = await getSiteSettings()
-    const niche = settings.niche || 'Dog Park'
-    const nicheSlug = niche.toLowerCase().replace(/\s+/g, '-')
-    
-    const { redirect } = await import('next/navigation')
-    redirect(`/${nicheSlug}-${slug}`)
-  }
   
   
   console.log('=== CITY PAGE DEBUG ===')

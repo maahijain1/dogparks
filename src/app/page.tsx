@@ -26,6 +26,7 @@ export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCity, setSelectedCity] = useState('')
   const [cities, setCities] = useState<(City & { states: State })[]>([])
+  const [states, setStates] = useState<State[]>([])
   const [featuredListings, setFeaturedListings] = useState<(Listing & { cities: City & { states: State } })[]>([])
   const [allListings, setAllListings] = useState<(Listing & { cities: City & { states: State } })[]>([])
   const [latestArticles, setLatestArticles] = useState<Article[]>([])
@@ -120,7 +121,8 @@ export default function HomePage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [citiesRes, allListingsRes, articlesRes] = await Promise.all([
+        const [statesRes, citiesRes, allListingsRes, articlesRes] = await Promise.all([
+          fetch('/api/states', { cache: 'no-store' }),
           fetch('/api/cities', { cache: 'no-store' }),
           fetch('/api/listings', { cache: 'no-store' }),
           fetch('/api/articles?published=true', { cache: 'no-store' })
@@ -139,12 +141,14 @@ export default function HomePage() {
           featuredRes = null
         }
 
+        const statesData = await statesRes.json()
         const citiesData = await citiesRes.json()
         const featuredData = featuredRes ? await featuredRes.json() : []
         const allListingsData = await allListingsRes.json()
         const articlesData = await articlesRes.json()
         
 
+        setStates(Array.isArray(statesData) ? statesData : [])
         setCities(Array.isArray(citiesData) ? citiesData : [])
         
         // If featured listings API fails or returns empty, filter featured from all listings
@@ -604,44 +608,22 @@ export default function HomePage() {
           </div>
 
           <div className="flex flex-wrap gap-4 justify-center">
-            {(() => {
-              const states = cities.reduce((states, city) => {
-                const existingState = states.find(s => s.id === city.states?.id)
-                if (existingState) {
-                  existingState.cities.push(city)
-                  existingState.totalListings += allListings.filter(listing => listing.city_id === city.id).length
-                } else if (city.states) {
-                  states.push({
-                    id: city.states.id,
-                    name: city.states.name,
-                    cities: [city],
-                    totalListings: allListings.filter(listing => listing.city_id === city.id).length
-                  })
-                }
-                return states
-              }, [] as Array<{id: string, name: string, cities: Array<{id: string, name: string}>, totalListings: number}>)
-              
-              
-              // If no states found from cities, show a message
-              if (states.length === 0 && cities.length > 0) {
-                return (
-                  <div className="col-span-full text-center py-12">
-                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <MapPin className="h-8 w-8 text-gray-400" />
-                    </div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">States Not Linked</h3>
-                    <p className="text-gray-600 mb-4">Cities exist but are not linked to states. Please check your admin panel.</p>
-                    <Link 
-                      href="/admin/listings/cities" 
-                      className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                      Fix City-States Links
-                    </Link>
-                  </div>
-                )
-              }
-              
-              return states.map((state) => {
+            {states.length === 0 ? (
+              <div className="col-span-full text-center py-12">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <MapPin className="h-8 w-8 text-gray-400" />
+                </div>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No States Found</h3>
+                <p className="text-gray-600 mb-4">Create states in the admin panel to get started.</p>
+                <Link 
+                  href="/admin/listings/states" 
+                  className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Add States
+                </Link>
+              </div>
+            ) : (
+              states.map((state) => {
                 const stateUrl = `/${dynamicSettings.niche.toLowerCase().replace(/\s+/g, '-')}-${state.name.toLowerCase().replace(/\s+/g, '-')}`
                 console.log('State link generated:', state.name, '→', stateUrl)
                 
@@ -655,7 +637,7 @@ export default function HomePage() {
                   </Link>
                 )
               })
-            })()}
+            )}
           </div>
 
           {cities.length === 0 && (
