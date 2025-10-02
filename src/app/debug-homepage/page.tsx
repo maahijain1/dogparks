@@ -3,8 +3,21 @@
 import { useState, useEffect } from 'react'
 
 export default function DebugHomepage() {
-  const [states, setStates] = useState<any[]>([])
-  const [cities, setCities] = useState<any[]>([])
+  interface StateType {
+    id: string
+    name: string
+  }
+  
+  interface CityType {
+    id: string
+    name: string
+    states?: {
+      name: string
+    }
+  }
+
+  const [states, setStates] = useState<StateType[]>([])
+  const [cities, setCities] = useState<CityType[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -50,7 +63,7 @@ export default function DebugHomepage() {
               <p className="text-red-600">❌ NO STATES LOADED!</p>
             ) : (
               <div className="space-y-2">
-                {states.map((state: any, index: number) => (
+                {states.map((state, index: number) => (
                   <div key={index} className="p-2 border rounded">
                     <p><strong>Name:</strong> {state.name}</p>
                     <p><strong>ID:</strong> {state.id}</p>
@@ -67,7 +80,7 @@ export default function DebugHomepage() {
               <p className="text-red-600">❌ NO CITIES LOADED!</p>
             ) : (
               <div className="space-y-2 max-h-96 overflow-y-auto">
-                {cities.slice(0, 10).map((city: any, index: number) => (
+                {cities.slice(0, 10).map((city, index: number) => (
                   <div key={index} className="p-2 border rounded text-sm">
                     <p><strong>Name:</strong> {city.name}</p>
                     <p><strong>State:</strong> {city.states?.name || 'No State'}</p>
@@ -83,7 +96,7 @@ export default function DebugHomepage() {
           <ol className="list-decimal list-inside space-y-2">
             <li>Check if states are loading properly above</li>
             <li>If no states, create them in admin panel</li>
-            <li>If states exist but homepage still wrong, there's another link section</li>
+            <li>If states exist but homepage still wrong, there&apos;s another link section</li>
             <li>Check browser console for state link generation logs</li>
           </ol>
         </div>
