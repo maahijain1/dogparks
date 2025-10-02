@@ -460,6 +460,28 @@ export default async function SlugPage({ params }: SlugPageProps) {
           </div>
         </section>
 
+        {/* Cities Section - Right after the heading */}
+        {cities.length > 0 && (
+          <section className="py-16 bg-gray-50">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <h2 className="text-3xl font-bold text-center mb-12">
+                Cities in {stateName}
+              </h2>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {cities.map((city) => (
+                  <Link
+                    key={city.id}
+                    href={`/city/${city.name.toLowerCase().replace(/\s+/g, '-')}`}
+                    className="bg-blue-50 hover:bg-blue-100 text-blue-800 px-4 py-3 rounded-lg text-center transition-colors"
+                  >
+                    {city.name}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
         {/* Featured Listings Section */}
         {stateListings.filter(listing => listing.featured).length > 0 && (
           <section className="py-16 bg-white">
@@ -585,28 +607,6 @@ export default async function SlugPage({ params }: SlugPageProps) {
                       )}
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* Cities Section */}
-        {cities.length > 0 && (
-          <section className="py-16 bg-white">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <h2 className="text-3xl font-bold text-center mb-12">
-                Cities in {stateName}
-              </h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {cities.map((city) => (
-                  <Link
-                    key={city.id}
-                    href={`/city/${city.name.toLowerCase().replace(/\s+/g, '-')}`}
-                    className="bg-blue-50 hover:bg-blue-100 text-blue-800 px-4 py-3 rounded-lg text-center transition-colors"
-                  >
-                    {city.name}
-                  </Link>
                 ))}
               </div>
             </div>
