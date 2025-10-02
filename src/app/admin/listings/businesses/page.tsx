@@ -14,6 +14,7 @@ export default function BusinessesPage() {
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [showImportModal, setShowImportModal] = useState(false)
+  const [showStateImportModal, setShowStateImportModal] = useState(false)
   const [editingListing, setEditingListing] = useState<Listing | null>(null)
   const [importing, setImporting] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -33,6 +34,12 @@ export default function BusinessesPage() {
   const [importFormData, setImportFormData] = useState({
     city_id: ''
   })
+  const [stateImportFormData, setStateImportFormData] = useState({
+    state_id: '',
+    auto_create_cities: true
+  })
+  const stateFileInputRef = useRef<HTMLInputElement>(null)
+  const [states, setStates] = useState<State[]>([])
   const [cityListingCounts, setCityListingCounts] = useState<{[key: string]: number}>({})
   const [selectedCityFilter, setSelectedCityFilter] = useState<string>('')
   const [currentPage, setCurrentPage] = useState(1)
@@ -118,10 +125,33 @@ export default function BusinessesPage() {
     }
   }, [])
 
+  const fetchStates = useCallback(async () => {
+    try {
+      console.log('🔄 Fetching states...')
+      const response = await fetch('/api/states', { 
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      })
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      const data = await response.json()
+      console.log('✅ Fetched', data.length, 'states')
+      setStates(Array.isArray(data) ? data : [])
+    } catch (error) {
+      console.error('❌ Error fetching states:', error)
+      setStates([])
+    }
+  }, [])
+
   useEffect(() => {
     fetchListings()
     fetchCities()
-  }, [fetchListings, fetchCities])
+    fetchStates()
+  }, [fetchListings, fetchCities, fetchStates])
 
 
 
@@ -185,6 +215,72 @@ export default function BusinessesPage() {
       alert(`Error saving listing: ${error instanceof Error ? error.message : 'Unknown error'}`)
     } finally {
       setSubmitting(false)
+    }
+  }
+
+  // Handle State CSV import
+  const handleStateCSVImport = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    const file = stateFileInputRef.current?.files?.[0]
+    const stateId = stateImportFormData.state_id
+    const autoCreateCities = stateImportFormData.auto_create_cities
+
+    if (!file || !stateId) {
+      alert('Please select a CSV file and a state')
+      return
+    }
+
+    setImporting(true)
+    
+    try {
+      const formDataToSend = new FormData()
+      formDataToSend.append('file', file)
+      formDataToSend.append('stateId', stateId)
+      formDataToSend.append('autoCreateCities', autoCreateCities.toString())
+
+      const response = await fetch('/api/listings/import-state', {
+        method: 'POST',
+        body: formDataToSend
+      })
+
+      if (response.ok) {
+        const result = await response.json()
+        const stats = result.stats
+        
+        let message = `🎉 State Import Completed!\n\n`
+        message += `📊 SUMMARY:\n`
+        message += `• State: ${stats.state}\n`
+        message += `• Processed: ${stats.processed} rows\n`
+        message += `• Imported: ${stats.imported} listings\n`
+        message += `• Cities created: ${stats.citiesCreated}\n`
+        message += `• Cities matched: ${stats.citiesMatched}\n`
+        message += `• Skipped: ${stats.skipped} rows\n`
+        
+        if (stats.errors.length > 0) {
+          message += `\n⚠️ ISSUES (first 5):\n`
+          stats.errors.slice(0, 5).forEach((error: string) => {
+            message += `• ${error}\n`
+          })
+          if (stats.errors.length > 5) {
+            message += `• ... and ${stats.errors.length - 5} more issues\n`
+          }
+        }
+        
+        alert(message)
+        await fetchListings()
+        await fetchCities() // Refresh cities if new ones were created
+        setShowStateImportModal(false)
+        setStateImportFormData({ state_id: '', auto_create_cities: true })
+      } else {
+        const error = await response.json()
+        alert(`Import failed: ${error.error}\n\nDetails: ${error.details || 'Unknown error'}`)
+      }
+    } catch (error) {
+      console.error('Error importing state CSV:', error)
+      alert('Import failed. Please try again.')
+    } finally {
+      setImporting(false)
     }
   }
 
@@ -444,6 +540,13 @@ export default function BusinessesPage() {
               >
                 <Upload className="w-5 h-5 mr-2" />
                 Import CSV
+              </button>
+              <button
+                onClick={() => setShowStateImportModal(true)}
+                className="inline-flex items-center px-6 py-3 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors cursor-pointer"
+              >
+                <Upload className="w-5 h-5 mr-2" />
+                🚀 Import Entire State
               </button>
               <button
                 onClick={() => {
@@ -851,6 +954,116 @@ export default function BusinessesPage() {
                     className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50"
                   >
                     {submitting ? 'Saving...' : (editingListing ? 'Update' : 'Add')} Listing
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* State Import Modal */}
+        {showStateImportModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-8 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+                🚀 Import Entire State
+              </h2>
+              <div className="mb-6 p-4 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg">
+                <h3 className="font-bold text-purple-900 dark:text-purple-100 mb-2">✨ Smart Auto-Import Features:</h3>
+                <ul className="text-sm text-purple-800 dark:text-purple-200 space-y-1">
+                  <li>• 🏙️ <strong>Auto-detects cities</strong> from business addresses</li>
+                  <li>• 🆕 <strong>Creates missing cities</strong> automatically</li>
+                  <li>• 📍 <strong>Matches existing cities</strong> intelligently</li>
+                  <li>• 🔄 <strong>Handles variations</strong> (St. → Saint, Mt. → Mount)</li>
+                  <li>• 📊 <strong>Detailed import report</strong> with statistics</li>
+                </ul>
+              </div>
+              
+              <form onSubmit={handleStateCSVImport}>
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Select State *
+                  </label>
+                  <select
+                    value={stateImportFormData.state_id}
+                    onChange={(e) => setStateImportFormData({ ...stateImportFormData, state_id: e.target.value })}
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white cursor-pointer"
+                    required
+                  >
+                    <option value="">Select a state to import listings for</option>
+                    {states.map((state) => (
+                      <option key={state.id} value={state.id}>
+                        {state.name}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-sm text-gray-500 mt-2">
+                    All listings will be automatically sorted into cities within this state.
+                  </p>
+                </div>
+
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    CSV File with Addresses *
+                  </label>
+                  <input
+                    ref={stateFileInputRef}
+                    type="file"
+                    accept=".csv"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                    required
+                  />
+                  <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                    <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">📋 Required CSV Format:</h4>
+                    <p className="text-sm text-blue-800 dark:text-blue-200 mb-2">
+                      <strong>Required columns:</strong> Business, Address
+                    </p>
+                    <p className="text-sm text-blue-800 dark:text-blue-200 mb-2">
+                      <strong>Optional columns:</strong> Category, Review Rating, Number of Reviews, Website, Phone, Email, Featured
+                    </p>
+                    <p className="text-xs text-blue-600 dark:text-blue-400">
+                      <strong>Address examples:</strong> &quot;123 Main St, Birmingham, AL 35203&quot; or &quot;456 Oak Ave, Mobile, Alabama&quot;
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mb-6">
+                  <label className="flex items-center space-x-3">
+                    <input
+                      type="checkbox"
+                      checked={stateImportFormData.auto_create_cities}
+                      onChange={(e) => setStateImportFormData({ ...stateImportFormData, auto_create_cities: e.target.checked })}
+                      className="w-5 h-5 text-purple-600 bg-gray-100 border-gray-300 rounded focus:ring-purple-500 focus:ring-2 cursor-pointer"
+                    />
+                    <div>
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        🏗️ Auto-create missing cities (Recommended)
+                      </span>
+                      <p className="text-xs text-gray-500 mt-1">
+                        If enabled, new cities will be created automatically when found in addresses. 
+                        If disabled, listings with unknown cities will be skipped.
+                      </p>
+                    </div>
+                  </label>
+                </div>
+
+                <div className="flex gap-4">
+                  <button
+                    type="submit"
+                    disabled={importing}
+                    className="flex-1 bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 cursor-pointer font-medium"
+                  >
+                    {importing ? '🔄 Processing State...' : '🚀 Import Entire State'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowStateImportModal(false)
+                      setStateImportFormData({ state_id: '', auto_create_cities: true })
+                    }}
+                    className="flex-1 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 py-3 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors cursor-pointer font-medium"
+                  >
+                    Cancel
                   </button>
                 </div>
               </form>
