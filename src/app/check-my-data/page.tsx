@@ -4,8 +4,21 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
 export default function CheckMyDataPage() {
-  const [states, setStates] = useState<Array<{id: string, name: string}>>([])
-  const [cities, setCities] = useState<Array<{id: string, name: string, states?: {name: string}}>>([])
+  interface StateType {
+    id: string
+    name: string
+  }
+  
+  interface CityType {
+    id: string
+    name: string
+    states?: {
+      name: string
+    }
+  }
+
+  const [states, setStates] = useState<StateType[]>([])
+  const [cities, setCities] = useState<CityType[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
