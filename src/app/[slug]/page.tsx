@@ -1,7 +1,7 @@
 import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, MapPin, Phone, Globe } from 'lucide-react'
 import { siteConfig } from '@/lib/config'
 import { Metadata } from 'next'
 import { supabase } from '@/lib/supabase'
@@ -190,7 +190,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
           article = articles.find((a: { slug: string }) => a.slug === slug)
           articleError = null
         }
-      } catch (_apiError) {
+      } catch {
       }
     }
     
@@ -241,7 +241,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
         </div>
       )
     }
-  } catch (_error) {
+  } catch {
     // Error fetching article
   }
   
@@ -313,7 +313,16 @@ export default async function SlugPage({ params }: SlugPageProps) {
     
     // Fetch cities for this state and listings
     let cities: Array<{id: string, name: string}> = []
-    let stateListings: any[] = []
+    let stateListings: Array<{
+      id: string
+      business: string
+      featured: boolean
+      review_rating: number | string
+      address?: string
+      phone?: string
+      website?: string
+      cities?: { name: string }
+    }> = []
     
     try {
       // First, try exact match
@@ -401,7 +410,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
           console.log('❌ No cities found for state_id:', stateData.id)
           
           // Debug: Check if any cities exist at all
-          const { data: allCities, error: allCitiesError } = await supabase
+          const { data: allCities } = await supabase
             .from('cities')
             .select('id, name, state_id')
             .limit(10)

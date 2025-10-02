@@ -15,7 +15,6 @@ export async function generateMetadata({ params }: CityPageProps): Promise<Metad
   
   // Get dynamic settings
   const settings = await getSiteSettings()
-  const siteName = settings.site_name || 'DirectoryHub'
   const niche = settings.niche || 'Dog Park'
   
   // Format: "Niche City | Site Name"
