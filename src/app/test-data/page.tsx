@@ -15,7 +15,13 @@ interface City {
 }
 
 export default function TestDataPage() {
-  const [data, setData] = useState<any>(null)
+  const [data, setData] = useState<{
+    states: State[]
+    statesCount: number
+    cities: City[]
+    citiesCount: number
+    citiesByState: Record<string, string[]>
+  } | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
