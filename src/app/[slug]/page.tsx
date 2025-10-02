@@ -303,8 +303,11 @@ export default async function SlugPage({ params }: SlugPageProps) {
     // Clean up parentheses and extra spaces
     stateName = stateName.replace(/\s*\([^)]*\)\s*/g, '').trim()
     
-    console.log('=== STATE PAGE ===')
+    console.log('=== STATE PAGE DEBUG ===')
     console.log('URL slug:', slug)
+    console.log('Niche slug:', nicheSlug)
+    console.log('Niche parts:', nicheParts)
+    console.log('URL parts:', parts)
     console.log('Original state name:', parts.slice(nicheParts.length).join('-'))
     console.log('Cleaned state name:', stateName)
     console.log('Looking for cities in state:', stateName)
@@ -381,16 +384,31 @@ export default async function SlugPage({ params }: SlugPageProps) {
         .select('id, name')
         .eq('state_id', stateData.id)
       
-      if (!citiesError && stateCities) {
+      if (citiesError) {
+        console.error('Cities query error:', citiesError)
+      } else {
         console.log('Raw state cities data:', stateCities)
-        cities = stateCities.map(city => ({
-          id: city.id,
-          name: city.name
-        }))
-        console.log('Found cities in state:', cities.map(c => c.name))
-        console.log('Cities count:', cities.length)
+        console.log('Cities data length:', stateCities?.length || 0)
         
-        // Note: Listings are not shown on state pages - only on individual city pages
+        if (stateCities && stateCities.length > 0) {
+          cities = stateCities.map(city => ({
+            id: city.id,
+            name: city.name
+          }))
+          console.log('✅ Found cities in state:', cities.map(c => c.name))
+          console.log('✅ Cities count:', cities.length)
+        } else {
+          console.log('❌ No cities found for state_id:', stateData.id)
+          
+          // Debug: Check if any cities exist at all
+          const { data: allCities, error: allCitiesError } = await supabase
+            .from('cities')
+            .select('id, name, state_id')
+            .limit(10)
+          
+          console.log('Debug - Sample cities in database:', allCities)
+          console.log('Debug - Cities with matching state_id:', allCities?.filter(c => c.state_id === stateData.id))
+        }
       }
     } catch (error) {
       console.error('Error fetching state data:', error)
