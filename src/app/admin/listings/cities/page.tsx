@@ -197,7 +197,7 @@ export default function CitiesPage() {
                   setBulkCities('')
                   setBulkStateId('')
                 }}
-                className="inline-flex items-center px-6 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors"
+                className="inline-flex items-center px-6 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors cursor-pointer"
               >
                 <Plus className="w-5 h-5 mr-2" />
                 Bulk Add Cities
@@ -208,7 +208,7 @@ export default function CitiesPage() {
                   setEditingCity(null)
                   setFormData({ name: '', state_id: '' })
                 }}
-                className="inline-flex items-center px-6 py-3 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors"
+                className="inline-flex items-center px-6 py-3 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors cursor-pointer"
               >
                 <Plus className="w-5 h-5 mr-2" />
                 Add City
@@ -326,7 +326,7 @@ export default function CitiesPage() {
                   <button
                     type="submit"
                     disabled={bulkSubmitting}
-                    className="flex-1 bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+                    className="flex-1 bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium cursor-pointer"
                   >
                     {bulkSubmitting ? 'Creating Cities...' : 'Create All Cities'}
                   </button>
@@ -337,7 +337,7 @@ export default function CitiesPage() {
                       setBulkCities('')
                       setBulkStateId('')
                     }}
-                    className="flex-1 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 py-3 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors"
+                    className="flex-1 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 py-3 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors cursor-pointer"
                   >
                     Cancel
                   </button>

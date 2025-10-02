@@ -177,7 +177,7 @@ export default function StatesPage() {
                   setShowBulkForm(true)
                   setBulkStates('')
                 }}
-                className="inline-flex items-center px-6 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors"
+                className="inline-flex items-center px-6 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors cursor-pointer"
               >
                 <Plus className="w-5 h-5 mr-2" />
                 Bulk Add States
@@ -188,7 +188,7 @@ export default function StatesPage() {
                   setEditingState(null)
                   setFormData({ name: '' })
                 }}
-                className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+                className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
               >
                 <Plus className="w-5 h-5 mr-2" />
                 Add State
@@ -270,7 +270,7 @@ export default function StatesPage() {
                   <button
                     type="submit"
                     disabled={bulkSubmitting}
-                    className="flex-1 bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+                    className="flex-1 bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium cursor-pointer"
                   >
                     {bulkSubmitting ? 'Creating States...' : 'Create All States'}
                   </button>
@@ -280,7 +280,7 @@ export default function StatesPage() {
                       setShowBulkForm(false)
                       setBulkStates('')
                     }}
-                    className="flex-1 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 py-3 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors"
+                    className="flex-1 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 py-3 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors cursor-pointer"
                   >
                     Cancel
                   </button>
