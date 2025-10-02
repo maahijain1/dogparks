@@ -36,7 +36,8 @@ export default function BusinessesPage() {
   const [cityListingCounts, setCityListingCounts] = useState<{[key: string]: number}>({})
   const [selectedCityFilter, setSelectedCityFilter] = useState<string>('')
   const [currentPage, setCurrentPage] = useState(1)
-  const [itemsPerPage] = useState(50) // 50 listings per page
+  const [itemsPerPage, setItemsPerPage] = useState(25) // Default 25 listings per page
+  const [searchTerm, setSearchTerm] = useState('')
 
   // Calculate listing counts per city
   const calculateCityCounts = (listings: (Listing & { cities: City & { states: State } })[]) => {
@@ -48,10 +49,18 @@ export default function BusinessesPage() {
     setCityListingCounts(counts)
   }
 
-  // Filter listings by selected city
-  const filteredListings = selectedCityFilter 
-    ? listings.filter(listing => listing.city_id === selectedCityFilter)
-    : listings
+  // Filter listings by selected city and search term
+  const filteredListings = listings.filter(listing => {
+    const matchesCity = selectedCityFilter ? listing.city_id === selectedCityFilter : true
+    const matchesSearch = searchTerm ? (
+      listing.business.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      listing.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      listing.phone?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      listing.cities?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      listing.cities?.states?.name.toLowerCase().includes(searchTerm.toLowerCase())
+    ) : true
+    return matchesCity && matchesSearch
+  })
 
   // Pagination calculations
   const totalPages = Math.ceil(filteredListings.length / itemsPerPage)
@@ -449,6 +458,66 @@ export default function BusinessesPage() {
           </div>
         </div>
 
+
+        {/* Search and Controls */}
+        <div className="mb-8 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+          <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+            <div className="flex-1 max-w-md">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Search Listings
+              </label>
+              <input
+                type="text"
+                placeholder="Search by business name, category, phone, city, or state..."
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value)
+                  setCurrentPage(1) // Reset to first page when searching
+                }}
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              />
+            </div>
+            <div className="flex gap-4 items-end">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Items per page
+                </label>
+                <select
+                  value={itemsPerPage}
+                  onChange={(e) => {
+                    setItemsPerPage(Number(e.target.value))
+                    setCurrentPage(1) // Reset to first page when changing items per page
+                  }}
+                  className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white cursor-pointer"
+                >
+                  <option value={10}>10</option>
+                  <option value={25}>25</option>
+                  <option value={50}>50</option>
+                  <option value={100}>100</option>
+                </select>
+              </div>
+              {(searchTerm || selectedCityFilter) && (
+                <button
+                  onClick={() => {
+                    setSearchTerm('')
+                    setSelectedCityFilter('')
+                    setCurrentPage(1)
+                  }}
+                  className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors cursor-pointer"
+                >
+                  Clear All Filters
+                </button>
+              )}
+            </div>
+          </div>
+          {(searchTerm || selectedCityFilter) && (
+            <div className="mt-4 text-sm text-gray-600 dark:text-gray-400">
+              {filteredListings.length} of {listings.length} listings match your filters
+              {searchTerm && <span className="ml-2 px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded">Search: &quot;{searchTerm}&quot;</span>}
+              {selectedCityFilter && <span className="ml-2 px-2 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded">City: {cities.find(c => c.id === selectedCityFilter)?.name}</span>}
+            </div>
+          )}
+        </div>
 
         {/* Summary Stats */}
         <div className="mb-8 grid grid-cols-1 md:grid-cols-4 gap-6">
