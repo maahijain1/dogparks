@@ -10,8 +10,11 @@ export default function StatesPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [showForm, setShowForm] = useState(false)
+  const [showBulkForm, setShowBulkForm] = useState(false)
   const [editingState, setEditingState] = useState<State | null>(null)
   const [formData, setFormData] = useState({ name: '' })
+  const [bulkStates, setBulkStates] = useState('')
+  const [bulkSubmitting, setBulkSubmitting] = useState(false)
 
   // Fetch states
   const fetchStates = async () => {
@@ -69,6 +72,51 @@ export default function StatesPage() {
     setShowForm(true)
   }
 
+  // Handle bulk creation
+  const handleBulkSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setBulkSubmitting(true)
+    
+    try {
+      // Split by lines and filter out empty lines
+      const stateNames = bulkStates
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => line.length > 0)
+
+      if (stateNames.length === 0) {
+        alert('Please enter at least one state name')
+        return
+      }
+
+      console.log('Creating bulk states:', stateNames)
+
+      const response = await fetch('/api/states/bulk', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ states: stateNames })
+      })
+
+      const result = await response.json()
+
+      if (response.ok) {
+        console.log('Bulk creation successful:', result)
+        alert(`Successfully created ${result.created} states!`)
+        await fetchStates()
+        setBulkStates('')
+        setShowBulkForm(false)
+      } else {
+        console.error('Bulk creation failed:', result)
+        alert(`Failed to create states: ${result.error}`)
+      }
+    } catch (error) {
+      console.error('Error creating bulk states:', error)
+      alert('Error creating states. Please try again.')
+    } finally {
+      setBulkSubmitting(false)
+    }
+  }
+
   // Handle delete
   const handleDelete = async (id: string) => {
     console.log('Delete button clicked for state ID:', id)
@@ -123,17 +171,29 @@ export default function StatesPage() {
                 Create and manage states for your directory
               </p>
             </div>
-            <button
-              onClick={() => {
-                setShowForm(true)
-                setEditingState(null)
-                setFormData({ name: '' })
-              }}
-              className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              <Plus className="w-5 h-5 mr-2" />
-              Add State
-            </button>
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setShowBulkForm(true)
+                  setBulkStates('')
+                }}
+                className="inline-flex items-center px-6 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors"
+              >
+                <Plus className="w-5 h-5 mr-2" />
+                Bulk Add States
+              </button>
+              <button
+                onClick={() => {
+                  setShowForm(true)
+                  setEditingState(null)
+                  setFormData({ name: '' })
+                }}
+                className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <Plus className="w-5 h-5 mr-2" />
+                Add State
+              </button>
+            </div>
           </div>
         </div>
 
@@ -171,6 +231,54 @@ export default function StatesPage() {
                       setShowForm(false)
                       setEditingState(null)
                       setFormData({ name: '' })
+                    }}
+                    className="flex-1 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 py-3 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Bulk Creation Modal */}
+        {showBulkForm && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-8 w-full max-w-2xl mx-4">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+                Bulk Add States
+              </h2>
+              <form onSubmit={handleBulkSubmit}>
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    State Names (one per line)
+                  </label>
+                  <textarea
+                    value={bulkStates}
+                    onChange={(e) => setBulkStates(e.target.value)}
+                    placeholder="New South Wales&#10;Victoria&#10;Queensland&#10;South Australia&#10;Western Australia&#10;Tasmania&#10;Northern Territory&#10;Australian Capital Territory"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white resize-none"
+                    rows={8}
+                    required
+                  />
+                  <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                    Enter each state name on a new line. Empty lines will be ignored.
+                  </p>
+                </div>
+                <div className="flex gap-4">
+                  <button
+                    type="submit"
+                    disabled={bulkSubmitting}
+                    className="flex-1 bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+                  >
+                    {bulkSubmitting ? 'Creating States...' : 'Create All States'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowBulkForm(false)
+                      setBulkStates('')
                     }}
                     className="flex-1 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 py-3 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors"
                   >

@@ -10,8 +10,12 @@ export default function CitiesPage() {
   const [states, setStates] = useState<State[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
+  const [showBulkForm, setShowBulkForm] = useState(false)
   const [editingCity, setEditingCity] = useState<City | null>(null)
   const [formData, setFormData] = useState({ name: '', state_id: '' })
+  const [bulkCities, setBulkCities] = useState('')
+  const [bulkStateId, setBulkStateId] = useState('')
+  const [bulkSubmitting, setBulkSubmitting] = useState(false)
 
   // Fetch cities and states
   const fetchCities = async () => {
@@ -81,6 +85,57 @@ export default function CitiesPage() {
     setShowForm(true)
   }
 
+  // Handle bulk creation
+  const handleBulkSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setBulkSubmitting(true)
+    
+    try {
+      // Split by lines and filter out empty lines
+      const cityNames = bulkCities
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => line.length > 0)
+
+      if (cityNames.length === 0) {
+        alert('Please enter at least one city name')
+        return
+      }
+
+      if (!bulkStateId) {
+        alert('Please select a state for the cities')
+        return
+      }
+
+      console.log('Creating bulk cities:', cityNames, 'for state:', bulkStateId)
+
+      const response = await fetch('/api/cities/bulk', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cities: cityNames, state_id: bulkStateId })
+      })
+
+      const result = await response.json()
+
+      if (response.ok) {
+        console.log('Bulk creation successful:', result)
+        alert(`Successfully created ${result.created} cities in ${result.state.name}!`)
+        await fetchCities()
+        setBulkCities('')
+        setBulkStateId('')
+        setShowBulkForm(false)
+      } else {
+        console.error('Bulk creation failed:', result)
+        alert(`Failed to create cities: ${result.error}`)
+      }
+    } catch (error) {
+      console.error('Error creating bulk cities:', error)
+      alert('Error creating cities. Please try again.')
+    } finally {
+      setBulkSubmitting(false)
+    }
+  }
+
   // Handle delete
   const handleDelete = async (id: string) => {
     console.log('Delete button clicked for city ID:', id)
@@ -135,17 +190,30 @@ export default function CitiesPage() {
                 Create and manage cities under existing states
               </p>
             </div>
-            <button
-              onClick={() => {
-                setShowForm(true)
-                setEditingCity(null)
-                setFormData({ name: '', state_id: '' })
-              }}
-              className="inline-flex items-center px-6 py-3 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors"
-            >
-              <Plus className="w-5 h-5 mr-2" />
-              Add City
-            </button>
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setShowBulkForm(true)
+                  setBulkCities('')
+                  setBulkStateId('')
+                }}
+                className="inline-flex items-center px-6 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors"
+              >
+                <Plus className="w-5 h-5 mr-2" />
+                Bulk Add Cities
+              </button>
+              <button
+                onClick={() => {
+                  setShowForm(true)
+                  setEditingCity(null)
+                  setFormData({ name: '', state_id: '' })
+                }}
+                className="inline-flex items-center px-6 py-3 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors"
+              >
+                <Plus className="w-5 h-5 mr-2" />
+                Add City
+              </button>
+            </div>
           </div>
         </div>
 
@@ -201,6 +269,73 @@ export default function CitiesPage() {
                       setShowForm(false)
                       setEditingCity(null)
                       setFormData({ name: '', state_id: '' })
+                    }}
+                    className="flex-1 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 py-3 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Bulk Creation Modal */}
+        {showBulkForm && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-8 w-full max-w-2xl mx-4">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+                Bulk Add Cities
+              </h2>
+              <form onSubmit={handleBulkSubmit}>
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Select State
+                  </label>
+                  <select
+                    value={bulkStateId}
+                    onChange={(e) => setBulkStateId(e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                    required
+                  >
+                    <option value="">Choose a state...</option>
+                    {states.map((state) => (
+                      <option key={state.id} value={state.id}>
+                        {state.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    City Names (one per line)
+                  </label>
+                  <textarea
+                    value={bulkCities}
+                    onChange={(e) => setBulkCities(e.target.value)}
+                    placeholder="Sydney&#10;Melbourne&#10;Brisbane&#10;Perth&#10;Adelaide&#10;Gold Coast&#10;Newcastle&#10;Canberra"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white resize-none"
+                    rows={8}
+                    required
+                  />
+                  <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                    Enter each city name on a new line. Empty lines will be ignored.
+                  </p>
+                </div>
+                <div className="flex gap-4">
+                  <button
+                    type="submit"
+                    disabled={bulkSubmitting}
+                    className="flex-1 bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+                  >
+                    {bulkSubmitting ? 'Creating Cities...' : 'Create All Cities'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowBulkForm(false)
+                      setBulkCities('')
+                      setBulkStateId('')
                     }}
                     className="flex-1 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 py-3 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors"
                   >
