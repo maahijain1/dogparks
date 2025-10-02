@@ -312,8 +312,9 @@ export default async function SlugPage({ params }: SlugPageProps) {
     console.log('Cleaned state name:', stateName)
     console.log('Looking for cities in state:', stateName)
     
-    // Fetch cities for this state
+    // Fetch cities for this state and listings
     let cities: Array<{id: string, name: string}> = []
+    let stateListings: any[] = []
     
     try {
       // First, try exact match
@@ -410,6 +411,34 @@ export default async function SlugPage({ params }: SlugPageProps) {
           console.log('Debug - Cities with matching state_id:', allCities?.filter(c => c.state_id === stateData.id))
         }
       }
+
+      // Fetch all listings from all cities in this state
+      if (stateData) {
+        console.log('🔄 Fetching listings for state:', stateData.name)
+        const { data: listings, error: listingsError } = await supabase
+          .from('listings')
+          .select(`
+            *,
+            cities (
+              id,
+              name,
+              states (
+                id,
+                name
+              )
+            )
+          `)
+          .in('city_id', cities.map(city => city.id))
+          .order('featured', { ascending: false })
+          .order('business')
+
+        if (listingsError) {
+          console.error('❌ Error fetching state listings:', listingsError)
+        } else {
+          stateListings = listings || []
+          console.log('✅ Fetched', stateListings.length, 'listings for state')
+        }
+      }
     } catch (error) {
       console.error('Error fetching state data:', error)
     }
@@ -438,11 +467,15 @@ export default async function SlugPage({ params }: SlugPageProps) {
               {niche}s {stateName}
             </h1>
             <p className="text-xl md:text-2xl mb-8 text-gray-600">
-              Discover {cities.length} cities in {stateName}
+              Discover {stateListings.length} {niche.toLowerCase()}s across {cities.length} cities in {stateName}
             </p>
             
             {/* Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-1 gap-8 max-w-2xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-blue-600">{stateListings.length}</div>
+                <div className="text-gray-600">{niche}s</div>
+              </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-purple-600">{cities.length}</div>
                 <div className="text-gray-600">Cities</div>
@@ -451,6 +484,107 @@ export default async function SlugPage({ params }: SlugPageProps) {
           </div>
         </section>
 
+        {/* Featured Listings Section */}
+        {stateListings.filter(listing => listing.featured).length > 0 && (
+          <section className="py-16 bg-white">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <h2 className="text-3xl font-bold text-center mb-12">
+                Featured {niche}s in {stateName}
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {stateListings.filter(listing => listing.featured).slice(0, 6).map((listing) => (
+                  <div key={listing.id} className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition-shadow">
+                    <div className="p-6">
+                      <div className="flex justify-between items-start mb-4">
+                        <h3 className="text-xl font-bold text-gray-900 leading-tight">{listing.business}</h3>
+                        {listing.review_rating && parseFloat(listing.review_rating.toString()) >= 4.0 && (
+                          <span className="bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded-full whitespace-nowrap">
+                            ⭐ {listing.review_rating}
+                          </span>
+                        )}
+                      </div>
+                      
+                      <div className="space-y-2 mb-4">
+                        <p className="text-gray-600 flex items-center">
+                          <MapPin className="h-4 w-4 mr-2 text-gray-400" />
+                          {listing.cities?.name}, {stateName}
+                        </p>
+                        {listing.address && (
+                          <p className="text-sm text-gray-500">{listing.address}</p>
+                        )}
+                      </div>
+
+                      <div className="flex flex-col gap-2">
+                        {listing.phone && (
+                          <a 
+                            href={`tel:${listing.phone}`}
+                            className="w-full bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition-colors text-center font-medium flex items-center justify-center"
+                          >
+                            <Phone className="h-4 w-4 mr-2" />
+                            Call Now
+                          </a>
+                        )}
+                        {listing.website && (
+                          <a 
+                            href={listing.website.startsWith('http') ? listing.website : `https://${listing.website}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-full bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition-colors text-center font-medium flex items-center justify-center"
+                          >
+                            <Globe className="h-4 w-4 mr-2" />
+                            Visit Website
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* All Listings Section */}
+        {stateListings.length > 0 && (
+          <section className="py-16 bg-gray-50">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <h2 className="text-3xl font-bold text-center mb-12">
+                All {niche}s in {stateName}
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {stateListings.filter(listing => !listing.featured).map((listing) => (
+                  <div key={listing.id} className="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
+                    <div className="p-4">
+                      <div className="flex justify-between items-start mb-3">
+                        <h3 className="text-lg font-semibold text-gray-900 leading-tight">{listing.business}</h3>
+                        {listing.review_rating && parseFloat(listing.review_rating.toString()) >= 4.0 && (
+                          <span className="bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded-full">
+                            ⭐ {listing.review_rating}
+                          </span>
+                        )}
+                      </div>
+                      
+                      <p className="text-gray-600 text-sm mb-3 flex items-center">
+                        <MapPin className="h-4 w-4 mr-1 text-gray-400" />
+                        {listing.cities?.name}, {stateName}
+                      </p>
+
+                      {listing.phone && (
+                        <a 
+                          href={`tel:${listing.phone}`}
+                          className="w-full bg-green-600 text-white px-3 py-2 rounded-md hover:bg-green-700 transition-colors text-center text-sm font-medium flex items-center justify-center"
+                        >
+                          <Phone className="h-4 w-4 mr-1" />
+                          Call Now
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* Cities Section */}
         {cities.length > 0 ? (
@@ -463,7 +597,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
                 {cities.map((city) => (
                   <Link
                     key={city.id}
-                    href={`/${niche.toLowerCase().replace(/\s+/g, '-')}-${city.name.toLowerCase().replace(/\s+/g, '-')}`}
+                    href={`/city/${city.name.toLowerCase().replace(/\s+/g, '-')}`}
                     className="bg-blue-50 hover:bg-blue-100 text-blue-800 px-4 py-3 rounded-lg text-center transition-colors"
                   >
                     {city.name}
