@@ -62,16 +62,24 @@ export default function BusinessesPage() {
   // Fetch listings and cities
   const fetchListings = useCallback(async () => {
     try {
-      const response = await fetch('/api/listings')
+      console.log('🔄 Fetching listings...')
+      const response = await fetch('/api/listings', { 
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      })
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
       const data = await response.json()
       const listingsData = Array.isArray(data) ? data : []
+      console.log('✅ Fetched', listingsData.length, 'listings')
       setListings(listingsData)
       calculateCityCounts(listingsData)
     } catch (error) {
-      console.error('Error fetching listings:', error)
+      console.error('❌ Error fetching listings:', error)
       setListings([])
       setCityListingCounts({})
     } finally {
@@ -81,14 +89,22 @@ export default function BusinessesPage() {
 
   const fetchCities = useCallback(async () => {
     try {
-      const response = await fetch('/api/cities')
+      console.log('🔄 Fetching cities...')
+      const response = await fetch('/api/cities', { 
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      })
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
       const data = await response.json()
+      console.log('✅ Fetched', data.length, 'cities')
       setCities(Array.isArray(data) ? data : [])
     } catch (error) {
-      console.error('Error fetching cities:', error)
+      console.error('❌ Error fetching cities:', error)
       setCities([])
     }
   }, [])
@@ -401,6 +417,18 @@ export default function BusinessesPage() {
               </p>
             </div>
             <div className="flex gap-4">
+              <button
+                onClick={() => {
+                  setLoading(true)
+                  fetchListings()
+                  fetchCities()
+                }}
+                disabled={loading}
+                className="inline-flex items-center px-4 py-3 bg-gray-600 text-white font-medium rounded-lg hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+              >
+                <Building2 className={`w-5 h-5 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                {loading ? 'Refreshing...' : 'Refresh'}
+              </button>
               <button
                 onClick={() => setShowImportModal(true)}
                 className="inline-flex items-center px-6 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors cursor-pointer"
