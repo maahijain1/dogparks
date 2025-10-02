@@ -5,9 +5,7 @@ import Link from "next/link";
 import { ArrowLeft, Plus, Edit, Trash2, MapPin } from "lucide-react";
 import { disableCache } from '@/lib/cache-buster'
 
-// Force no caching for this admin page
-export const dynamic = 'force-dynamic'
-export const revalidate = 0
+// Cache settings are handled by admin layout
 import { State } from '@/types/database'
 
 export default function StatesPage() {
