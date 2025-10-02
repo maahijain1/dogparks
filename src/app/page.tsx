@@ -641,15 +641,20 @@ export default function HomePage() {
                 )
               }
               
-              return states.map((state) => (
-              <Link
-                key={state.id}
-                href={`/${dynamicSettings.niche.toLowerCase().replace(/\s+/g, '-')}-${state.name.toLowerCase().replace(/\s+/g, '-')}`}
-                className="text-blue-600 hover:text-blue-800 hover:underline"
-              >
-                {state.name}
-              </Link>
-              ))
+              return states.map((state) => {
+                const stateUrl = `/${dynamicSettings.niche.toLowerCase().replace(/\s+/g, '-')}-${state.name.toLowerCase().replace(/\s+/g, '-')}`
+                console.log('State link generated:', state.name, '→', stateUrl)
+                
+                return (
+                  <Link
+                    key={state.id}
+                    href={stateUrl}
+                    className="text-blue-600 hover:text-blue-800 hover:underline"
+                  >
+                    {state.name}
+                  </Link>
+                )
+              })
             })()}
           </div>
 
