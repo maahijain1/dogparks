@@ -36,6 +36,27 @@ export default async function CityPage({ params }: CityPageProps) {
   const { slug } = await params
   const cityName = slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
   
+  // Check if this is actually a state name being accessed via /city/ URL
+  const commonStates = [
+    'alabama', 'alaska', 'arizona', 'arkansas', 'california', 'colorado', 'connecticut', 'delaware', 'florida', 'georgia',
+    'hawaii', 'idaho', 'illinois', 'indiana', 'iowa', 'kansas', 'kentucky', 'louisiana', 'maine', 'maryland',
+    'massachusetts', 'michigan', 'minnesota', 'mississippi', 'missouri', 'montana', 'nebraska', 'nevada', 'new-hampshire', 'new-jersey',
+    'new-mexico', 'new-york', 'north-carolina', 'north-dakota', 'ohio', 'oklahoma', 'oregon', 'pennsylvania', 'rhode-island', 'south-carolina',
+    'south-dakota', 'tennessee', 'texas', 'utah', 'vermont', 'virginia', 'washington', 'west-virginia', 'wisconsin', 'wyoming',
+    'new-south-wales', 'victoria', 'queensland', 'western-australia', 'south-australia', 'tasmania', 'northern-territory', 'australian-capital-territory'
+  ]
+  
+  if (commonStates.includes(slug.toLowerCase())) {
+    // Get niche for redirect
+    const settings = await getSiteSettings()
+    const niche = settings.niche || 'Dog Park'
+    const nicheSlug = niche.toLowerCase().replace(/\s+/g, '-')
+    
+    // Redirect to proper state URL
+    const { redirect } = await import('next/navigation')
+    redirect(`/${nicheSlug}-${slug}`)
+  }
+  
   console.log('=== CITY PAGE DEBUG ===')
   console.log('URL slug:', slug)
   console.log('Parsed city name:', cityName)
