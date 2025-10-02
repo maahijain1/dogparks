@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
 export default function CheckMyDataPage() {
-  const [states, setStates] = useState<any[]>([])
-  const [cities, setCities] = useState<any[]>([])
+  const [states, setStates] = useState<Array<{id: string, name: string}>>([])
+  const [cities, setCities] = useState<Array<{id: string, name: string, states?: {name: string}}>>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -53,7 +53,7 @@ export default function CheckMyDataPage() {
               <p className="text-red-600">❌ NO STATES FOUND! You need to create states first.</p>
             ) : (
               <div className="space-y-3">
-                {states.map((state: any) => (
+                {states.map((state) => (
                   <div key={state.id} className="border p-3 rounded">
                     <p><strong>{state.name}</strong></p>
                     <div className="mt-2">
@@ -78,7 +78,7 @@ export default function CheckMyDataPage() {
               <p className="text-red-600">❌ NO CITIES FOUND! You need to create cities under states.</p>
             ) : (
               <div className="space-y-2 max-h-96 overflow-y-auto">
-                {cities.map((city: any) => (
+                {cities.map((city) => (
                   <div key={city.id} className="border p-2 rounded text-sm">
                     <p><strong>{city.name}</strong> → {city.states?.name || 'No State Linked!'}</p>
                     {city.states?.name ? (
