@@ -3,6 +3,11 @@
 import { useState, useEffect } from 'react'
 import Link from "next/link";
 import { ArrowLeft, Plus, Edit, Trash2, Building2 } from "lucide-react";
+import { disableCache } from '@/lib/cache-buster'
+
+// Force no caching for this admin page
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 import { State, City } from '@/types/database'
 
 export default function CitiesPage() {
@@ -49,6 +54,8 @@ export default function CitiesPage() {
   }
 
   useEffect(() => {
+    // Disable caching for admin pages
+    disableCache()
     fetchCities()
     fetchStates()
   }, [])

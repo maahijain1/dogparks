@@ -1,4 +1,13 @@
-import AdminAuth from '@/components/AdminAuth'
+import { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Admin Panel',
+  description: 'Directory Admin Panel',
+}
+
+// Force no caching for admin pages
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 export default function AdminLayout({
   children,
@@ -6,9 +15,8 @@ export default function AdminLayout({
   children: React.ReactNode
 }) {
   return (
-    <AdminAuth>
+    <div className="admin-layout">
       {children}
-    </AdminAuth>
+    </div>
   )
 }
-

@@ -3,6 +3,10 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from "next/link";
 import { ArrowLeft, Plus, Edit, Trash2, Upload, Building2, X } from "lucide-react";
+
+// Force no caching for this admin page
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 import { Listing, City, State } from '@/types/database'
 import AdminHeader from '@/components/AdminHeader'
 
