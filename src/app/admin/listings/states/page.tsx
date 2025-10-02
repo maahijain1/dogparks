@@ -71,19 +71,29 @@ export default function StatesPage() {
 
   // Handle delete
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this state? This will also delete all associated cities and listings.')) {
+    console.log('Delete button clicked for state ID:', id)
+    
+    // Use window.confirm to ensure it works
+    const confirmed = window.confirm('Are you sure you want to delete this state? This will also delete all associated cities and listings.')
+    console.log('User confirmation result:', confirmed)
+    
+    if (!confirmed) {
+      console.log('User cancelled deletion')
       return
     }
 
+    console.log('Proceeding with deletion...')
     try {
       const response = await fetch(`/api/states/${id}`, {
         method: 'DELETE'
       })
 
       if (response.ok) {
+        console.log('State deleted successfully')
         // Optimistic update - remove from UI immediately without refetching
         setStates(prevStates => prevStates.filter(state => state.id !== id))
       } else {
+        console.error('Failed to delete state - server response not ok')
         alert('Failed to delete state')
       }
     } catch (error) {
@@ -259,13 +269,13 @@ export default function StatesPage() {
                         <div className="flex items-center justify-end gap-2">
                           <button
                             onClick={() => handleEdit(state)}
-                            className="p-2 text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-lg transition-colors"
+                            className="p-2 text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-lg transition-colors cursor-pointer"
                           >
                             <Edit className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleDelete(state.id)}
-                            className="p-2 text-red-600 hover:bg-red-100 dark:hover:bg-red-900 rounded-lg transition-colors"
+                            className="p-2 text-red-600 hover:bg-red-100 dark:hover:bg-red-900 rounded-lg transition-colors cursor-pointer"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
