@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from "next/link";
-import { ArrowLeft, Plus, Edit, Trash2, Upload, Building2, X, Star, StarOff } from "lucide-react";
+import { ArrowLeft, Plus, Edit, Trash2, Upload, Building2, X, Star, StarOff, Copy, Trash } from "lucide-react";
 
 // Cache settings are handled by admin layout
 import { Listing, City, State } from '@/types/database'
@@ -41,6 +41,7 @@ export default function BusinessesPage() {
   const stateFileInputRef = useRef<HTMLInputElement>(null)
   const [states, setStates] = useState<State[]>([])
   const [autoFeaturedProcessing, setAutoFeaturedProcessing] = useState(false)
+  const [duplicateProcessing, setDuplicateProcessing] = useState(false)
   const [cityListingCounts, setCityListingCounts] = useState<{[key: string]: number}>({})
   const [selectedCityFilter, setSelectedCityFilter] = useState<string>('')
   const [currentPage, setCurrentPage] = useState(1)
@@ -519,6 +520,76 @@ export default function BusinessesPage() {
     }
   }
 
+  // Handle duplicate detection and removal
+  const handleDuplicates = async (action: 'find' | 'remove', cityId?: string, stateId?: string) => {
+    const actionText = action === 'find' ? 'finding' : 'removing'
+    const scopeText = cityId ? 'city' : stateId ? 'state' : 'all listings'
+    
+    const confirmed = window.confirm(
+      `Are you sure you want to ${action === 'find' ? 'find duplicate listings' : 'remove duplicate listings'} for ${scopeText}?\n\n` +
+      `${action === 'remove' ? '⚠️ WARNING: This will permanently delete duplicate listings (keeping the oldest one in each group)!' : 'This will show you a preview of duplicate listings found.'}`
+    )
+    
+    if (!confirmed) return
+
+    setDuplicateProcessing(true)
+    
+    try {
+      const response = await fetch('/api/listings/remove-duplicates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, cityId, stateId })
+      })
+
+      if (response.ok) {
+        const result = await response.json()
+        const stats = result.stats
+        
+        let message = `🔍 Duplicate ${action === 'find' ? 'Detection' : 'Removal'} Completed!\n\n`
+        message += `📊 SUMMARY:\n`
+        message += `• Total listings analyzed: ${stats.total}\n`
+        message += `• Duplicate groups found: ${stats.duplicateGroups}\n`
+        message += `• Total duplicates: ${stats.duplicates}\n`
+        
+        if (action === 'remove') {
+          message += `• Duplicates removed: ${stats.removed}\n`
+          message += `• Listings remaining: ${stats.total - stats.removed}\n`
+        }
+        
+        if (action === 'find' && result.duplicates && result.duplicates.length > 0) {
+          message += `\n🔍 DUPLICATE GROUPS (first 3):\n`
+          result.duplicates.slice(0, 3).forEach((group: {
+            originalListing: { business: string; city: string };
+            duplicates: Array<{ business: string; city: string }>
+          }, index: number) => {
+            message += `\nGroup ${index + 1}:\n`
+            message += `  Original: ${group.originalListing.business} (${group.originalListing.city})\n`
+            group.duplicates.forEach((dup: { business: string; city: string }) => {
+              message += `  Duplicate: ${dup.business} (${dup.city})\n`
+            })
+          })
+          if (result.duplicates.length > 3) {
+            message += `\n... and ${result.duplicates.length - 3} more groups\n`
+          }
+        }
+        
+        alert(message)
+        
+        if (action === 'remove' && stats.removed > 0) {
+          await fetchListings() // Refresh the listings
+        }
+      } else {
+        const error = await response.json()
+        alert(`Duplicate ${actionText} failed: ${error.error}\n\nDetails: ${error.details || 'Unknown error'}`)
+      }
+    } catch (error) {
+      console.error(`Error ${actionText} duplicates:`, error)
+      alert(`Duplicate ${actionText} failed. Please try again.`)
+    } finally {
+      setDuplicateProcessing(false)
+    }
+  }
+
   // Handle delete
   const handleDelete = async (id: string) => {
     console.log('Delete button clicked for listing ID:', id)
@@ -635,6 +706,22 @@ export default function BusinessesPage() {
             >
               <StarOff className="w-4 h-4 mr-2" />
               {autoFeaturedProcessing ? 'Processing...' : '🚫 Clear All Featured'}
+            </button>
+            <button
+              onClick={() => handleDuplicates('find')}
+              disabled={duplicateProcessing}
+              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors cursor-pointer"
+            >
+              <Copy className="w-4 h-4 mr-2" />
+              {duplicateProcessing ? 'Processing...' : '🔍 Find Duplicates'}
+            </button>
+            <button
+              onClick={() => handleDuplicates('remove')}
+              disabled={duplicateProcessing}
+              className="inline-flex items-center px-4 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors cursor-pointer"
+            >
+              <Trash className="w-4 h-4 mr-2" />
+              {duplicateProcessing ? 'Processing...' : '🗑️ Remove Duplicates'}
             </button>
           </div>
         </div>
