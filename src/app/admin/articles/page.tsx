@@ -117,19 +117,29 @@ export default function ArticlesPage() {
 
   // Handle delete
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this article?')) {
+    console.log('Delete button clicked for article ID:', id)
+    
+    // Use window.confirm to ensure it works
+    const confirmed = window.confirm('Are you sure you want to delete this article?')
+    console.log('User confirmation result:', confirmed)
+    
+    if (!confirmed) {
+      console.log('User cancelled deletion')
       return
     }
 
+    console.log('Proceeding with deletion...')
     try {
       const response = await fetch(`/api/articles/${id}`, {
         method: 'DELETE'
       })
 
       if (response.ok) {
+        console.log('Article deleted successfully')
         // Optimistic update - remove from UI immediately without refetching
         setArticles(prevArticles => prevArticles.filter(article => article.id !== id))
       } else {
+        console.error('Failed to delete article - server response not ok')
         alert('Failed to delete article')
       }
     } catch (error) {
