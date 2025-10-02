@@ -260,38 +260,6 @@ export default async function SlugPage({ params }: SlugPageProps) {
   const nicheSlug = currentNiche.toLowerCase().replace(/\s+/g, '-')
   const nicheParts = nicheSlug.split('-')
   
-  // Handle city pages (format: {niche}-{city}) - redirect to proper city URL
-  if (slug.includes('-') && parts.length >= 2) {
-    console.log('=== CHECKING URL PATTERN ===')
-    console.log('URL slug:', slug)
-    console.log('Niche slug:', nicheSlug)
-    console.log('Niche parts length:', nicheParts.length)
-    console.log('URL parts:', parts)
-    console.log('Parts length:', parts.length)
-    
-    // Check if this starts with the niche
-    const potentialNiche = parts.slice(0, nicheParts.length).join('-')
-    console.log('Potential niche:', potentialNiche)
-    
-    // UNIVERSAL FIX: If URL starts with niche and has more parts, treat rest as city
-    if (potentialNiche === nicheSlug && parts.length > nicheParts.length) {
-      const cityParts = parts.slice(nicheParts.length)
-      const potentialCity = cityParts.join('-').toLowerCase()
-      
-      console.log('=== UNIVERSAL CITY DETECTION ===')
-      console.log('City parts:', cityParts)
-      console.log('Potential city:', potentialCity)
-      
-      // Exclude state abbreviations and other non-city patterns
-      const excludedPatterns = ['nsw', 'vic', 'qld', 'sa', 'wa', 'tas', 'nt', 'act', 'state', 'states']
-      const isExcluded = excludedPatterns.some(pattern => potentialCity.includes(pattern))
-      
-      if (!isExcluded && potentialCity.length > 2) {
-        console.log('✅ Redirecting to city page:', `/city/${potentialCity}`)
-        redirect(`/city/${potentialCity}`)
-      }
-    }
-  }
   
   // Handle state pages (format: {niche}-{state}) - show state with cities
   if (slug.includes('-') && parts.length >= 3 && 
