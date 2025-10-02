@@ -607,9 +607,9 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-4 justify-center">
+          <div className="max-w-6xl mx-auto">
             {states.length === 0 ? (
-              <div className="col-span-full text-center py-12">
+              <div className="text-center py-12">
                 <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <MapPin className="h-8 w-8 text-gray-400" />
                 </div>
@@ -617,26 +617,33 @@ export default function HomePage() {
                 <p className="text-gray-600 mb-4">Create states in the admin panel to get started.</p>
                 <Link 
                   href="/admin/listings/states" 
-                  className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
                 >
                   Add States
                 </Link>
               </div>
             ) : (
-              states.map((state) => {
-                const stateUrl = `/${dynamicSettings.niche.toLowerCase().replace(/\s+/g, '-')}-${state.name.toLowerCase().replace(/\s+/g, '-')}`
-                console.log('State link generated:', state.name, '→', stateUrl)
-                
-                return (
-                  <Link
-                    key={state.id}
-                    href={stateUrl}
-                    className="text-blue-600 hover:text-blue-800 hover:underline"
-                  >
-                    {state.name}
-                  </Link>
-                )
-              })
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+                {states.map((state) => {
+                  const stateUrl = `/${dynamicSettings.niche.toLowerCase().replace(/\s+/g, '-')}-${state.name.toLowerCase().replace(/\s+/g, '-')}`
+                  console.log('State link generated:', state.name, '→', stateUrl)
+                  
+                  return (
+                    <Link
+                      key={state.id}
+                      href={stateUrl}
+                      className="group relative bg-white border-2 border-gray-200 rounded-lg px-4 py-3 text-center hover:border-blue-500 hover:shadow-md transition-all duration-200 cursor-pointer"
+                    >
+                      <div className="flex items-center justify-center min-h-[2.5rem]">
+                        <span className="text-gray-700 group-hover:text-blue-600 font-medium text-sm leading-tight">
+                          {state.name}
+                        </span>
+                      </div>
+                      <div className="absolute inset-0 bg-blue-50 opacity-0 group-hover:opacity-10 rounded-lg transition-opacity"></div>
+                    </Link>
+                  )
+                })}
+              </div>
             )}
           </div>
 
