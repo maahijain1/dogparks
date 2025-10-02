@@ -161,7 +161,6 @@ export default async function SlugPage({ params }: SlugPageProps) {
   
   // Get dynamic settings
   const settings = await getSiteSettings()
-  const siteName = settings.site_name || 'DirectoryHub'
   const niche = settings.niche || 'Dog Park'
   
   // First check if this is an article by trying to fetch it
