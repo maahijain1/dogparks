@@ -243,11 +243,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
                   quality={90}
                   onError={(e) => {
-                    console.log('Featured image failed to load:', article?.featured_image)
-                    console.log('Image element:', e.currentTarget)
-                  }}
-                  onLoad={() => {
-                    console.log('Featured image loaded successfully:', article?.featured_image)
+                    e.currentTarget.style.display = 'none'
                   }}
                 />
               </div>

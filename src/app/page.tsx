@@ -317,8 +317,8 @@ export default function HomePage() {
         const allListingsData = await allListingsRes.json()
         const articlesData = await articlesRes.json()
         
-        console.log('Fetched articles:', articlesData)
-        console.log('Article featured images:', articlesData.map((a: Article) => ({ title: a.title, featured_image: a.featured_image })))
+        // Debug: Check articles data
+        console.log('Fetched articles count:', articlesData?.length || 0)
         
 
         setStates(Array.isArray(statesData) ? statesData : [])
@@ -1416,12 +1416,7 @@ export default function HomePage() {
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       quality={75}
                       onError={(e) => {
-                        console.log('Image failed to load:', article.featured_image)
-                        console.log('Image element:', e.currentTarget)
                         e.currentTarget.style.display = 'none'
-                      }}
-                      onLoad={() => {
-                        console.log('Image loaded successfully:', article.featured_image)
                       }}
                     />
                   ) : (
