@@ -1,7 +1,7 @@
 import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowLeft, MapPin, Phone, Globe } from 'lucide-react'
+import { ArrowLeft, MapPin, Phone, Globe, Search } from 'lucide-react'
 import { siteConfig } from '@/lib/config'
 import { Metadata } from 'next'
 import { supabase } from '@/lib/supabase'
@@ -546,16 +546,47 @@ export default async function SlugPage({ params }: SlugPageProps) {
               <h2 className="text-3xl font-bold text-center mb-12">
                 Cities in {stateName}
               </h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              
+              {/* Search Bar */}
+              <div className="max-w-md mx-auto mb-8">
+                <div className="relative">
+                  <input
+                    type="text"
+                    id="citySearch"
+                    placeholder="Search cities..."
+                    className="w-full px-4 py-3 pl-10 pr-4 text-gray-700 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    onInput={(e) => {
+                      const searchTerm = e.currentTarget.value.toLowerCase()
+                      const cityCards = document.querySelectorAll('[data-city-name]')
+                      cityCards.forEach(card => {
+                        const cityName = card.getAttribute('data-city-name')?.toLowerCase() || ''
+                        const shouldShow = cityName.includes(searchTerm)
+                        ;(card as HTMLElement).style.display = shouldShow ? 'block' : 'none'
+                      })
+                    }}
+                  />
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Search className="h-5 w-5 text-gray-400" />
+                  </div>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                 {cities
                   .sort((a, b) => a.name.localeCompare(b.name))
                   .map((city) => (
                     <Link
                       key={city.id}
                       href={`/city/${city.name.toLowerCase().replace(/\s+/g, '-')}`}
-                      className="bg-blue-50 hover:bg-blue-100 text-blue-800 px-4 py-3 rounded-lg text-center transition-colors"
+                      className="group relative bg-white border-2 border-gray-200 rounded-lg px-4 py-3 text-center hover:border-blue-500 hover:shadow-md transition-all duration-200 cursor-pointer"
+                      data-city-name={city.name}
                     >
-                      {city.name}
+                      <div className="flex items-center justify-center min-h-[2.5rem]">
+                        <span className="text-gray-700 group-hover:text-blue-600 font-medium text-sm leading-tight">
+                          {city.name}
+                        </span>
+                      </div>
+                      <div className="absolute inset-0 bg-blue-50 opacity-0 group-hover:opacity-10 rounded-lg transition-opacity"></div>
                     </Link>
                   ))}
               </div>
