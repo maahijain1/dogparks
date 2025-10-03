@@ -23,6 +23,14 @@ const nextConfig = {
         protocol: 'http',
         hostname: '**',
       },
+      {
+        protocol: 'https',
+        hostname: 'ideogram.ai',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.ideogram.ai',
+      },
     ],
   },
   

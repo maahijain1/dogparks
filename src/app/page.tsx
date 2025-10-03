@@ -1417,7 +1417,11 @@ export default function HomePage() {
                       quality={75}
                       onError={(e) => {
                         console.log('Image failed to load:', article.featured_image)
+                        console.log('Image element:', e.currentTarget)
                         e.currentTarget.style.display = 'none'
+                      }}
+                      onLoad={() => {
+                        console.log('Image loaded successfully:', article.featured_image)
                       }}
                     />
                   ) : (
