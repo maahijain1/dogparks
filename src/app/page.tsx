@@ -22,6 +22,22 @@ function cleanArticleContent(content: string): string {
     .trim()
 }
 
+// Function to strip HTML tags for meta descriptions
+function stripHtmlTags(html: string): string {
+  if (!html) return ''
+  
+  return html
+    .replace(/<[^>]*>/g, '') // Remove all HTML tags
+    .replace(/&nbsp;/g, ' ') // Replace &nbsp; with regular space
+    .replace(/&amp;/g, '&') // Replace &amp; with &
+    .replace(/&lt;/g, '<') // Replace &lt; with <
+    .replace(/&gt;/g, '>') // Replace &gt; with >
+    .replace(/&quot;/g, '"') // Replace &quot; with "
+    .replace(/&#39;/g, "'") // Replace &#39; with '
+    .replace(/\s+/g, ' ') // Clean up multiple spaces
+    .trim()
+}
+
 export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCity, setSelectedCity] = useState('')

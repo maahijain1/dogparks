@@ -22,6 +22,22 @@ function cleanArticleContent(content: string): string {
     .trim()
 }
 
+// Function to strip HTML tags for meta descriptions
+function stripHtmlTags(html: string): string {
+  if (!html) return ''
+  
+  return html
+    .replace(/<[^>]*>/g, '') // Remove all HTML tags
+    .replace(/&nbsp;/g, ' ') // Replace &nbsp; with regular space
+    .replace(/&amp;/g, '&') // Replace &amp; with &
+    .replace(/&lt;/g, '<') // Replace &lt; with <
+    .replace(/&gt;/g, '>') // Replace &gt; with >
+    .replace(/&quot;/g, '"') // Replace &quot; with "
+    .replace(/&#39;/g, "'") // Replace &#39; with '
+    .replace(/\s+/g, ' ') // Clean up multiple spaces
+    .trim()
+}
+
 interface SlugPageProps {
   params: Promise<{ slug: string }>
 }
@@ -58,11 +74,11 @@ export async function generateMetadata({ params }: SlugPageProps): Promise<Metad
     if (article && !articleError) {
       return {
         title: `${article.title} | ${siteName}`,
-        description: article.excerpt || (article.content ? article.content.substring(0, 160) : 'No description available'),
+        description: article.excerpt || (article.content ? stripHtmlTags(article.content).substring(0, 160) : 'No description available'),
         keywords: `${niche.toLowerCase()}s, article, ${article.title}`,
         openGraph: {
           title: article.title,
-          description: article.excerpt || (article.content ? article.content.substring(0, 160) : 'No description available'),
+          description: article.excerpt || (article.content ? stripHtmlTags(article.content).substring(0, 160) : 'No description available'),
           url: `${siteConfig.siteUrl}/${slug}`,
           siteName: siteName,
           type: 'article',
@@ -71,7 +87,7 @@ export async function generateMetadata({ params }: SlugPageProps): Promise<Metad
         twitter: {
           card: 'summary_large_image',
           title: article.title,
-          description: article.excerpt || (article.content ? article.content.substring(0, 160) : 'No description available'),
+          description: article.excerpt || (article.content ? stripHtmlTags(article.content).substring(0, 160) : 'No description available'),
         },
         alternates: {
           canonical: `${siteConfig.siteUrl}/${slug}`,
@@ -235,8 +251,11 @@ export default async function SlugPage({ params }: SlugPageProps) {
             )}
             
             <div 
-              className="prose prose-lg max-w-none prose-p:mb-6 prose-headings:mb-4 prose-headings:mt-8 prose-h2:text-2xl prose-h3:text-xl prose-h2:font-bold prose-h3:font-semibold prose-strong:font-bold prose-a:text-blue-600 prose-a:underline hover:prose-a:text-blue-800"
-              dangerouslySetInnerHTML={{ __html: cleanArticleContent(article.content || '') }}
+              className="prose prose-lg max-w-none prose-p:mb-6 prose-headings:mb-4 prose-headings:mt-8 prose-h2:text-2xl prose-h3:text-xl prose-h2:font-bold prose-h3:font-semibold prose-strong:font-bold prose-a:text-blue-600 prose-a:underline hover:prose-a:text-blue-800 prose-img:rounded-lg prose-img:shadow-lg prose-img:max-w-full prose-img:h-auto"
+              dangerouslySetInnerHTML={{ 
+                __html: cleanArticleContent(article.content || '')
+                  .replace(/<img([^>]*)>/gi, '<img$1 class="max-w-full h-auto rounded-lg shadow-lg" loading="lazy">')
+              }}
             />
           </div>
         </div>
