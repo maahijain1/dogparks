@@ -16,22 +16,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .select('slug, updated_at')
       .eq('published', true)
 
-    // Get all states with their cities
+    // Get all states
     const { data: states } = await supabase
       .from('states')
-      .select(`
-        slug, 
-        updated_at,
-        cities (
-          slug,
-          updated_at
-        )
-      `)
+      .select('name, updated_at')
 
     // Get all cities
     const { data: cities } = await supabase
       .from('cities')
-      .select('slug, updated_at')
+      .select('name, updated_at')
 
     const sitemap: MetadataRoute.Sitemap = [
       // Homepage
@@ -68,19 +61,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.8,
       })) || []),
       // State pages (format: {niche}-{state})
-      ...(states?.map((state) => ({
-        url: `${baseUrl}/${nicheSlug}-${state.slug}`,
-        lastModified: new Date(state.updated_at),
-        changeFrequency: 'weekly' as const,
-        priority: 0.9,
-      })) || []),
+      ...(states?.map((state) => {
+        const stateSlug = state.name.toLowerCase().replace(/\s+/g, '-')
+        return {
+          url: `${baseUrl}/${nicheSlug}-${stateSlug}`,
+          lastModified: new Date(state.updated_at),
+          changeFrequency: 'weekly' as const,
+          priority: 0.9,
+        }
+      }) || []),
       // City pages (format: city/{city})
-      ...(cities?.map((city) => ({
-        url: `${baseUrl}/city/${city.slug}`,
-        lastModified: new Date(city.updated_at),
-        changeFrequency: 'weekly' as const,
-        priority: 0.7,
-      })) || []),
+      ...(cities?.map((city) => {
+        const citySlug = city.name.toLowerCase().replace(/\s+/g, '-')
+        return {
+          url: `${baseUrl}/city/${citySlug}`,
+          lastModified: new Date(city.updated_at),
+          changeFrequency: 'weekly' as const,
+          priority: 0.7,
+        }
+      }) || []),
     ]
 
     return sitemap
