@@ -547,7 +547,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
                 Cities in {stateName}
               </h2>
               
-              {/* Search Bar */}
+              {/* Search Bar - Simple placeholder for now */}
               <div className="max-w-md mx-auto mb-8">
                 <div className="relative">
                   <input
@@ -555,20 +555,15 @@ export default async function SlugPage({ params }: SlugPageProps) {
                     id="citySearch"
                     placeholder="Search cities..."
                     className="w-full px-4 py-3 pl-10 pr-4 text-gray-700 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    onInput={(e) => {
-                      const searchTerm = e.currentTarget.value.toLowerCase()
-                      const cityCards = document.querySelectorAll('[data-city-name]')
-                      cityCards.forEach(card => {
-                        const cityName = card.getAttribute('data-city-name')?.toLowerCase() || ''
-                        const shouldShow = cityName.includes(searchTerm)
-                        ;(card as HTMLElement).style.display = shouldShow ? 'block' : 'none'
-                      })
-                    }}
+                    disabled
                   />
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <Search className="h-5 w-5 text-gray-400" />
                   </div>
                 </div>
+                <p className="text-center text-sm text-gray-500 mt-2">
+                  Search functionality coming soon
+                </p>
               </div>
               
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
