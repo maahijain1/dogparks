@@ -848,7 +848,7 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
             {(() => {
-              const listingsToShow = filteredListings.filter(listing => !listing.featured && listing.phone)
+              const listingsToShow = filteredListings.filter(listing => !listing.featured)
               const totalPages = Math.ceil(listingsToShow.length / itemsPerPage)
               const startIndex = (currentPage - 1) * itemsPerPage
               const endIndex = startIndex + itemsPerPage
@@ -908,7 +908,7 @@ export default function HomePage() {
 
           {/* Pagination Controls */}
           {(() => {
-            const listingsToShow = filteredListings.filter(listing => !listing.featured && listing.phone)
+            const listingsToShow = filteredListings.filter(listing => !listing.featured)
             const totalPages = Math.ceil(listingsToShow.length / itemsPerPage)
             
             if (totalPages <= 1) return null
@@ -987,7 +987,7 @@ export default function HomePage() {
 
           {/* Pagination Info */}
           {(() => {
-            const listingsToShow = filteredListings.filter(listing => !listing.featured && listing.phone)
+            const listingsToShow = filteredListings.filter(listing => !listing.featured)
             const totalPages = Math.ceil(listingsToShow.length / itemsPerPage)
             const startIndex = (currentPage - 1) * itemsPerPage
             const endIndex = Math.min(startIndex + itemsPerPage, listingsToShow.length)

@@ -831,112 +831,7 @@ export default function BusinessesPage() {
           </div>
         </div>
 
-        {/* Search and Controls */}
-        <div className="mb-8 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-          <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-            <div className="flex-1 max-w-md">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Search Listings
-              </label>
-              <input
-                type="text"
-                placeholder="Search by business name, category, phone, city, or state..."
-                value={searchTerm}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value)
-                  setCurrentPage(1) // Reset to first page when searching
-                }}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-              />
-            </div>
-            <div className="flex gap-4 items-end">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Items per page
-                </label>
-                <select
-                  value={itemsPerPage}
-                  onChange={(e) => {
-                    setItemsPerPage(Number(e.target.value))
-                    setCurrentPage(1) // Reset to first page when changing items per page
-                  }}
-                  className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white cursor-pointer"
-                >
-                  <option value={10}>10</option>
-                  <option value={25}>25</option>
-                  <option value={50}>50</option>
-                  <option value={100}>100</option>
-                </select>
-              </div>
-              {(searchTerm || selectedCityFilter) && (
-                <button
-                  onClick={() => {
-                    setSearchTerm('')
-                    setSelectedCityFilter('')
-                    setCurrentPage(1)
-                  }}
-                  className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors cursor-pointer"
-                >
-                  Clear All Filters
-                </button>
-              )}
-            </div>
-          </div>
-          {(searchTerm || selectedCityFilter) && (
-            <div className="mt-4 text-sm text-gray-600 dark:text-gray-400">
-              {filteredListings.length} of {listings.length} listings match your filters
-              {searchTerm && <span className="ml-2 px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded">Search: &quot;{searchTerm}&quot;</span>}
-              {selectedCityFilter && <span className="ml-2 px-2 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded">City: {cities.find(c => c.id === selectedCityFilter)?.name}</span>}
-            </div>
-          )}
-        </div>
-
-        {/* Summary Stats */}
-        <div className="mb-8 grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <div className="flex items-center">
-              <Building2 className="h-8 w-8 text-blue-600 mr-3" />
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Listings</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">{listings.length}</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <div className="flex items-center">
-              <Building2 className="h-8 w-8 text-green-600 mr-3" />
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Cities with Listings</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">{Object.keys(cityListingCounts).length}</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <div className="flex items-center">
-              <Building2 className="h-8 w-8 text-purple-600 mr-3" />
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Featured Listings</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {listings.filter(listing => listing.featured).length}
-                </p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <div className="flex items-center">
-              <Building2 className="h-8 w-8 text-orange-600 mr-3" />
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Max Featured per City</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">3</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* City Filter Buttons */}
+        {/* City Filter Dropdown */}
         {Object.keys(cityListingCounts).length > 0 && (
           <div className="mb-8 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
             <div className="flex items-center justify-between mb-4">
@@ -947,55 +842,37 @@ export default function BusinessesPage() {
                     setSelectedCityFilter('')
                     setCurrentPage(1)
                   }}
-                  className="text-sm px-3 py-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors"
+                  className="text-sm px-3 py-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors cursor-pointer"
                 >
                   Clear Filter
                 </button>
               )}
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {cities
-                .filter(city => cityListingCounts[city.id] > 0)
-                .sort((a, b) => (cityListingCounts[b.id] || 0) - (cityListingCounts[a.id] || 0))
-                .map((city) => (
-                  <button
-                    key={city.id}
-                    onClick={() => {
-                      setSelectedCityFilter(city.id)
-                      setCurrentPage(1)
-                    }}
-                    className={`flex items-center justify-between p-3 rounded-lg transition-all ${
-                      selectedCityFilter === city.id 
-                        ? 'bg-blue-600 text-white shadow-lg scale-105' 
-                        : 'bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600'
-                    }`}
-                  >
-                    <div className="text-left">
-                      <p className={`font-medium ${selectedCityFilter === city.id ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
-                        {city.name}
-                      </p>
-                      <p className={`text-sm ${selectedCityFilter === city.id ? 'text-blue-100' : 'text-gray-600 dark:text-gray-300'}`}>
-                        {city.states?.name}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <div className={`px-3 py-1 rounded-full text-sm font-medium mb-1 ${
-                        selectedCityFilter === city.id 
-                          ? 'bg-blue-500 text-white' 
-                          : 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200'
-                      }`}>
-                        {cityListingCounts[city.id]} listings
-                      </div>
-                      <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        selectedCityFilter === city.id 
-                          ? 'bg-purple-500 text-white' 
-                          : 'bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200'
-                      }`}>
-                        {listings.filter(l => l.city_id === city.id && l.featured).length}/3 featured
-                      </div>
-                    </div>
-                  </button>
-                ))}
+            <div className="max-w-md">
+              <select
+                value={selectedCityFilter}
+                onChange={(e) => {
+                  setSelectedCityFilter(e.target.value)
+                  setCurrentPage(1)
+                }}
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white cursor-pointer"
+              >
+                <option value="">All Cities ({listings.length} listings)</option>
+                {cities
+                  .filter(city => cityListingCounts[city.id] > 0)
+                  .sort((a, b) => (cityListingCounts[b.id] || 0) - (cityListingCounts[a.id] || 0))
+                  .map((city) => (
+                    <option key={city.id} value={city.id}>
+                      {city.name}, {city.states?.name} ({cityListingCounts[city.id]} listings, {listings.filter(l => l.city_id === city.id && l.featured).length}/3 featured)
+                    </option>
+                  ))}
+              </select>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                {selectedCityFilter 
+                  ? `Showing ${filteredListings.length} listings for ${cities.find(c => c.id === selectedCityFilter)?.name}`
+                  : `Showing all ${listings.length} listings across ${Object.keys(cityListingCounts).length} cities`
+                }
+              </p>
             </div>
           </div>
         )}

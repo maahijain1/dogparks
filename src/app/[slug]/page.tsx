@@ -560,7 +560,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
                 All {niche}s in {stateName}
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {stateListings.filter(listing => !listing.featured && listing.phone).map((listing) => (
+                {stateListings.filter(listing => !listing.featured).map((listing) => (
                   <div key={listing.id} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
                     <h3 className="text-xl font-semibold text-gray-900 mb-4">{listing.business}</h3>
                     
