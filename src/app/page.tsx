@@ -37,6 +37,14 @@ export default function HomePage() {
   const [locationLoading, setLocationLoading] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage] = useState(30) // 30 listings per page
+  const [articlesCurrentPage, setArticlesCurrentPage] = useState(1)
+  const [articlesPerPage] = useState(12) // 12 articles per page
+
+  // Articles pagination calculations
+  const articlesTotalPages = Math.ceil(latestArticles.length / articlesPerPage)
+  const articlesStartIndex = (articlesCurrentPage - 1) * articlesPerPage
+  const articlesEndIndex = articlesStartIndex + articlesPerPage
+  const articlesToShow = latestArticles.slice(articlesStartIndex, articlesEndIndex)
   const [dynamicSettings, setDynamicSettings] = useState({
     siteName: 'DirectoryHub',
     niche: 'Dog Park',
@@ -1370,12 +1378,12 @@ export default function HomePage() {
 
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {latestArticles.length === 0 ? (
+            {articlesToShow.length === 0 ? (
               <div className="col-span-full text-center text-gray-500">
                 No articles available
               </div>
             ) : (
-              latestArticles.map((article, index) => (
+              articlesToShow.map((article, index) => (
               <article key={article.id} className="group bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-200">
                 {article.featured_image && (
                   <div className="relative overflow-hidden">
@@ -1438,6 +1446,81 @@ export default function HomePage() {
               ))
             )}
           </div>
+
+          {/* Articles Pagination Controls */}
+          {articlesTotalPages > 1 && (
+            <div className="mt-8 flex justify-center items-center space-x-2">
+              <button
+                onClick={() => setArticlesCurrentPage(1)}
+                disabled={articlesCurrentPage === 1}
+                className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-l-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              >
+                First
+              </button>
+              <button
+                onClick={() => setArticlesCurrentPage(articlesCurrentPage - 1)}
+                disabled={articlesCurrentPage === 1}
+                className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border-t border-b border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              >
+                Previous
+              </button>
+              
+              {/* Page Numbers */}
+              <div className="flex space-x-1">
+                {Array.from({ length: Math.min(5, articlesTotalPages) }, (_, i) => {
+                  let pageNum;
+                  if (articlesTotalPages <= 5) {
+                    pageNum = i + 1;
+                  } else if (articlesCurrentPage <= 3) {
+                    pageNum = i + 1;
+                  } else if (articlesCurrentPage >= articlesTotalPages - 2) {
+                    pageNum = articlesTotalPages - 4 + i;
+                  } else {
+                    pageNum = articlesCurrentPage - 2 + i;
+                  }
+                  
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => setArticlesCurrentPage(pageNum)}
+                      className={`px-3 py-2 text-sm font-medium border ${
+                        articlesCurrentPage === pageNum
+                          ? 'bg-indigo-600 text-white border-indigo-600'
+                          : 'text-gray-500 bg-white border-gray-300 hover:bg-gray-50'
+                      } cursor-pointer`}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
+              </div>
+              
+              <button
+                onClick={() => setArticlesCurrentPage(articlesCurrentPage + 1)}
+                disabled={articlesCurrentPage === articlesTotalPages}
+                className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border-t border-b border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              >
+                Next
+              </button>
+              <button
+                onClick={() => setArticlesCurrentPage(articlesTotalPages)}
+                disabled={articlesCurrentPage === articlesTotalPages}
+                className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-r-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              >
+                Last
+              </button>
+            </div>
+          )}
+
+          {/* Articles Pagination Info */}
+          {latestArticles.length > 0 && (
+            <div className="mt-4 text-center text-sm text-gray-600">
+              Showing {articlesStartIndex + 1}-{Math.min(articlesEndIndex, latestArticles.length)} of {latestArticles.length} articles
+              {articlesTotalPages > 1 && (
+                <span className="ml-2">• Page {articlesCurrentPage} of {articlesTotalPages}</span>
+              )}
+            </div>
+          )}
         </div>
       </section>
 
