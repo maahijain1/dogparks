@@ -65,7 +65,8 @@ function extractCityFromAddress(address: string): string | null {
     
     console.log(`Cleaned city part: "${cityPart}"`)
     
-    if (cityPart && cityPart.length > 1) {
+    // Validate city name - reject if it looks like an address or number
+    if (cityPart && cityPart.length > 1 && isValidCityName(cityPart)) {
       const normalized = normalizeCityName(cityPart)
       console.log(`Normalized city: "${normalized}"`)
       return normalized
@@ -82,13 +83,55 @@ function extractCityFromAddress(address: string): string | null {
     // Remove ZIP codes (5 digits or ZIP+4)
     cityPart = cityPart.replace(/\b\d{5}(-\d{4})?\b/g, '').trim()
     
-    if (cityPart && cityPart.length > 1) {
+    if (cityPart && cityPart.length > 1 && isValidCityName(cityPart)) {
       return normalizeCityName(cityPart)
     }
   }
   
   console.log(`Could not extract city from: "${address}"`)
   return null
+}
+
+// Validate city name to prevent address-like names
+function isValidCityName(cityName: string): boolean {
+  if (!cityName || cityName.length < 2) return false
+  
+  // Reject if it's mostly numbers or contains common address patterns
+  const cleanName = cityName.trim()
+  
+  // Reject if it's just numbers (like "190 39")
+  if (/^\d+(\s+\d+)*$/.test(cleanName)) {
+    console.log(`Rejected city name "${cleanName}" - contains only numbers`)
+    return false
+  }
+  
+  // Reject if it contains common address abbreviations
+  const addressPatterns = [
+    /\b(st|street|ave|avenue|rd|road|blvd|boulevard|dr|drive|ln|lane|ct|court|pl|place|way|pkwy|parkway)\b/i,
+    /\b(north|south|east|west|n|s|e|w)\s+\d+/i,
+    /\b\d+\s+(st|street|ave|avenue|rd|road|blvd|boulevard|dr|drive|ln|lane|ct|court|pl|place|way|pkwy|parkway)\b/i
+  ]
+  
+  for (const pattern of addressPatterns) {
+    if (pattern.test(cleanName)) {
+      console.log(`Rejected city name "${cleanName}" - contains address pattern`)
+      return false
+    }
+  }
+  
+  // Reject if it's too short or contains only special characters
+  if (cleanName.length < 2 || /^[^a-zA-Z]+$/.test(cleanName)) {
+    console.log(`Rejected city name "${cleanName}" - too short or no letters`)
+    return false
+  }
+  
+  // Must contain at least one letter
+  if (!/[a-zA-Z]/.test(cleanName)) {
+    console.log(`Rejected city name "${cleanName}" - no letters found`)
+    return false
+  }
+  
+  return true
 }
 
 // Normalize city name

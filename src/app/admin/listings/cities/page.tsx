@@ -19,6 +19,12 @@ export default function CitiesPage() {
   const [bulkCities, setBulkCities] = useState('')
   const [bulkStateId, setBulkStateId] = useState('')
   const [bulkSubmitting, setBulkSubmitting] = useState(false)
+  
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage, setItemsPerPage] = useState(20)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [selectedState, setSelectedState] = useState('')
 
   // Fetch cities and states
   const fetchCities = async () => {
@@ -57,6 +63,35 @@ export default function CitiesPage() {
     fetchCities()
     fetchStates()
   }, [])
+
+  // Filter cities based on search term and selected state
+  const filteredCities = cities.filter(city => {
+    const matchesSearch = !searchTerm || 
+      city.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      city.states?.name.toLowerCase().includes(searchTerm.toLowerCase())
+    
+    const matchesState = !selectedState || city.state_id === selectedState
+    
+    return matchesSearch && matchesState
+  })
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredCities.length / itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
+  const paginatedCities = filteredCities.slice(startIndex, endIndex)
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [searchTerm, selectedState])
+
+  // Clear all filters
+  const clearFilters = () => {
+    setSearchTerm('')
+    setSelectedState('')
+    setCurrentPage(1)
+  }
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
@@ -352,6 +387,86 @@ export default function CitiesPage() {
           </div>
         )}
 
+        {/* Search and Controls */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 mb-6">
+          <div className="flex flex-col lg:flex-row gap-4">
+            {/* Search Input */}
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Search Cities
+              </label>
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search by city name or state..."
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              />
+            </div>
+            
+            {/* State Filter */}
+            <div className="lg:w-64">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Filter by State
+              </label>
+              <select
+                value={selectedState}
+                onChange={(e) => setSelectedState(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              >
+                <option value="">All States</option>
+                {states.map((state) => (
+                  <option key={state.id} value={state.id}>
+                    {state.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            {/* Items per page */}
+            <div className="lg:w-32">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Per Page
+              </label>
+              <select
+                value={itemsPerPage}
+                onChange={(e) => {
+                  setItemsPerPage(Number(e.target.value))
+                  setCurrentPage(1)
+                }}
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              >
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+              </select>
+            </div>
+            
+            {/* Clear Filters */}
+            <div className="lg:w-32 flex items-end">
+              <button
+                onClick={clearFilters}
+                className="w-full px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors cursor-pointer"
+              >
+                Clear All
+              </button>
+            </div>
+          </div>
+          
+          {/* Results Summary */}
+          <div className="mt-4 flex justify-between items-center text-sm text-gray-600 dark:text-gray-300">
+            <span>
+              Showing {startIndex + 1}-{Math.min(endIndex, filteredCities.length)} of {filteredCities.length} cities
+              {searchTerm && ` matching "${searchTerm}"`}
+              {selectedState && ` in ${states.find(s => s.id === selectedState)?.name}`}
+            </span>
+            {totalPages > 1 && (
+              <span>Page {currentPage} of {totalPages}</span>
+            )}
+          </div>
+        </div>
+
         {/* Cities List */}
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
           {loading ? (
@@ -359,7 +474,7 @@ export default function CitiesPage() {
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto"></div>
               <p className="mt-4 text-gray-600 dark:text-gray-300">Loading cities...</p>
             </div>
-          ) : cities.length === 0 ? (
+          ) : filteredCities.length === 0 ? (
             <div className="p-8 text-center">
               <Building2 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
@@ -368,7 +483,9 @@ export default function CitiesPage() {
               <p className="text-gray-600 dark:text-gray-300 mb-6">
                 {states.length === 0 
                   ? 'First create some states, then add cities under them.'
-                  : 'Get started by creating your first city.'
+                  : searchTerm || selectedState
+                    ? 'No cities match your current filters. Try adjusting your search criteria.'
+                    : 'Get started by creating your first city.'
                 }
               </p>
               {states.length > 0 && (
@@ -401,7 +518,7 @@ export default function CitiesPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                  {cities.map((city) => (
+                  {paginatedCities.map((city) => (
                     <tr key={city.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                       <td className="px-6 py-4">
                         <div className="flex items-center">
@@ -440,6 +557,77 @@ export default function CitiesPage() {
             </div>
           )}
         </div>
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="mt-6 flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => setCurrentPage(1)}
+                disabled={currentPage === 1}
+                className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-l-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              >
+                First
+              </button>
+              <button
+                onClick={() => setCurrentPage(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border-t border-b border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              >
+                Previous
+              </button>
+              
+              {/* Page Numbers */}
+              <div className="flex space-x-1">
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  let pageNum;
+                  if (totalPages <= 5) {
+                    pageNum = i + 1;
+                  } else if (currentPage <= 3) {
+                    pageNum = i + 1;
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNum = totalPages - 4 + i;
+                  } else {
+                    pageNum = currentPage - 2 + i;
+                  }
+                  
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => setCurrentPage(pageNum)}
+                      className={`px-3 py-2 text-sm font-medium border ${
+                        currentPage === pageNum
+                          ? 'bg-purple-600 text-white border-purple-600'
+                          : 'text-gray-500 bg-white border-gray-300 hover:bg-gray-50'
+                      } cursor-pointer`}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
+              </div>
+              
+              <button
+                onClick={() => setCurrentPage(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border-t border-b border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              >
+                Next
+              </button>
+              <button
+                onClick={() => setCurrentPage(totalPages)}
+                disabled={currentPage === totalPages}
+                className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-r-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              >
+                Last
+              </button>
+            </div>
+            
+            <div className="text-sm text-gray-700 dark:text-gray-300">
+              Page {currentPage} of {totalPages}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
