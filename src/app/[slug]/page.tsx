@@ -440,17 +440,17 @@ export default async function SlugPage({ params }: SlugPageProps) {
         <section className="bg-white text-gray-900 py-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-4">
-              {niche}s {stateName}
+              {niche.endsWith('s') ? niche : niche + 's'} {stateName}
             </h1>
             <p className="text-xl md:text-2xl mb-8 text-gray-600">
-              Discover {stateListings.length} {niche.toLowerCase()}s across {cities.length} cities in {stateName}
+              Discover {stateListings.length} {niche.toLowerCase().endsWith('s') ? niche.toLowerCase() : niche.toLowerCase() + 's'} across {cities.length} cities in {stateName}
             </p>
             
             {/* Stats */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto">
               <div className="text-center">
                 <div className="text-3xl font-bold text-blue-600">{stateListings.length}</div>
-                <div className="text-gray-600">{niche}s</div>
+                <div className="text-gray-600">{niche.endsWith('s') ? niche : niche + 's'}</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-purple-600">{cities.length}</div>
@@ -466,10 +466,10 @@ export default async function SlugPage({ params }: SlugPageProps) {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="text-center mb-12">
                 <div className="inline-flex items-center bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-6 py-3 rounded-full shadow-lg mb-4">
-                  <span className="text-lg font-semibold">⭐ Featured {niche}s in {stateName}</span>
+                  <span className="text-lg font-semibold">⭐ Featured {niche.endsWith('s') ? niche : niche + 's'} in {stateName}</span>
                 </div>
                 <p className="text-xl text-gray-600">
-                  Hand-picked premium {niche.toLowerCase()}s that stand out from the crowd
+                  Hand-picked premium {niche.toLowerCase().endsWith('s') ? niche.toLowerCase() : niche.toLowerCase() + 's'} that stand out from the crowd
                 </p>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -568,7 +568,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
           <section className="py-16 bg-gray-50">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <h2 className="text-3xl font-bold text-center mb-12">
-                All {niche}s in {stateName}
+                All {niche.endsWith('s') ? niche : niche + 's'} in {stateName}
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {stateListings

@@ -5,7 +5,9 @@ import { getSiteSettings } from '@/lib/dynamic-config'
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Get dynamic site URL from settings
   const settings = await getSiteSettings()
-  const baseUrl = settings.site_url || 'https://directoryhub.com'
+  const baseUrl = settings.site_url || 'https://dogparks.vercel.app'
+  const niche = settings.niche || 'Dog Park'
+  const nicheSlug = niche.toLowerCase().replace(/\s+/g, '-')
   
   try {
     // Get all published articles
@@ -14,10 +16,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .select('slug, updated_at')
       .eq('published', true)
 
-    // Get all states
+    // Get all states with their cities
     const { data: states } = await supabase
       .from('states')
-      .select('slug, updated_at')
+      .select(`
+        slug, 
+        updated_at,
+        cities (
+          slug,
+          updated_at
+        )
+      `)
 
     // Get all cities
     const { data: cities } = await supabase
@@ -32,26 +41,45 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         changeFrequency: 'daily',
         priority: 1,
       },
+      // Static pages
+      {
+        url: `${baseUrl}/about`,
+        lastModified: new Date(),
+        changeFrequency: 'monthly',
+        priority: 0.5,
+      },
+      {
+        url: `${baseUrl}/contact`,
+        lastModified: new Date(),
+        changeFrequency: 'monthly',
+        priority: 0.5,
+      },
+      {
+        url: `${baseUrl}/privacy`,
+        lastModified: new Date(),
+        changeFrequency: 'yearly',
+        priority: 0.3,
+      },
       // Articles
       ...(articles?.map((article) => ({
-        url: `${baseUrl}/${article.slug}`,
+        url: `${baseUrl}/articles/${article.slug}`,
         lastModified: new Date(article.updated_at),
         changeFrequency: 'weekly' as const,
         priority: 0.8,
       })) || []),
-      // States
+      // State pages (format: {niche}-{state})
       ...(states?.map((state) => ({
-        url: `${baseUrl}/state/${state.slug}`,
+        url: `${baseUrl}/${nicheSlug}-${state.slug}`,
         lastModified: new Date(state.updated_at),
         changeFrequency: 'weekly' as const,
-        priority: 0.7,
+        priority: 0.9,
       })) || []),
-      // Cities
+      // City pages (format: city/{city})
       ...(cities?.map((city) => ({
         url: `${baseUrl}/city/${city.slug}`,
         lastModified: new Date(city.updated_at),
         changeFrequency: 'weekly' as const,
-        priority: 0.6,
+        priority: 0.7,
       })) || []),
     ]
 

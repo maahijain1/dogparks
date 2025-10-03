@@ -216,9 +216,9 @@ export default async function CityPage({ params }: CityPageProps) {
                 <div className="text-center mb-8">
                   <div className="inline-flex items-center bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-6 py-3 rounded-full shadow-lg mb-4">
                     <Star className="h-6 w-6 mr-2 fill-current" />
-                    <span className="font-bold text-lg">PREMIUM FEATURED {niche.toUpperCase()}S</span>
+                    <span className="font-bold text-lg">PREMIUM FEATURED {niche.toUpperCase().endsWith('S') ? niche.toUpperCase() : niche.toUpperCase() + 'S'}</span>
                   </div>
-                  <h2 className="text-3xl font-bold text-gray-900 mb-2">Featured {niche}s in {cityData?.name || cityName}</h2>
+                  <h2 className="text-3xl font-bold text-gray-900 mb-2">Featured {niche.endsWith('s') ? niche : niche + 's'} in {cityData?.name || cityName}</h2>
                   <p className="text-gray-600">Hand-picked premium businesses that stand out from the crowd</p>
                 </div>
                 <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
@@ -314,7 +314,7 @@ export default async function CityPage({ params }: CityPageProps) {
             {/* All Listings */}
             <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                All {niche} in {cityData?.name || cityName}
+                All {niche.endsWith('s') ? niche : niche + 's'} in {cityData?.name || cityName}
               </h2>
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {listings
