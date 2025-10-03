@@ -113,23 +113,49 @@ export async function POST(request: NextRequest) {
 
     // Parse CSV with the same header mapping as individual city import
     const csvText = await file.text()
+    console.log('CSV Text preview:', csvText.substring(0, 500))
+    
     const parseResult = Papa.parse(csvText, {
       header: true,
       skipEmptyLines: true,
       transformHeader: (header) => {
-        // Map CSV headers to our database fields (EXACT SAME as individual city import)
+        // Clean header and map to our database fields
+        const cleanHeader = header.trim()
+        console.log('Processing header:', `"${cleanHeader}"`)
+        
         const headerMap: { [key: string]: string } = {
           'Business': 'business',
+          'business': 'business',
+          'BUSINESS': 'business',
           'Category': 'category',
+          'category': 'category',
+          'CATEGORY': 'category',
           'Review Ra': 'review_rating',
+          'review_rating': 'review_rating',
+          'Review Rating': 'review_rating',
           'Number o': 'number_of_reviews',
+          'number_of_reviews': 'number_of_reviews',
+          'Number of Reviews': 'number_of_reviews',
           'Address': 'address',
+          'address': 'address',
+          'ADDRESS': 'address',
           'Website': 'website',
+          'website': 'website',
+          'WEBSITE': 'website',
           'Phone': 'phone',
+          'phone': 'phone',
+          'PHONE': 'phone',
           'Email': 'email',
-          'Featured': 'featured'
+          'email': 'email',
+          'EMAIL': 'email',
+          'Featured': 'featured',
+          'featured': 'featured',
+          'FEATURED': 'featured'
         }
-        return headerMap[header] || header.toLowerCase().replace(/\s+/g, '_')
+        
+        const mapped = headerMap[cleanHeader] || cleanHeader.toLowerCase().replace(/\s+/g, '_')
+        console.log(`Mapped "${cleanHeader}" to "${mapped}"`)
+        return mapped
       }
     })
 
@@ -142,6 +168,12 @@ export async function POST(request: NextRequest) {
 
     const rows = parseResult.data as Record<string, unknown>[]
     console.log(`Processing ${rows.length} rows from CSV for state: ${stateData.name}`)
+    
+    // Debug: Show first few rows and their headers
+    if (rows.length > 0) {
+      console.log('First row data:', rows[0])
+      console.log('Available keys in first row:', Object.keys(rows[0]))
+    }
 
     // Get existing cities for this state
     const { data: existingCities } = await supabase
@@ -174,12 +206,25 @@ export async function POST(request: NextRequest) {
       try {
         // Extract basic listing data using mapped field names
         const typedRow = row as Record<string, string>
-        const business = typedRow.business || ''
-        const address = typedRow.address || ''
+        
+        // Try multiple possible field names for business
+        const business = typedRow.business || 
+                        typedRow.Business || 
+                        typedRow.BUSINESS || 
+                        typedRow['Business Name'] ||
+                        typedRow['business_name'] ||
+                        ''
+        
+        const address = typedRow.address || 
+                       typedRow.Address || 
+                       typedRow.ADDRESS || 
+                       ''
+        
+        console.log(`Row ${index + 1}: business="${business}", address="${address}"`)
         
         if (!business.trim()) {
           stats.skipped++
-          stats.errors.push(`Row ${index + 1}: Missing business name`)
+          stats.errors.push(`Row ${index + 1}: Missing business name (available fields: ${Object.keys(typedRow).join(', ')})`)
           continue
         }
 
