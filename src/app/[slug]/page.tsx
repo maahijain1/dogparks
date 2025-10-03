@@ -10,32 +10,40 @@ import CitySearch from '@/components/CitySearch'
 
 // Function to clean article content and remove empty heading tags
 function cleanArticleContent(content: string): string {
-  if (!content) return ''
+  if (!content || typeof content !== 'string') return ''
   
-  // Remove empty heading tags (h1, h2, h3, h4, h5, h6) that have no content or only whitespace
-  return content
-    .replace(/<h[1-6][^>]*>\s*<\/h[1-6]>/gi, '') // Remove empty heading tags
-    .replace(/<h[1-6][^>]*>\s*&nbsp;\s*<\/h[1-6]>/gi, '') // Remove heading tags with only &nbsp;
-    .replace(/<h[1-6][^>]*>\s*<br\s*\/?>\s*<\/h[1-6]>/gi, '') // Remove heading tags with only <br>
-    .replace(/<h[1-6][^>]*>\s*<p>\s*<\/p>\s*<\/h[1-6]>/gi, '') // Remove heading tags with empty paragraphs
-    .replace(/\s+/g, ' ') // Clean up multiple spaces
-    .trim()
+  try {
+    // Remove empty heading tags (h1, h2, h3, h4, h5, h6) that have no content or only whitespace
+    return content
+      .replace(/<h[1-6][^>]*>\s*<\/h[1-6]>/gi, '') // Remove empty heading tags
+      .replace(/<h[1-6][^>]*>\s*&nbsp;\s*<\/h[1-6]>/gi, '') // Remove heading tags with only &nbsp;
+      .replace(/<h[1-6][^>]*>\s*<br\s*\/?>\s*<\/h[1-6]>/gi, '') // Remove heading tags with only <br>
+      .replace(/<h[1-6][^>]*>\s*<p>\s*<\/p>\s*<\/h[1-6]>/gi, '') // Remove heading tags with empty paragraphs
+      .replace(/\s+/g, ' ') // Clean up multiple spaces
+      .trim()
+  } catch (error) {
+    return content || ''
+  }
 }
 
 // Function to strip HTML tags for meta descriptions
 function stripHtmlTags(html: string): string {
-  if (!html) return ''
+  if (!html || typeof html !== 'string') return ''
   
-  return html
-    .replace(/<[^>]*>/g, '') // Remove all HTML tags
-    .replace(/&nbsp;/g, ' ') // Replace &nbsp; with regular space
-    .replace(/&amp;/g, '&') // Replace &amp; with &
-    .replace(/&lt;/g, '<') // Replace &lt; with <
-    .replace(/&gt;/g, '>') // Replace &gt; with >
-    .replace(/&quot;/g, '"') // Replace &quot; with "
-    .replace(/&#39;/g, "'") // Replace &#39; with '
-    .replace(/\s+/g, ' ') // Clean up multiple spaces
-    .trim()
+  try {
+    return html
+      .replace(/<[^>]*>/g, '') // Remove all HTML tags
+      .replace(/&nbsp;/g, ' ') // Replace &nbsp; with regular space
+      .replace(/&amp;/g, '&') // Replace &amp; with &
+      .replace(/&lt;/g, '<') // Replace &lt; with <
+      .replace(/&gt;/g, '>') // Replace &gt; with >
+      .replace(/&quot;/g, '"') // Replace &quot; with "
+      .replace(/&#39;/g, "'") // Replace &#39; with '
+      .replace(/\s+/g, ' ') // Clean up multiple spaces
+      .trim()
+  } catch (error) {
+    return html || ''
+  }
 }
 
 interface SlugPageProps {
@@ -74,11 +82,11 @@ export async function generateMetadata({ params }: SlugPageProps): Promise<Metad
     if (article && !articleError) {
       return {
         title: `${article.title} | ${siteName}`,
-        description: article.excerpt || (article.content ? stripHtmlTags(article.content).substring(0, 160) : 'No description available'),
+        description: article.excerpt || (article.content ? stripHtmlTags(article.content || '').substring(0, 160) : 'No description available'),
         keywords: `${niche.toLowerCase()}s, article, ${article.title}`,
         openGraph: {
           title: article.title,
-          description: article.excerpt || (article.content ? stripHtmlTags(article.content).substring(0, 160) : 'No description available'),
+          description: article.excerpt || (article.content ? stripHtmlTags(article.content || '').substring(0, 160) : 'No description available'),
           url: `${siteConfig.siteUrl}/${slug}`,
           siteName: siteName,
           type: 'article',
@@ -87,7 +95,7 @@ export async function generateMetadata({ params }: SlugPageProps): Promise<Metad
         twitter: {
           card: 'summary_large_image',
           title: article.title,
-          description: article.excerpt || (article.content ? stripHtmlTags(article.content).substring(0, 160) : 'No description available'),
+          description: article.excerpt || (article.content ? stripHtmlTags(article.content || '').substring(0, 160) : 'No description available'),
         },
         alternates: {
           canonical: `${siteConfig.siteUrl}/${slug}`,
@@ -95,7 +103,7 @@ export async function generateMetadata({ params }: SlugPageProps): Promise<Metad
       }
     }
   } catch (error) {
-    console.error('Error fetching article for metadata:', error)
+    // Continue to other checks
   }
   
   // Handle state pages (format: arkansas)
@@ -256,8 +264,15 @@ export default async function SlugPage({ params }: SlugPageProps) {
             <div 
               className="prose prose-lg max-w-none prose-p:mb-6 prose-headings:mb-4 prose-headings:mt-8 prose-h2:text-2xl prose-h3:text-xl prose-h2:font-bold prose-h3:font-semibold prose-strong:font-bold prose-a:text-blue-600 prose-a:underline hover:prose-a:text-blue-800 prose-img:rounded-lg prose-img:shadow-lg prose-img:max-w-full prose-img:h-auto"
               dangerouslySetInnerHTML={{ 
-                __html: cleanArticleContent(article.content || '')
-                  .replace(/<img([^>]*)>/gi, '<img$1 class="max-w-full h-auto rounded-lg shadow-lg" loading="lazy">')
+                __html: (() => {
+                  try {
+                    const content = article?.content || ''
+                    const cleaned = cleanArticleContent(content)
+                    return cleaned.replace(/<img([^>]*)>/gi, '<img$1 class="max-w-full h-auto rounded-lg shadow-lg" loading="lazy">')
+                  } catch (error) {
+                    return '<p>Error loading article content.</p>'
+                  }
+                })()
               }}
             />
           </div>
