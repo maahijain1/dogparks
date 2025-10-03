@@ -50,7 +50,30 @@ export default function HomePage() {
     minReviews: '',
     featured: false,
     hasPhone: false,
-    hasWebsite: false
+    hasWebsite: false,
+    // Kennel-specific filters
+    boardingType: '',
+    dogSize: '',
+    services: [] as string[],
+    supervision24_7: false,
+    cctvAccess: false,
+    vetOnCall: false,
+    vaccinationRequired: false,
+    minPrice: '',
+    maxPrice: '',
+    priceType: 'night',
+    outdoorSpace: false,
+    indoorSpace: false,
+    specialDiet: false,
+    medication: false,
+    socialPlaytime: false,
+    individualAttention: false,
+    webcamAccess: false,
+    insurance: false,
+    specialNeeds: false,
+    temperatureControlled: false,
+    noiseLevel: '',
+    minYearsBusiness: ''
   })
   const [showFilters, setShowFilters] = useState(false)
   const [categories, setCategories] = useState<string[]>([])
@@ -128,7 +151,30 @@ export default function HomePage() {
       minReviews: '',
       featured: false,
       hasPhone: false,
-      hasWebsite: false
+      hasWebsite: false,
+      // Kennel-specific filters
+      boardingType: '',
+      dogSize: '',
+      services: [],
+      supervision24_7: false,
+      cctvAccess: false,
+      vetOnCall: false,
+      vaccinationRequired: false,
+      minPrice: '',
+      maxPrice: '',
+      priceType: 'night',
+      outdoorSpace: false,
+      indoorSpace: false,
+      specialDiet: false,
+      medication: false,
+      socialPlaytime: false,
+      individualAttention: false,
+      webcamAccess: false,
+      insurance: false,
+      specialNeeds: false,
+      temperatureControlled: false,
+      noiseLevel: '',
+      minYearsBusiness: ''
     })
     setCurrentPage(1) // Reset to first page
   }
@@ -141,13 +187,36 @@ export default function HomePage() {
       minReviews: '',
       featured: false,
       hasPhone: false,
-      hasWebsite: false
+      hasWebsite: false,
+      // Kennel-specific filters
+      boardingType: '',
+      dogSize: '',
+      services: [],
+      supervision24_7: false,
+      cctvAccess: false,
+      vetOnCall: false,
+      vaccinationRequired: false,
+      minPrice: '',
+      maxPrice: '',
+      priceType: 'night',
+      outdoorSpace: false,
+      indoorSpace: false,
+      specialDiet: false,
+      medication: false,
+      socialPlaytime: false,
+      individualAttention: false,
+      webcamAccess: false,
+      insurance: false,
+      specialNeeds: false,
+      temperatureControlled: false,
+      noiseLevel: '',
+      minYearsBusiness: ''
     })
     setCurrentPage(1)
   }
 
   // Update filter
-  const updateFilter = (key: string, value: string | boolean) => {
+  const updateFilter = (key: string, value: string | boolean | string[]) => {
     setFilters(prev => ({ ...prev, [key]: value }))
     setCurrentPage(1)
   }
@@ -173,6 +242,30 @@ export default function HomePage() {
         if (filters.hasPhone) filterParams.set('hasPhone', 'true')
         if (filters.hasWebsite) filterParams.set('hasWebsite', 'true')
         if (searchQuery) filterParams.set('search', searchQuery)
+        
+        // Kennel-specific filters
+        if (filters.boardingType) filterParams.set('boardingType', filters.boardingType)
+        if (filters.dogSize) filterParams.set('dogSize', filters.dogSize)
+        if (filters.services.length > 0) filterParams.set('services', filters.services.join(','))
+        if (filters.supervision24_7) filterParams.set('supervision24_7', 'true')
+        if (filters.cctvAccess) filterParams.set('cctvAccess', 'true')
+        if (filters.vetOnCall) filterParams.set('vetOnCall', 'true')
+        if (filters.vaccinationRequired) filterParams.set('vaccinationRequired', 'true')
+        if (filters.minPrice) filterParams.set('minPrice', filters.minPrice)
+        if (filters.maxPrice) filterParams.set('maxPrice', filters.maxPrice)
+        if (filters.priceType) filterParams.set('priceType', filters.priceType)
+        if (filters.outdoorSpace) filterParams.set('outdoorSpace', 'true')
+        if (filters.indoorSpace) filterParams.set('indoorSpace', 'true')
+        if (filters.specialDiet) filterParams.set('specialDiet', 'true')
+        if (filters.medication) filterParams.set('medication', 'true')
+        if (filters.socialPlaytime) filterParams.set('socialPlaytime', 'true')
+        if (filters.individualAttention) filterParams.set('individualAttention', 'true')
+        if (filters.webcamAccess) filterParams.set('webcamAccess', 'true')
+        if (filters.insurance) filterParams.set('insurance', 'true')
+        if (filters.specialNeeds) filterParams.set('specialNeeds', 'true')
+        if (filters.temperatureControlled) filterParams.set('temperatureControlled', 'true')
+        if (filters.noiseLevel) filterParams.set('noiseLevel', filters.noiseLevel)
+        if (filters.minYearsBusiness) filterParams.set('minYearsBusiness', filters.minYearsBusiness)
 
         const [statesRes, citiesRes, allListingsRes, articlesRes] = await Promise.all([
           fetch('/api/states', { cache: 'no-store' }),
@@ -500,117 +593,370 @@ export default function HomePage() {
 
                 {showFilters && (
                   <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {/* State Filter */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          State
-                        </label>
-                        <select
-                          value={selectedState}
-                          onChange={(e) => setSelectedState(e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                          <option value="">All States</option>
-                          {states.map((state) => (
-                            <option key={state.id} value={state.id}>
-                              {state.name}
-                            </option>
-                          ))}
-                        </select>
+                    <div className="space-y-8">
+                      {/* Basic Filters Row */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        {/* State Filter */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            State
+                          </label>
+                          <select
+                            value={selectedState}
+                            onChange={(e) => setSelectedState(e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          >
+                            <option value="">All States</option>
+                            {states.map((state) => (
+                              <option key={state.id} value={state.id}>
+                                {state.name}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+
+                        {/* Category Filter */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Category
+                          </label>
+                          <select
+                            value={filters.category}
+                            onChange={(e) => updateFilter('category', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          >
+                            <option value="">All Categories</option>
+                            {categories.map((category) => (
+                              <option key={category} value={category}>
+                                {category}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+
+                        {/* Rating Filter */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Min Rating
+                          </label>
+                          <select
+                            value={filters.minRating}
+                            onChange={(e) => updateFilter('minRating', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          >
+                            <option value="">Any Rating</option>
+                            <option value="3">3+ Stars</option>
+                            <option value="4">4+ Stars</option>
+                            <option value="4.5">4.5+ Stars</option>
+                          </select>
+                        </div>
+
+                        {/* Review Count Filter */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Min Reviews
+                          </label>
+                          <select
+                            value={filters.minReviews}
+                            onChange={(e) => updateFilter('minReviews', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          >
+                            <option value="">Any Reviews</option>
+                            <option value="10">10+ Reviews</option>
+                            <option value="50">50+ Reviews</option>
+                            <option value="100">100+ Reviews</option>
+                          </select>
+                        </div>
                       </div>
 
-                      {/* Category Filter */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Category
-                        </label>
-                        <select
-                          value={filters.category}
-                          onChange={(e) => updateFilter('category', e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                          <option value="">All Categories</option>
-                          {categories.map((category) => (
-                            <option key={category} value={category}>
-                              {category}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
+                      {/* Kennel-Specific Filters */}
+                      <div className="border-t pt-6">
+                        <h4 className="text-lg font-semibold text-gray-900 mb-4">🐕 Kennel-Specific Filters</h4>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                          {/* Boarding Type */}
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Boarding Type
+                            </label>
+                            <select
+                              value={filters.boardingType}
+                              onChange={(e) => updateFilter('boardingType', e.target.value)}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                              <option value="">Any Type</option>
+                              <option value="cage-based">Cage-based</option>
+                              <option value="suite">Suite</option>
+                              <option value="free-roam">Free-roam</option>
+                              <option value="in-home">In-home</option>
+                            </select>
+                          </div>
 
-                      {/* Rating Filter */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Min Rating
-                        </label>
-                        <select
-                          value={filters.minRating}
-                          onChange={(e) => updateFilter('minRating', e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                          <option value="">Any Rating</option>
-                          <option value="3">3+ Stars</option>
-                          <option value="4">4+ Stars</option>
-                          <option value="4.5">4.5+ Stars</option>
-                        </select>
-                      </div>
+                          {/* Dog Size */}
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Dog Size Accepted
+                            </label>
+                            <select
+                              value={filters.dogSize}
+                              onChange={(e) => updateFilter('dogSize', e.target.value)}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                              <option value="">Any Size</option>
+                              <option value="small">Small Dogs Only</option>
+                              <option value="medium">Medium Dogs</option>
+                              <option value="large">Large Dogs</option>
+                              <option value="all-sizes">All Sizes</option>
+                            </select>
+                          </div>
 
-                      {/* Review Count Filter */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Min Reviews
-                        </label>
-                        <select
-                          value={filters.minReviews}
-                          onChange={(e) => updateFilter('minReviews', e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                          <option value="">Any Reviews</option>
-                          <option value="10">10+ Reviews</option>
-                          <option value="50">50+ Reviews</option>
-                          <option value="100">100+ Reviews</option>
-                        </select>
-                      </div>
+                          {/* Price Range */}
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Price Range (per {filters.priceType})
+                            </label>
+                            <div className="flex space-x-2">
+                              <input
+                                type="number"
+                                placeholder="Min $"
+                                value={filters.minPrice}
+                                onChange={(e) => updateFilter('minPrice', e.target.value)}
+                                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              />
+                              <input
+                                type="number"
+                                placeholder="Max $"
+                                value={filters.maxPrice}
+                                onChange={(e) => updateFilter('maxPrice', e.target.value)}
+                                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              />
+                            </div>
+                            <select
+                              value={filters.priceType}
+                              onChange={(e) => updateFilter('priceType', e.target.value)}
+                              className="w-full mt-2 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                              <option value="night">Per Night</option>
+                              <option value="week">Per Week</option>
+                              <option value="month">Per Month</option>
+                            </select>
+                          </div>
 
-                      {/* Checkbox Filters */}
-                      <div className="space-y-3">
-                        <label className="flex items-center">
-                          <input
-                            type="checkbox"
-                            checked={filters.featured}
-                            onChange={(e) => updateFilter('featured', e.target.checked)}
-                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                          />
-                          <span className="ml-2 text-sm text-gray-700">Featured Only</span>
-                        </label>
-                        <label className="flex items-center">
-                          <input
-                            type="checkbox"
-                            checked={filters.hasPhone}
-                            onChange={(e) => updateFilter('hasPhone', e.target.checked)}
-                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                          />
-                          <span className="ml-2 text-sm text-gray-700">Has Phone</span>
-                        </label>
-                        <label className="flex items-center">
-                          <input
-                            type="checkbox"
-                            checked={filters.hasWebsite}
-                            onChange={(e) => updateFilter('hasWebsite', e.target.checked)}
-                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                          />
-                          <span className="ml-2 text-sm text-gray-700">Has Website</span>
-                        </label>
+                          {/* Services Offered */}
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Services Offered
+                            </label>
+                            <div className="space-y-2">
+                              {['playtime', 'walks', 'grooming', 'training', 'medical'].map((service) => (
+                                <label key={service} className="flex items-center">
+                                  <input
+                                    type="checkbox"
+                                    checked={filters.services.includes(service)}
+                                    onChange={(e) => {
+                                      if (e.target.checked) {
+                                        updateFilter('services', [...filters.services, service])
+                                      } else {
+                                        updateFilter('services', filters.services.filter(s => s !== service))
+                                      }
+                                    }}
+                                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                  />
+                                  <span className="ml-2 text-sm text-gray-700 capitalize">{service}</span>
+                                </label>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Supervision & Safety */}
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Supervision & Safety
+                            </label>
+                            <div className="space-y-2">
+                              <label className="flex items-center">
+                                <input
+                                  type="checkbox"
+                                  checked={filters.supervision24_7}
+                                  onChange={(e) => updateFilter('supervision24_7', e.target.checked)}
+                                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                />
+                                <span className="ml-2 text-sm text-gray-700">24/7 Staff</span>
+                              </label>
+                              <label className="flex items-center">
+                                <input
+                                  type="checkbox"
+                                  checked={filters.cctvAccess}
+                                  onChange={(e) => updateFilter('cctvAccess', e.target.checked)}
+                                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                />
+                                <span className="ml-2 text-sm text-gray-700">CCTV Access</span>
+                              </label>
+                              <label className="flex items-center">
+                                <input
+                                  type="checkbox"
+                                  checked={filters.vetOnCall}
+                                  onChange={(e) => updateFilter('vetOnCall', e.target.checked)}
+                                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                />
+                                <span className="ml-2 text-sm text-gray-700">Vet On Call</span>
+                              </label>
+                              <label className="flex items-center">
+                                <input
+                                  type="checkbox"
+                                  checked={filters.vaccinationRequired}
+                                  onChange={(e) => updateFilter('vaccinationRequired', e.target.checked)}
+                                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                />
+                                <span className="ml-2 text-sm text-gray-700">Vaccination Required</span>
+                              </label>
+                            </div>
+                          </div>
+
+                          {/* Facilities & Amenities */}
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Facilities & Amenities
+                            </label>
+                            <div className="space-y-2">
+                              <label className="flex items-center">
+                                <input
+                                  type="checkbox"
+                                  checked={filters.outdoorSpace}
+                                  onChange={(e) => updateFilter('outdoorSpace', e.target.checked)}
+                                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                />
+                                <span className="ml-2 text-sm text-gray-700">Outdoor Space</span>
+                              </label>
+                              <label className="flex items-center">
+                                <input
+                                  type="checkbox"
+                                  checked={filters.indoorSpace}
+                                  onChange={(e) => updateFilter('indoorSpace', e.target.checked)}
+                                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                />
+                                <span className="ml-2 text-sm text-gray-700">Indoor Space</span>
+                              </label>
+                              <label className="flex items-center">
+                                <input
+                                  type="checkbox"
+                                  checked={filters.temperatureControlled}
+                                  onChange={(e) => updateFilter('temperatureControlled', e.target.checked)}
+                                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                />
+                                <span className="ml-2 text-sm text-gray-700">Temperature Controlled</span>
+                              </label>
+                              <label className="flex items-center">
+                                <input
+                                  type="checkbox"
+                                  checked={filters.webcamAccess}
+                                  onChange={(e) => updateFilter('webcamAccess', e.target.checked)}
+                                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                />
+                                <span className="ml-2 text-sm text-gray-700">Webcam Access</span>
+                              </label>
+                            </div>
+                          </div>
+
+                          {/* Special Care */}
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Special Care
+                            </label>
+                            <div className="space-y-2">
+                              <label className="flex items-center">
+                                <input
+                                  type="checkbox"
+                                  checked={filters.specialDiet}
+                                  onChange={(e) => updateFilter('specialDiet', e.target.checked)}
+                                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                />
+                                <span className="ml-2 text-sm text-gray-700">Special Diet</span>
+                              </label>
+                              <label className="flex items-center">
+                                <input
+                                  type="checkbox"
+                                  checked={filters.medication}
+                                  onChange={(e) => updateFilter('medication', e.target.checked)}
+                                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                />
+                                <span className="ml-2 text-sm text-gray-700">Medication Administered</span>
+                              </label>
+                              <label className="flex items-center">
+                                <input
+                                  type="checkbox"
+                                  checked={filters.specialNeeds}
+                                  onChange={(e) => updateFilter('specialNeeds', e.target.checked)}
+                                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                />
+                                <span className="ml-2 text-sm text-gray-700">Special Needs</span>
+                              </label>
+                              <label className="flex items-center">
+                                <input
+                                  type="checkbox"
+                                  checked={filters.individualAttention}
+                                  onChange={(e) => updateFilter('individualAttention', e.target.checked)}
+                                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                />
+                                <span className="ml-2 text-sm text-gray-700">Individual Attention</span>
+                              </label>
+                            </div>
+                          </div>
+
+                          {/* Additional Options */}
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Additional Options
+                            </label>
+                            <div className="space-y-2">
+                              <label className="flex items-center">
+                                <input
+                                  type="checkbox"
+                                  checked={filters.socialPlaytime}
+                                  onChange={(e) => updateFilter('socialPlaytime', e.target.checked)}
+                                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                />
+                                <span className="ml-2 text-sm text-gray-700">Social Playtime</span>
+                              </label>
+                              <label className="flex items-center">
+                                <input
+                                  type="checkbox"
+                                  checked={filters.insurance}
+                                  onChange={(e) => updateFilter('insurance', e.target.checked)}
+                                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                />
+                                <span className="ml-2 text-sm text-gray-700">Insurance Coverage</span>
+                              </label>
+                              <label className="flex items-center">
+                                <input
+                                  type="checkbox"
+                                  checked={filters.featured}
+                                  onChange={(e) => updateFilter('featured', e.target.checked)}
+                                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                />
+                                <span className="ml-2 text-sm text-gray-700">Featured Only</span>
+                              </label>
+                              <label className="flex items-center">
+                                <input
+                                  type="checkbox"
+                                  checked={filters.hasPhone}
+                                  onChange={(e) => updateFilter('hasPhone', e.target.checked)}
+                                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                />
+                                <span className="ml-2 text-sm text-gray-700">Has Phone</span>
+                              </label>
+                            </div>
+                          </div>
+                        </div>
                       </div>
 
                       {/* Clear Filters Button */}
-                      <div className="flex items-end">
+                      <div className="flex justify-center pt-4 border-t">
                         <button
                           onClick={clearFilters}
-                          className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors"
+                          className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-medium transition-colors"
                         >
-                          Clear Filters
+                          Clear All Filters
                         </button>
                       </div>
                     </div>

@@ -13,6 +13,33 @@ export async function GET(request: NextRequest) {
     const hasPhone = searchParams.get('hasPhone')
     const hasWebsite = searchParams.get('hasWebsite')
     const search = searchParams.get('search')
+    
+    // New kennel-specific filters
+    const boardingType = searchParams.get('boardingType')
+    const dogSize = searchParams.get('dogSize')
+    const services = searchParams.get('services') // comma-separated
+    const supervision24_7 = searchParams.get('supervision24_7')
+    const cctvAccess = searchParams.get('cctvAccess')
+    const vetOnCall = searchParams.get('vetOnCall')
+    const vaccinationRequired = searchParams.get('vaccinationRequired')
+    const minPrice = searchParams.get('minPrice')
+    const maxPrice = searchParams.get('maxPrice')
+    const priceType = searchParams.get('priceType') // night, week, month
+    const maxDistance = searchParams.get('maxDistance') // in miles
+    const userLat = searchParams.get('userLat')
+    const userLng = searchParams.get('userLng')
+    const outdoorSpace = searchParams.get('outdoorSpace')
+    const indoorSpace = searchParams.get('indoorSpace')
+    const specialDiet = searchParams.get('specialDiet')
+    const medication = searchParams.get('medication')
+    const socialPlaytime = searchParams.get('socialPlaytime')
+    const individualAttention = searchParams.get('individualAttention')
+    const webcamAccess = searchParams.get('webcamAccess')
+    const insurance = searchParams.get('insurance')
+    const specialNeeds = searchParams.get('specialNeeds')
+    const temperatureControlled = searchParams.get('temperatureControlled')
+    const noiseLevel = searchParams.get('noiseLevel')
+    const minYearsBusiness = searchParams.get('minYearsBusiness')
 
         let query = supabase
           .from('listings')
@@ -86,6 +113,109 @@ export async function GET(request: NextRequest) {
     // Search filter (searches in business name, category, and address)
     if (search) {
       query = query.or(`business.ilike.%${search}%,category.ilike.%${search}%,address.ilike.%${search}%`)
+    }
+
+    // Kennel-specific filters
+    if (boardingType) {
+      query = query.eq('boarding_type', boardingType)
+    }
+
+    if (dogSize) {
+      query = query.eq('dog_size_accepted', dogSize)
+    }
+
+    if (services) {
+      const servicesArray = services.split(',').map(s => s.trim())
+      query = query.overlaps('services_offered', servicesArray)
+    }
+
+    if (supervision24_7 === 'true') {
+      query = query.eq('supervision_24_7', true)
+    }
+
+    if (cctvAccess === 'true') {
+      query = query.eq('cctv_access', true)
+    }
+
+    if (vetOnCall === 'true') {
+      query = query.eq('vet_on_call', true)
+    }
+
+    if (vaccinationRequired === 'true') {
+      query = query.eq('vaccination_required', true)
+    }
+
+    // Price filters
+    if (minPrice || maxPrice) {
+      const priceField = priceType === 'week' ? 'price_per_week' : 
+                        priceType === 'month' ? 'price_per_month' : 'price_per_night'
+      
+      if (minPrice) {
+        const min = parseFloat(minPrice)
+        if (!isNaN(min)) {
+          query = query.gte(priceField, min)
+        }
+      }
+      
+      if (maxPrice) {
+        const max = parseFloat(maxPrice)
+        if (!isNaN(max)) {
+          query = query.lte(priceField, max)
+        }
+      }
+    }
+
+    // Space filters
+    if (outdoorSpace === 'true') {
+      query = query.eq('outdoor_space', true)
+    }
+
+    if (indoorSpace === 'true') {
+      query = query.eq('indoor_space', true)
+    }
+
+    // Service filters
+    if (specialDiet === 'true') {
+      query = query.eq('special_diet_accommodation', true)
+    }
+
+    if (medication === 'true') {
+      query = query.eq('medication_administered', true)
+    }
+
+    if (socialPlaytime === 'true') {
+      query = query.eq('social_playtime', true)
+    }
+
+    if (individualAttention === 'true') {
+      query = query.eq('individual_attention', true)
+    }
+
+    if (webcamAccess === 'true') {
+      query = query.eq('webcam_access', true)
+    }
+
+    if (insurance === 'true') {
+      query = query.eq('insurance_coverage', true)
+    }
+
+    if (specialNeeds === 'true') {
+      query = query.eq('special_needs_accommodation', true)
+    }
+
+    if (temperatureControlled === 'true') {
+      query = query.eq('temperature_controlled', true)
+    }
+
+    if (noiseLevel) {
+      query = query.eq('noise_level', noiseLevel)
+    }
+
+    if (minYearsBusiness) {
+      const years = parseInt(minYearsBusiness)
+      if (!isNaN(years)) {
+        query = query.gte('years_in_business', years)
+      }
     }
 
     const { data, error } = await query

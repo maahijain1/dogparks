@@ -27,6 +27,38 @@ export interface Listing {
   featured?: boolean
   created_at: string
   updated_at: string
+  // Kennel-specific fields
+  boarding_type?: string // cage-based, suite, free-roam, in-home
+  dog_size_accepted?: string // small, medium, large, all-sizes
+  breed_restrictions?: string
+  services_offered?: string[] // playtime, walks, grooming, training, medical
+  supervision_24_7?: boolean
+  cctv_access?: boolean
+  vet_on_call?: boolean
+  vaccination_required?: boolean
+  price_per_night?: number
+  price_per_week?: number
+  price_per_month?: number
+  latitude?: number
+  longitude?: number
+  max_dogs?: number
+  outdoor_space?: boolean
+  indoor_space?: boolean
+  emergency_contact?: string
+  pickup_dropoff_times?: string
+  special_diet_accommodation?: boolean
+  medication_administered?: boolean
+  exercise_schedule?: string
+  social_playtime?: boolean
+  individual_attention?: boolean
+  webcam_access?: boolean
+  insurance_coverage?: boolean
+  licensing_info?: string
+  years_in_business?: number
+  staff_ratio?: string
+  temperature_controlled?: boolean
+  noise_level?: string
+  special_needs_accommodation?: boolean
 }
 
 export interface Article {
