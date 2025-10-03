@@ -142,14 +142,21 @@ export async function POST(request: NextRequest) {
         const addressSimilar = areAddressesSimilar(listing1.address, listing2.address)
         const phoneSame = arePhonesSame(listing1.phone, listing2.phone)
 
-        // Duplicate criteria (any of these conditions)
-        if (businessSimilarity > 0.8 && addressSimilar) {
+        // MUCH MORE CONSERVATIVE duplicate criteria - only very obvious duplicates
+        if (normalizeText(listing1.business) === normalizeText(listing2.business) && 
+            listing1.city_id === listing2.city_id && 
+            areAddressesSimilar(listing1.address, listing2.address)) {
+          // Exact same business name, same city, similar address
           isDuplicate = true
-        } else if (businessSimilarity > 0.9) {
+        } else if (phoneSame && 
+                   normalizeText(listing1.business) === normalizeText(listing2.business) && 
+                   listing1.city_id === listing2.city_id) {
+          // Same phone, same business name, same city
           isDuplicate = true
-        } else if (phoneSame && businessSimilarity > 0.6) {
-          isDuplicate = true
-        } else if (normalizeText(listing1.business) === normalizeText(listing2.business) && listing1.city_id === listing2.city_id) {
+        } else if (businessSimilarity > 0.95 && 
+                   areAddressesSimilar(listing1.address, listing2.address) && 
+                   listing1.city_id === listing2.city_id) {
+          // Very high similarity (95%+) with same address and city
           isDuplicate = true
         }
 
@@ -215,6 +222,23 @@ export async function POST(request: NextRequest) {
       })
 
       if (idsToRemove.length > 0) {
+        // SAFETY CHECK: Don't allow removing more than 50% of listings
+        const maxRemovable = Math.floor(listings.length * 0.5)
+        if (idsToRemove.length > maxRemovable) {
+          return NextResponse.json(
+            { 
+              error: `SAFETY BLOCKED: Would remove ${idsToRemove.length} listings (${Math.round(idsToRemove.length/listings.length*100)}% of total). Maximum allowed: ${maxRemovable} (50%). Please review duplicates manually.`,
+              stats: {
+                ...stats,
+                blocked: true,
+                wouldRemove: idsToRemove.length,
+                maxAllowed: maxRemovable
+              }
+            },
+            { status: 400 }
+          )
+        }
+
         console.log(`Removing ${idsToRemove.length} duplicate listings...`)
         
         const { error: deleteError } = await supabase
