@@ -461,7 +461,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
         </section>
 
         {/* Featured Listings Section */}
-        {stateListings.filter(listing => listing.featured).length > 0 && (
+        {stateListings.length > 0 && (
           <section className="py-16 bg-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="text-center mb-12">
@@ -473,7 +473,18 @@ export default async function SlugPage({ params }: SlugPageProps) {
                 </p>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {stateListings.filter(listing => listing.featured).slice(0, 6).map((listing) => (
+                {stateListings
+                  .sort((a, b) => {
+                    // Sort by featured status first, then by rating, then by review count
+                    if (a.featured && !b.featured) return -1
+                    if (!a.featured && b.featured) return 1
+                    const aRating = Number(a.review_rating) || 0
+                    const bRating = Number(b.review_rating) || 0
+                    if (aRating !== bRating) return bRating - aRating
+                    return (Number((b as { number_of_reviews?: number }).number_of_reviews) || 0) - (Number((a as { number_of_reviews?: number }).number_of_reviews) || 0)
+                  })
+                  .slice(0, 6)
+                  .map((listing) => (
                   <div key={listing.id} className="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow border-2 border-yellow-200">
                     <div className="flex justify-between items-start mb-4">
                       <h3 className="text-xl font-semibold text-gray-900">{listing.business}</h3>
@@ -553,14 +564,25 @@ export default async function SlugPage({ params }: SlugPageProps) {
         )}
 
         {/* All Listings Section */}
-        {stateListings.filter(listing => !listing.featured).length > 0 && (
+        {stateListings.length > 6 && (
           <section className="py-16 bg-gray-50">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <h2 className="text-3xl font-bold text-center mb-12">
                 All {niche}s in {stateName}
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {stateListings.filter(listing => !listing.featured).map((listing) => (
+                {stateListings
+                  .sort((a, b) => {
+                    // Sort by featured status first, then by rating, then by review count
+                    if (a.featured && !b.featured) return -1
+                    if (!a.featured && b.featured) return 1
+                    const aRating = Number(a.review_rating) || 0
+                    const bRating = Number(b.review_rating) || 0
+                    if (aRating !== bRating) return bRating - aRating
+                    return (Number((b as { number_of_reviews?: number }).number_of_reviews) || 0) - (Number((a as { number_of_reviews?: number }).number_of_reviews) || 0)
+                  })
+                  .slice(6) // Skip the first 6 (featured) listings
+                  .map((listing) => (
                   <div key={listing.id} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
                     <h3 className="text-xl font-semibold text-gray-900 mb-4">{listing.business}</h3>
                     

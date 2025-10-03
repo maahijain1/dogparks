@@ -211,7 +211,7 @@ export default async function CityPage({ params }: CityPageProps) {
         ) : (
           <div className="space-y-8">
             {/* Featured Listings */}
-            {featuredListings > 0 && (
+            {listings.length > 0 && (
               <div>
                 <div className="text-center mb-8">
                   <div className="inline-flex items-center bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-6 py-3 rounded-full shadow-lg mb-4">
@@ -223,7 +223,15 @@ export default async function CityPage({ params }: CityPageProps) {
                 </div>
                 <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
                   {listings
-                    .filter(listing => listing.featured)
+                    .sort((a, b) => {
+                      // Sort by featured status first, then by rating, then by review count
+                      if (a.featured && !b.featured) return -1
+                      if (!a.featured && b.featured) return 1
+                      const aRating = Number(a.review_rating) || 0
+                      const bRating = Number(b.review_rating) || 0
+                      if (aRating !== bRating) return bRating - aRating
+                      return (Number((b as { number_of_reviews?: number }).number_of_reviews) || 0) - (Number((a as { number_of_reviews?: number }).number_of_reviews) || 0)
+                    })
                     .slice(0, 3)
                     .map((listing) => (
                       <div key={listing.id} className="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-lg shadow-lg p-6 hover:shadow-xl transition-all duration-300 border-2 border-yellow-200 transform hover:-translate-y-1">
@@ -310,7 +318,14 @@ export default async function CityPage({ params }: CityPageProps) {
               </h2>
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {listings
-                  .filter(listing => !listing.featured && listing.phone) // Only show listings with phone numbers
+                  .sort((a, b) => {
+                    // Sort by featured status first, then by rating, then by review count
+                    if (a.featured && !b.featured) return -1
+                    if (!a.featured && b.featured) return 1
+                    if (a.review_rating !== b.review_rating) return b.review_rating - a.review_rating
+                    return b.number_of_reviews - a.number_of_reviews
+                  })
+                  .slice(3) // Skip the first 3 (featured) listings
                   .map((listing) => (
                   <div key={listing.id} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
                     <h3 className="text-xl font-semibold text-gray-900 mb-4">{listing.business}</h3>
