@@ -317,6 +317,9 @@ export default function HomePage() {
         const allListingsData = await allListingsRes.json()
         const articlesData = await articlesRes.json()
         
+        console.log('Fetched articles:', articlesData)
+        console.log('Article featured images:', articlesData.map((a: Article) => ({ title: a.title, featured_image: a.featured_image })))
+        
 
         setStates(Array.isArray(statesData) ? statesData : [])
         setCities(Array.isArray(citiesData) ? citiesData : [])
@@ -1401,8 +1404,8 @@ export default function HomePage() {
             ) : (
               articlesToShow.map((article, index) => (
               <article key={article.id} className="group bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-200">
-                {article.featured_image && (
-                  <div className="relative overflow-hidden">
+                <div className="relative overflow-hidden">
+                  {article.featured_image ? (
                     <Image 
                       src={article.featured_image} 
                       alt={article.title}
@@ -1412,9 +1415,20 @@ export default function HomePage() {
                       loading="lazy"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       quality={75}
+                      onError={(e) => {
+                        console.log('Image failed to load:', article.featured_image)
+                        e.currentTarget.style.display = 'none'
+                      }}
                     />
-                  </div>
-                )}
+                  ) : (
+                    <div className="w-full h-32 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                      <div className="text-center text-white">
+                        <div className="text-4xl mb-2">📝</div>
+                        <div className="text-sm font-medium">Article</div>
+                      </div>
+                    </div>
+                  )}
+                </div>
                 <div className="p-4">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-medium text-gray-500">
