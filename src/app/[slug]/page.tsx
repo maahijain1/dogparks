@@ -1,11 +1,12 @@
 import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowLeft, MapPin, Phone, Globe, Search } from 'lucide-react'
+import { ArrowLeft, MapPin, Phone, Globe } from 'lucide-react'
 import { siteConfig } from '@/lib/config'
 import { Metadata } from 'next'
 import { supabase } from '@/lib/supabase'
 import { getSiteSettings } from '@/lib/dynamic-config'
+import CitySearch from '@/components/CitySearch'
 
 // Function to clean article content and remove empty heading tags
 function cleanArticleContent(content: string): string {
@@ -446,6 +447,9 @@ export default async function SlugPage({ params }: SlugPageProps) {
               Discover {stateListings.length} {niche.toLowerCase().endsWith('s') ? niche.toLowerCase() : niche.toLowerCase() + 's'} across {cities.length} cities in {stateName}
             </p>
             
+            {/* City Search Bar */}
+            {cities.length > 0 && <CitySearch cities={cities} />}
+            
             {/* Stats */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto">
               <div className="text-center">
@@ -546,25 +550,6 @@ export default async function SlugPage({ params }: SlugPageProps) {
               <h2 className="text-3xl font-bold text-center mb-12">
                 Cities in {stateName}
               </h2>
-              
-              {/* Search Bar - Simple placeholder for now */}
-              <div className="max-w-md mx-auto mb-8">
-                <div className="relative">
-                  <input
-                    type="text"
-                    id="citySearch"
-                    placeholder="Search cities..."
-                    className="w-full px-4 py-3 pl-10 pr-4 text-gray-700 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    disabled
-                  />
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Search className="h-5 w-5 text-gray-400" />
-                  </div>
-                </div>
-                <p className="text-center text-sm text-gray-500 mt-2">
-                  Search functionality coming soon
-                </p>
-              </div>
               
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                 {cities
