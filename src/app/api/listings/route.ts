@@ -5,8 +5,14 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const cityId = searchParams.get('cityId')
+    const stateId = searchParams.get('stateId')
     const category = searchParams.get('category')
     const featured = searchParams.get('featured')
+    const minRating = searchParams.get('minRating')
+    const minReviews = searchParams.get('minReviews')
+    const hasPhone = searchParams.get('hasPhone')
+    const hasWebsite = searchParams.get('hasWebsite')
+    const search = searchParams.get('search')
 
         let query = supabase
           .from('listings')
@@ -24,17 +30,63 @@ export async function GET(request: NextRequest) {
           .order('featured', { ascending: false })
           .order('business')
 
+    // City filter
     if (cityId) {
       query = query.eq('city_id', cityId)
     }
 
+    // State filter (get all cities in state first)
+    if (stateId && !cityId) {
+      const { data: cities } = await supabase
+        .from('cities')
+        .select('id')
+        .eq('state_id', stateId)
+      
+      if (cities && cities.length > 0) {
+        query = query.in('city_id', cities.map(c => c.id))
+      }
+    }
+
+    // Category filter
     if (category) {
       query = query.eq('category', category)
     }
 
-          if (featured === 'true') {
-            query = query.eq('featured', true).limit(3)
-          }
+    // Featured filter
+    if (featured === 'true') {
+      query = query.eq('featured', true).limit(3)
+    }
+
+    // Rating filter
+    if (minRating) {
+      const rating = parseFloat(minRating)
+      if (!isNaN(rating)) {
+        query = query.gte('review_rating', rating)
+      }
+    }
+
+    // Review count filter
+    if (minReviews) {
+      const reviews = parseInt(minReviews)
+      if (!isNaN(reviews)) {
+        query = query.gte('number_of_reviews', reviews)
+      }
+    }
+
+    // Phone availability filter
+    if (hasPhone === 'true') {
+      query = query.not('phone', 'is', null).neq('phone', '')
+    }
+
+    // Website availability filter
+    if (hasWebsite === 'true') {
+      query = query.not('website', 'is', null).neq('website', '')
+    }
+
+    // Search filter (searches in business name, category, and address)
+    if (search) {
+      query = query.or(`business.ilike.%${search}%,category.ilike.%${search}%,address.ilike.%${search}%`)
+    }
 
     const { data, error } = await query
 

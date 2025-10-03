@@ -25,6 +25,7 @@ function cleanArticleContent(content: string): string {
 export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCity, setSelectedCity] = useState('')
+  const [selectedState, setSelectedState] = useState('')
   const [cities, setCities] = useState<(City & { states: State })[]>([])
   const [states, setStates] = useState<State[]>([])
   const [featuredListings, setFeaturedListings] = useState<(Listing & { cities: City & { states: State } })[]>([])
@@ -41,6 +42,18 @@ export default function HomePage() {
     niche: 'Dog Park',
     country: 'USA'
   })
+
+  // Filter states
+  const [filters, setFilters] = useState({
+    category: '',
+    minRating: '',
+    minReviews: '',
+    featured: false,
+    hasPhone: false,
+    hasWebsite: false
+  })
+  const [showFilters, setShowFilters] = useState(false)
+  const [categories, setCategories] = useState<string[]>([])
 
   // Load dynamic settings
   const loadDynamicSettings = async () => {
@@ -104,11 +117,39 @@ export default function HomePage() {
     console.log('Searching for:', searchQuery, 'in city:', selectedCity)
   }
 
-  // Clear search
+  // Clear search and filters
   const clearSearch = () => {
     setSearchQuery('')
     setSelectedCity('')
+    setSelectedState('')
+    setFilters({
+      category: '',
+      minRating: '',
+      minReviews: '',
+      featured: false,
+      hasPhone: false,
+      hasWebsite: false
+    })
     setCurrentPage(1) // Reset to first page
+  }
+
+  // Clear all filters
+  const clearFilters = () => {
+    setFilters({
+      category: '',
+      minRating: '',
+      minReviews: '',
+      featured: false,
+      hasPhone: false,
+      hasWebsite: false
+    })
+    setCurrentPage(1)
+  }
+
+  // Update filter
+  const updateFilter = (key: string, value: string | boolean) => {
+    setFilters(prev => ({ ...prev, [key]: value }))
+    setCurrentPage(1)
   }
 
   // Reset page when search or city filter changes
@@ -121,10 +162,22 @@ export default function HomePage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // Build filter parameters
+        const filterParams = new URLSearchParams()
+        if (selectedCity) filterParams.set('cityId', selectedCity)
+        if (selectedState) filterParams.set('stateId', selectedState)
+        if (filters.category) filterParams.set('category', filters.category)
+        if (filters.minRating) filterParams.set('minRating', filters.minRating)
+        if (filters.minReviews) filterParams.set('minReviews', filters.minReviews)
+        if (filters.featured) filterParams.set('featured', 'true')
+        if (filters.hasPhone) filterParams.set('hasPhone', 'true')
+        if (filters.hasWebsite) filterParams.set('hasWebsite', 'true')
+        if (searchQuery) filterParams.set('search', searchQuery)
+
         const [statesRes, citiesRes, allListingsRes, articlesRes] = await Promise.all([
           fetch('/api/states', { cache: 'no-store' }),
           fetch('/api/cities', { cache: 'no-store' }),
-          fetch('/api/listings', { cache: 'no-store' }),
+          fetch(`/api/listings?${filterParams.toString()}`, { cache: 'no-store' }),
           fetch('/api/articles?published=true', { cache: 'no-store' })
         ])
 
@@ -151,10 +204,13 @@ export default function HomePage() {
         setStates(Array.isArray(statesData) ? statesData : [])
         setCities(Array.isArray(citiesData) ? citiesData : [])
         
+        // Extract unique categories from all listings
+        const allListings = Array.isArray(allListingsData) ? allListingsData : []
+        const uniqueCategories = [...new Set(allListings.map(listing => listing.category).filter(Boolean))]
+        setCategories(uniqueCategories)
+        
         // If featured listings API fails or returns empty, filter featured from all listings
         const featuredListings = Array.isArray(featuredData) ? featuredData : []
-        const allListings = Array.isArray(allListingsData) ? allListingsData : []
-        
         
         // If featured API failed, filter featured listings from all listings
         if (featuredListings.length === 0 && allListings.length > 0) {
@@ -182,7 +238,7 @@ export default function HomePage() {
     fetchData()
     loadDynamicSettings()
     getUserLocation()
-  }, [selectedCity])
+  }, [selectedCity, selectedState, filters, searchQuery])
 
   // Refetch featured listings when city changes
   useEffect(() => {
@@ -220,50 +276,9 @@ export default function HomePage() {
     }
   }, [selectedCity, allListings]) // Added allListings dependency back
 
-  // Filter listings based on search
-  const filteredListings = allListings.filter(listing => {
-    // If search query is empty, just filter by city
-    if (searchQuery === '') {
-      // If no city selected, show all listings
-      if (!selectedCity || selectedCity === '' || selectedCity === null) {
-        return true
-      }
-      // If city selected, show only listings from that city
-      return listing.city_id === selectedCity
-    }
-    
-    const searchLower = searchQuery.toLowerCase()
-    
-    // Check if search query matches a city name
-    const matchesCity = cities.some(city => 
-      city.name.toLowerCase().includes(searchLower) ||
-      city.states?.name.toLowerCase().includes(searchLower) ||
-      `${city.name}, ${city.states?.name}`.toLowerCase().includes(searchLower)
-    )
-    
-    // If searching for a city, show all listings from that city
-    if (matchesCity) {
-      const matchingCity = cities.find(city => 
-        city.name.toLowerCase().includes(searchLower) ||
-        city.states?.name.toLowerCase().includes(searchLower) ||
-        `${city.name}, ${city.states?.name}`.toLowerCase().includes(searchLower)
-      )
-      
-      if (matchingCity) {
-        return listing.city_id === matchingCity.id
-      }
-    }
-    
-    // Otherwise, search in business details
-    const matchesBusiness = 
-      listing.business.toLowerCase().includes(searchLower) ||
-      listing.category.toLowerCase().includes(searchLower) ||
-      listing.address.toLowerCase().includes(searchLower)
-    
-    const matchesCityFilter = selectedCity === '' || listing.city_id === selectedCity
-    
-    return matchesBusiness && matchesCityFilter
-  })
+  // Since we're now using API-based filtering, we can use allListings directly
+  // The filtering is now handled by the API endpoint
+  const filteredListings = allListings
 
   // Structured Data for Homepage
   const structuredData = {
@@ -393,7 +408,7 @@ export default function HomePage() {
             </p>
             
             {/* Search Bar */}
-            <div className="max-w-2xl mx-auto">
+            <div className="max-w-4xl mx-auto">
               <div className="flex flex-col md:flex-row gap-4">
                 <div className="flex-1">
                   <div className="relative">
@@ -459,7 +474,7 @@ export default function HomePage() {
                       })}
                   </button>
                   
-                  {(searchQuery || selectedCity) && (
+                  {(searchQuery || selectedCity || selectedState || Object.values(filters).some(v => v !== '' && v !== false)) && (
                     <button
                       onClick={clearSearch}
                       className="w-full md:w-auto bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-1.5 rounded text-xs font-medium flex items-center justify-center transition-colors duration-200 border border-gray-300"
@@ -469,23 +484,162 @@ export default function HomePage() {
                   )}
                 </div>
               </div>
+
+              {/* Advanced Filters */}
+              <div className="mt-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900">Advanced Filters</h3>
+                  <button
+                    onClick={() => setShowFilters(!showFilters)}
+                    className="text-blue-600 hover:text-blue-800 font-medium text-sm flex items-center"
+                  >
+                    {showFilters ? 'Hide Filters' : 'Show Filters'} 
+                    <span className="ml-1">{showFilters ? '▲' : '▼'}</span>
+                  </button>
+                </div>
+
+                {showFilters && (
+                  <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {/* State Filter */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          State
+                        </label>
+                        <select
+                          value={selectedState}
+                          onChange={(e) => setSelectedState(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                          <option value="">All States</option>
+                          {states.map((state) => (
+                            <option key={state.id} value={state.id}>
+                              {state.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      {/* Category Filter */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Category
+                        </label>
+                        <select
+                          value={filters.category}
+                          onChange={(e) => updateFilter('category', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                          <option value="">All Categories</option>
+                          {categories.map((category) => (
+                            <option key={category} value={category}>
+                              {category}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      {/* Rating Filter */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Min Rating
+                        </label>
+                        <select
+                          value={filters.minRating}
+                          onChange={(e) => updateFilter('minRating', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                          <option value="">Any Rating</option>
+                          <option value="3">3+ Stars</option>
+                          <option value="4">4+ Stars</option>
+                          <option value="4.5">4.5+ Stars</option>
+                        </select>
+                      </div>
+
+                      {/* Review Count Filter */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Min Reviews
+                        </label>
+                        <select
+                          value={filters.minReviews}
+                          onChange={(e) => updateFilter('minReviews', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                          <option value="">Any Reviews</option>
+                          <option value="10">10+ Reviews</option>
+                          <option value="50">50+ Reviews</option>
+                          <option value="100">100+ Reviews</option>
+                        </select>
+                      </div>
+
+                      {/* Checkbox Filters */}
+                      <div className="space-y-3">
+                        <label className="flex items-center">
+                          <input
+                            type="checkbox"
+                            checked={filters.featured}
+                            onChange={(e) => updateFilter('featured', e.target.checked)}
+                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                          />
+                          <span className="ml-2 text-sm text-gray-700">Featured Only</span>
+                        </label>
+                        <label className="flex items-center">
+                          <input
+                            type="checkbox"
+                            checked={filters.hasPhone}
+                            onChange={(e) => updateFilter('hasPhone', e.target.checked)}
+                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                          />
+                          <span className="ml-2 text-sm text-gray-700">Has Phone</span>
+                        </label>
+                        <label className="flex items-center">
+                          <input
+                            type="checkbox"
+                            checked={filters.hasWebsite}
+                            onChange={(e) => updateFilter('hasWebsite', e.target.checked)}
+                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                          />
+                          <span className="ml-2 text-sm text-gray-700">Has Website</span>
+                        </label>
+                      </div>
+
+                      {/* Clear Filters Button */}
+                      <div className="flex items-end">
+                        <button
+                          onClick={clearFilters}
+                          className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors"
+                        >
+                          Clear Filters
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
             
             {/* Search Results Indicator */}
-            {searchQuery && (
+            {(searchQuery || selectedState || selectedCity || Object.values(filters).some(v => v !== '' && v !== false)) && (
               <div className="mt-6 p-4 bg-green-50 rounded-lg border border-green-200">
                 <div className="flex items-center justify-center text-green-800">
                   <Search className="h-5 w-5 mr-2" />
                   <span className="font-medium">
                     {filteredListings.length > 0 
-                      ? `Found ${filteredListings.length} ${dynamicSettings.niche.toLowerCase().endsWith('s') ? dynamicSettings.niche.toLowerCase() : dynamicSettings.niche.toLowerCase() + 's'} for "${searchQuery}"`
-                      : `No ${dynamicSettings.niche.toLowerCase().endsWith('s') ? dynamicSettings.niche.toLowerCase() : dynamicSettings.niche.toLowerCase() + 's'} found for "${searchQuery}"`
+                      ? `Found ${filteredListings.length} ${dynamicSettings.niche.toLowerCase().endsWith('s') ? dynamicSettings.niche.toLowerCase() : dynamicSettings.niche.toLowerCase() + 's'}`
+                      : `No ${dynamicSettings.niche.toLowerCase().endsWith('s') ? dynamicSettings.niche.toLowerCase() : dynamicSettings.niche.toLowerCase() + 's'} found`
                     }
+                    {searchQuery && ` for "${searchQuery}"`}
+                    {selectedState && ` in ${states.find(s => s.id === selectedState)?.name}`}
+                    {selectedCity && ` in ${cities.find(c => c.id === selectedCity)?.name}`}
+                    {filters.featured && ' (Featured Only)'}
+                    {filters.minRating && ` (${filters.minRating}+ Stars)`}
+                    {filters.category && ` (${filters.category})`}
                   </span>
                 </div>
                 {filteredListings.length === 0 && (
                   <p className="text-sm text-green-600 mt-1 text-center">
-                    Try searching for a city name or business category
+                    Try adjusting your search terms or filters
                   </p>
                 )}
               </div>
@@ -671,6 +825,12 @@ export default function HomePage() {
               {selectedCity && !searchQuery && (
                 <span> in {cities.find(c => c.id === selectedCity)?.name}</span>
               )}
+              {selectedState && !selectedCity && !searchQuery && (
+                <span> in {states.find(s => s.id === selectedState)?.name}</span>
+              )}
+              {filters.featured && ' (Featured Only)'}
+              {filters.minRating && ` (${filters.minRating}+ Stars)`}
+              {filters.category && ` (${filters.category})`}
             </p>
             
             
