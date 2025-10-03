@@ -39,14 +39,40 @@ const CITY_CORRECTIONS: { [key: string]: string } = {
 function extractCityFromAddress(address: string): string | null {
   if (!address || typeof address !== 'string') return null
   
+  console.log(`Extracting city from address: "${address}"`)
+  
   // Common address patterns:
   // "123 Main St, Birmingham, AL 35203"
   // "456 Oak Ave, Mobile, Alabama"
   // "789 Pine Rd, Huntsville AL"
+  // "1633 Co Rd 337, Section, AL 35771, United States" (your format)
   
   const addressParts = address.split(',').map(part => part.trim())
+  console.log(`Address parts:`, addressParts)
   
-  // If we have comma-separated parts, the city is usually the second-to-last part
+  // For your format: "1633 Co Rd 337, Section, AL 35771, United States"
+  // The city is the second part (index 1)
+  if (addressParts.length >= 3) {
+    let cityPart = addressParts[1] // Second part should be the city
+    
+    console.log(`Initial city part: "${cityPart}"`)
+    
+    // Remove state abbreviations if they're in the same part
+    cityPart = cityPart.replace(/\b(AL|Alabama|AK|Alaska|AZ|Arizona|AR|Arkansas|CA|California|CO|Colorado|CT|Connecticut|DE|Delaware|FL|Florida|GA|Georgia|HI|Hawaii|ID|Idaho|IL|Illinois|IN|Indiana|IA|Iowa|KS|Kansas|KY|Kentucky|LA|Louisiana|ME|Maine|MD|Maryland|MA|Massachusetts|MI|Michigan|MN|Minnesota|MS|Mississippi|MO|Missouri|MT|Montana|NE|Nebraska|NV|Nevada|NH|New Hampshire|NJ|New Jersey|NM|New Mexico|NY|New York|NC|North Carolina|ND|North Dakota|OH|Ohio|OK|Oklahoma|OR|Oregon|PA|Pennsylvania|RI|Rhode Island|SC|South Carolina|SD|South Dakota|TN|Tennessee|TX|Texas|UT|Utah|VT|Vermont|VA|Virginia|WA|Washington|WV|West Virginia|WI|Wisconsin|WY|Wyoming)\b/gi, '').trim()
+    
+    // Remove ZIP codes (5 digits or ZIP+4)
+    cityPart = cityPart.replace(/\b\d{5}(-\d{4})?\b/g, '').trim()
+    
+    console.log(`Cleaned city part: "${cityPart}"`)
+    
+    if (cityPart && cityPart.length > 1) {
+      const normalized = normalizeCityName(cityPart)
+      console.log(`Normalized city: "${normalized}"`)
+      return normalized
+    }
+  }
+  
+  // Fallback: try the old logic for other formats
   if (addressParts.length >= 2) {
     let cityPart = addressParts[addressParts.length - 2]
     
@@ -61,6 +87,7 @@ function extractCityFromAddress(address: string): string | null {
     }
   }
   
+  console.log(`Could not extract city from: "${address}"`)
   return null
 }
 
