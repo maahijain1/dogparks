@@ -483,7 +483,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
                     if (aRating !== bRating) return bRating - aRating
                     return (Number((b as { number_of_reviews?: number }).number_of_reviews) || 0) - (Number((a as { number_of_reviews?: number }).number_of_reviews) || 0)
                   })
-                  .slice(0, 6)
+                  .slice(0, 3)
                   .map((listing) => (
                   <div key={listing.id} className="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow border-2 border-yellow-200">
                     <div className="flex justify-between items-start mb-4">
