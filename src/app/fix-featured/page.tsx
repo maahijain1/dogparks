@@ -1,157 +1,145 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import Link from 'next/link'
-import { Listing, City, State } from '@/types/database'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function FixFeaturedPage() {
-  const [listings, setListings] = useState<(Listing & { cities: City & { states: State } })[]>([])
-  const [loading, setLoading] = useState(true)
-  const [updating, setUpdating] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [result, setResult] = useState<{
+    success: boolean
+    message: string
+    totalUpdated?: number
+    totalCities?: number
+    details?: string
+    error?: string
+    results?: Array<{
+      city: string
+      state: string
+      listings: number
+      featured: number
+      message: string
+    }>
+  } | null>(null)
+  const router = useRouter()
 
-  useEffect(() => {
-    fetchListings()
-  }, [])
-
-  const fetchListings = async () => {
+  const handleFixFeatured = async () => {
+    setLoading(true)
+    setResult(null)
+    
     try {
-      const response = await fetch('/api/check-featured-status')
+      const response = await fetch('/api/fix-featured-status', {
+        method: 'POST'
+      })
+      
       const data = await response.json()
-      if (data.success) {
-        setListings(data.allListings)
-      }
+      setResult(data)
     } catch (error) {
-      console.error('Error:', error)
+      setResult({
+        success: false,
+        message: 'Failed to fix featured status',
+        error: 'Failed to fix featured status',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      })
     } finally {
       setLoading(false)
     }
   }
 
-  const toggleFeatured = async (listing: Listing) => {
-    setUpdating(listing.id)
-    try {
-      const response = await fetch(`/api/listings/${listing.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: listing.id,
-          featured: !listing.featured
-        })
-      })
-
-      if (response.ok) {
-        await fetchListings()
-      } else {
-        const errorData = await response.json()
-        alert(`Error: ${errorData.error}`)
-      }
-    } catch (error) {
-      console.error('Error:', error)
-      alert('Error updating featured status')
-    } finally {
-      setUpdating(null)
-    }
-  }
-
-  if (loading) return <div className="p-8">Loading...</div>
-
-  const featuredListings = listings.filter(l => l.featured === true)
-  const nonFeaturedListings = listings.filter(l => l.featured !== true)
-
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold mb-4">Fix Featured Listings</h1>
-      
-      <div className="mb-6 p-4 bg-blue-50 rounded-lg">
-        <h2 className="text-lg font-semibold mb-2">Summary</h2>
-        <p>Total listings: {listings.length}</p>
-        <p>Featured listings: {featuredListings.length}</p>
-        <p>Non-featured listings: {nonFeaturedListings.length}</p>
-      </div>
-
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-4">Featured Listings ({featuredListings.length})</h2>
-        {featuredListings.length === 0 ? (
-          <p className="text-gray-600">No featured listings found. Click the buttons below to mark listings as featured.</p>
-        ) : (
-          <div className="space-y-2">
-            {featuredListings.map((listing) => (
-              <div key={listing.id} className="p-3 border rounded bg-green-50">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <div className="font-medium">{listing.business}</div>
-                    <div className="text-sm text-gray-600">
-                      {listing.cities?.name}, {listing.cities?.states?.name}
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => toggleFeatured(listing)}
-                    disabled={updating === listing.id}
-                    className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 disabled:opacity-50"
-                  >
-                    {updating === listing.id ? 'Updating...' : 'Featured ✓'}
-                  </button>
-                </div>
-              </div>
-            ))}
+    <div className="min-h-screen bg-gray-100 py-12">
+      <div className="max-w-4xl mx-auto px-4">
+        <div className="bg-white rounded-lg shadow-lg p-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-6">
+            🔧 Fix Featured Listings Status
+          </h1>
+          
+          <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <h2 className="text-lg font-semibold text-yellow-800 mb-2">
+              What this does:
+            </h2>
+            <ul className="text-sm text-yellow-700 space-y-1">
+              <li>• Clears ALL current featured status</li>
+              <li>• Selects up to 3 random high-quality listings per city</li>
+              <li>• Prioritizes listings with phone + website + higher ratings</li>
+              <li>• Ensures only 3 featured listings per city maximum</li>
+            </ul>
           </div>
-        )}
-      </div>
 
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-4">All Listings - Click to Make Featured</h2>
-        <div className="space-y-2">
-          {listings.map((listing) => (
-            <div key={listing.id} className="p-3 border rounded">
-              <div className="flex justify-between items-center">
-                <div>
-                  <div className="font-medium">{listing.business}</div>
-                  <div className="text-sm text-gray-600">
-                    {listing.cities?.name}, {listing.cities?.states?.name}
+          <div className="flex gap-4 mb-6">
+            <button
+              onClick={handleFixFeatured}
+              disabled={loading}
+              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+            >
+              {loading ? 'Fixing...' : 'Fix Featured Status'}
+            </button>
+            
+            <button
+              onClick={() => router.push('/admin/listings/businesses')}
+              className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 font-medium"
+            >
+              Back to Admin
+            </button>
+          </div>
+
+          {result && (
+            <div className={`p-6 rounded-lg ${
+              result.success 
+                ? 'bg-green-50 border border-green-200' 
+                : 'bg-red-50 border border-red-200'
+            }`}>
+              <h3 className={`text-lg font-semibold mb-4 ${
+                result.success ? 'text-green-800' : 'text-red-800'
+              }`}>
+                {result.success ? '✅ Success!' : '❌ Error'}
+              </h3>
+              
+              <div className="space-y-2 text-sm">
+                <p><strong>Message:</strong> {result.message}</p>
+                {result.totalUpdated && (
+                  <p><strong>Total Updated:</strong> {result.totalUpdated} listings</p>
+                )}
+                {result.totalCities && (
+                  <p><strong>Total Cities:</strong> {result.totalCities} cities</p>
+                )}
+                {result.details && (
+                  <p><strong>Details:</strong> {result.details}</p>
+                )}
+              </div>
+
+              {result.results && result.results.length > 0 && (
+                <div className="mt-4">
+                  <h4 className="font-semibold mb-2">Results by City:</h4>
+                  <div className="max-h-60 overflow-y-auto">
+                    <table className="w-full text-xs">
+                      <thead>
+                        <tr className="bg-gray-100">
+                          <th className="px-2 py-1 text-left">City</th>
+                          <th className="px-2 py-1 text-left">State</th>
+                          <th className="px-2 py-1 text-left">Total Listings</th>
+                          <th className="px-2 py-1 text-left">Featured</th>
+                          <th className="px-2 py-1 text-left">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {result.results.map((cityResult, index: number) => (
+                          <tr key={index} className="border-b">
+                            <td className="px-2 py-1">{cityResult.city}</td>
+                            <td className="px-2 py-1">{cityResult.state}</td>
+                            <td className="px-2 py-1">{cityResult.listings}</td>
+                            <td className="px-2 py-1">{cityResult.featured}</td>
+                            <td className="px-2 py-1 text-xs">{cityResult.message}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
-                <button
-                  onClick={() => toggleFeatured(listing)}
-                  disabled={updating === listing.id}
-                  className={`px-3 py-1 rounded text-white hover:opacity-80 disabled:opacity-50 ${
-                    listing.featured 
-                      ? 'bg-green-500 hover:bg-green-600' 
-                      : 'bg-blue-500 hover:bg-blue-600'
-                  }`}
-                >
-                  {updating === listing.id ? 'Updating...' : 
-                   listing.featured ? 'Featured ✓' : 'Make Featured'}
-                </button>
-              </div>
+              )}
             </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="mb-6">
-        <h2 className="text-lg font-semibold mb-2">Quick Actions</h2>
-        <div className="space-x-4">
-          <a 
-            href="/api/check-featured-status" 
-            target="_blank" 
-            className="text-blue-600 hover:underline"
-          >
-            Check Featured Status API
-          </a>
-          <Link 
-            href="/debug-featured" 
-            className="text-blue-600 hover:underline"
-          >
-            Debug Page
-          </Link>
+          )}
         </div>
       </div>
     </div>
   )
 }
-
-
-
-
-
-
