@@ -209,9 +209,9 @@ export default async function SlugPage({ params }: SlugPageProps) {
     articleError = error
     
     // If Supabase fails, try API fallback
-    if (error && process.env.NEXT_PUBLIC_SITE_URL) {
+    if (error) {
       try {
-        const apiResponse = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/articles`, {
+        const apiResponse = await fetch('/api/articles?published=true', {
           cache: 'no-store'
         })
         if (apiResponse.ok) {
