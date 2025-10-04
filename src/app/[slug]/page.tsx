@@ -255,9 +255,15 @@ export default async function SlugPage({ params }: SlugPageProps) {
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
                   quality={90}
                   onError={(e) => {
+                    // Hide the image and show fallback
                     e.currentTarget.style.display = 'none'
+                    const fallback = e.currentTarget.nextElementSibling as HTMLElement
+                    if (fallback) fallback.style.display = 'block'
                   }}
                 />
+                <div className="mb-8 p-8 bg-gray-100 rounded-lg text-center text-gray-500" style={{display: 'none'}}>
+                  Image failed to load
+                </div>
               </div>
             ) : (
               <div className="mb-8 p-8 bg-gray-100 rounded-lg text-center text-gray-500">
@@ -270,9 +276,23 @@ export default async function SlugPage({ params }: SlugPageProps) {
               dangerouslySetInnerHTML={{ 
                 __html: (() => {
                   try {
-                    const content = article?.content || ''
+                    if (!article?.content) {
+                      return '<p>No content available.</p>'
+                    }
+                    
+                    const content = String(article.content)
                     const cleaned = cleanArticleContent(content)
-                    return cleaned.replace(/<img([^>]*)>/gi, '<img$1 class="max-w-full h-auto rounded-lg shadow-lg" loading="lazy">')
+                    
+                    // Process images with better error handling
+                    const processedContent = cleaned.replace(/<img([^>]*)>/gi, (match) => {
+                      try {
+                        return match.replace(/(<img[^>]*)(>)/gi, '$1 class="max-w-full h-auto rounded-lg shadow-lg" loading="lazy"$2')
+                      } catch {
+                        return match
+                      }
+                    })
+                    
+                    return processedContent
                   } catch (error) {
                     return '<p>Error loading article content.</p>'
                   }
