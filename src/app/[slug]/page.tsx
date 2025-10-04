@@ -283,6 +283,8 @@ export default async function SlugPage({ params }: SlugPageProps) {
         </div>
       )
     }
+    
+    // If no article found, continue to check for state/city pages
   } catch (error) {
     // Error fetching article - return 404
     return notFound()
@@ -305,8 +307,11 @@ export default async function SlugPage({ params }: SlugPageProps) {
   
   
   // Handle state pages (format: {niche}-{state}) - show state with cities
+  // Only treat as state page if it matches the niche pattern exactly
   if (slug.includes('-') && parts.length >= 3 && 
-      parts.slice(0, nicheParts.length).join('-') === nicheSlug) {
+      parts.slice(0, nicheParts.length).join('-') === nicheSlug &&
+      !slug.startsWith('how-') && !slug.startsWith('what-') && !slug.startsWith('why-') && 
+      !slug.startsWith('when-') && !slug.startsWith('where-') && !slug.startsWith('which-')) {
     // This is a state page like {niche}-{state}
     let stateName = parts.slice(nicheParts.length).join('-').replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
     
