@@ -253,24 +253,11 @@ export default async function SlugPage({ params }: SlugPageProps) {
                   className="w-full h-64 md:h-80 object-cover rounded-lg shadow-lg"
                   priority
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
-                  onError={(e) => {
-                    // Hide the broken image and show fallback
-                    e.currentTarget.style.display = 'none'
-                    const fallback = e.currentTarget.nextElementSibling as HTMLElement
-                    if (fallback) fallback.style.display = 'block'
-                  }}
                 />
-                <div className="mb-8 p-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg text-center text-white" style={{display: 'none'}}>
-                  <div className="text-6xl mb-4">🐕</div>
-                  <div className="text-xl font-semibold">Luxury Dog Boarding</div>
-                  <div className="text-sm opacity-90">Premium care for your furry friend</div>
-                </div>
               </div>
             ) : (
-              <div className="mb-8 p-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg text-center text-white">
-                <div className="text-6xl mb-4">🐕</div>
-                <div className="text-xl font-semibold">Luxury Dog Boarding</div>
-                <div className="text-sm opacity-90">Premium care for your furry friend</div>
+              <div className="mb-8 p-8 bg-gray-100 rounded-lg text-center text-gray-500">
+                No featured image available
               </div>
             )}
             

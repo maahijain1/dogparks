@@ -31,6 +31,14 @@ const nextConfig = {
         protocol: 'https',
         hostname: '*.ideogram.ai',
       },
+      {
+        protocol: 'https',
+        hostname: 'ik.imagekit.io',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.imagekit.io',
+      },
     ],
   },
   
