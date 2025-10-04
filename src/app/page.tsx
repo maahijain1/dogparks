@@ -343,8 +343,7 @@ export default function HomePage() {
         const articlesToSet = Array.isArray(articlesData) ? articlesData : []
         setLatestArticles(articlesToSet) // All articles
       } catch (error) {
-        console.error('Error fetching data:', error)
-        console.error('Error details:', error)
+        // Error fetching data
         // Set empty arrays on error to prevent crashes
         setCities([])
         setFeaturedListings([])
