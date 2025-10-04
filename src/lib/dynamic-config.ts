@@ -17,7 +17,6 @@ export async function getSiteSettings(forceRefresh = false): Promise<Record<stri
       .select('setting_key, setting_value')
 
     if (error) {
-      console.error('Error fetching settings:', error)
       // Return default values if database fails
       return {
         site_name: 'DirectoryHub',
@@ -38,7 +37,6 @@ export async function getSiteSettings(forceRefresh = false): Promise<Record<stri
 
     return settingsObj
   } catch (error) {
-    console.error('Error in getSiteSettings:', error)
     // Return default values if there's an error
     return {
       site_name: 'DirectoryHub',

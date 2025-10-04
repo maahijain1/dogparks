@@ -184,8 +184,13 @@ export async function generateMetadata({ params }: SlugPageProps): Promise<Metad
 export default async function SlugPage({ params }: SlugPageProps) {
   const { slug } = await params
   
-  // Get dynamic settings
-  const settings = await getSiteSettings()
+  // Get dynamic settings with error handling
+  let settings
+  try {
+    settings = await getSiteSettings()
+  } catch {
+    settings = { niche: 'Dog Park' }
+  }
   const niche = settings.niche || 'Dog Park'
   
   // First check if this is an article by trying to fetch it
@@ -203,7 +208,6 @@ export default async function SlugPage({ params }: SlugPageProps) {
     article = data
     articleError = error
     
-    
     // If Supabase fails, try API fallback
     if (error && process.env.NEXT_PUBLIC_SITE_URL) {
       try {
@@ -216,9 +220,9 @@ export default async function SlugPage({ params }: SlugPageProps) {
           articleError = null
         }
       } catch {
+        // API fallback failed, continue with error
       }
     }
-    
     
     if (article && !articleError) {
       // This is an article page - with basic styling
@@ -279,8 +283,9 @@ export default async function SlugPage({ params }: SlugPageProps) {
         </div>
       )
     }
-  } catch {
-    // Error fetching article
+  } catch (error) {
+    // Error fetching article - return 404
+    return notFound()
   }
   
   
