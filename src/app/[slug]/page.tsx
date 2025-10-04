@@ -253,17 +253,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
                   className="w-full h-64 md:h-80 object-cover rounded-lg shadow-lg"
                   priority
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
-                  quality={90}
-                  onError={(e) => {
-                    // Hide the image and show fallback
-                    e.currentTarget.style.display = 'none'
-                    const fallback = e.currentTarget.nextElementSibling as HTMLElement
-                    if (fallback) fallback.style.display = 'block'
-                  }}
                 />
-                <div className="mb-8 p-8 bg-gray-100 rounded-lg text-center text-gray-500" style={{display: 'none'}}>
-                  Image failed to load
-                </div>
               </div>
             ) : (
               <div className="mb-8 p-8 bg-gray-100 rounded-lg text-center text-gray-500">
@@ -274,29 +264,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
             <div 
               className="prose prose-lg max-w-none prose-p:mb-6 prose-headings:mb-4 prose-headings:mt-8 prose-h2:text-2xl prose-h3:text-xl prose-h2:font-bold prose-h3:font-semibold prose-strong:font-bold prose-a:text-blue-600 prose-a:underline hover:prose-a:text-blue-800 prose-img:rounded-lg prose-img:shadow-lg prose-img:max-w-full prose-img:h-auto"
               dangerouslySetInnerHTML={{ 
-                __html: (() => {
-                  try {
-                    if (!article?.content) {
-                      return '<p>No content available.</p>'
-                    }
-                    
-                    const content = String(article.content)
-                    const cleaned = cleanArticleContent(content)
-                    
-                    // Process images with better error handling
-                    const processedContent = cleaned.replace(/<img([^>]*)>/gi, (match) => {
-                      try {
-                        return match.replace(/(<img[^>]*)(>)/gi, '$1 class="max-w-full h-auto rounded-lg shadow-lg" loading="lazy"$2')
-                      } catch {
-                        return match
-                      }
-                    })
-                    
-                    return processedContent
-                  } catch (error) {
-                    return '<p>Error loading article content.</p>'
-                  }
-                })()
+                __html: article?.content || '<p>No content available.</p>'
               }}
             />
           </div>
