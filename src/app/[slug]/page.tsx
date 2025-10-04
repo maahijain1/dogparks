@@ -318,15 +318,6 @@ export default async function SlugPage({ params }: SlugPageProps) {
     // Clean up parentheses and extra spaces
     stateName = stateName.replace(/\s*\([^)]*\)\s*/g, '').trim()
     
-    console.log('=== STATE PAGE DEBUG ===')
-    console.log('URL slug:', slug)
-    console.log('Niche slug:', nicheSlug)
-    console.log('Niche parts:', nicheParts)
-    console.log('URL parts:', parts)
-    console.log('Original state name:', parts.slice(nicheParts.length).join('-'))
-    console.log('Cleaned state name:', stateName)
-    console.log('Looking for cities in state:', stateName)
-    
     // Fetch cities for this state and listings
     let cities: Array<{id: string, name: string}> = []
     let stateListings: Array<{
@@ -350,7 +341,6 @@ export default async function SlugPage({ params }: SlugPageProps) {
       
       // If exact match fails, try case-insensitive partial match
       if (stateError || !stateData) {
-        console.log('Exact match failed, trying case-insensitive search...')
         const { data: stateDataCI, error: stateErrorCI } = await supabase
           .from('states')
           .select('id, name')
@@ -361,12 +351,10 @@ export default async function SlugPage({ params }: SlugPageProps) {
         if (!stateErrorCI && stateDataCI) {
           stateData = stateDataCI
           stateError = null
-          console.log('Found state with case-insensitive search:', stateData.name)
         }
       }
       
       if (stateError || !stateData) {
-        console.log('State not found:', stateName, stateError)
         
         // Show all available states for debugging
         const { data: allStates } = await supabase
@@ -401,7 +389,6 @@ export default async function SlugPage({ params }: SlugPageProps) {
         )
       }
       
-      console.log('Found state:', stateData)
       
       // Then get cities in this state using state_id
       const { data: stateCities, error: citiesError } = await supabase
@@ -409,36 +396,20 @@ export default async function SlugPage({ params }: SlugPageProps) {
         .select('id, name')
         .eq('state_id', stateData.id)
       
-      if (citiesError) {
-        console.error('Cities query error:', citiesError)
-      } else {
-        console.log('Raw state cities data:', stateCities)
-        console.log('Cities data length:', stateCities?.length || 0)
+      if (!citiesError) {
         
         if (stateCities && stateCities.length > 0) {
           cities = stateCities.map(city => ({
             id: city.id,
             name: city.name
           }))
-          console.log('✅ Found cities in state:', cities.map(c => c.name))
-          console.log('✅ Cities count:', cities.length)
         } else {
-          console.log('❌ No cities found for state_id:', stateData.id)
-          
-          // Debug: Check if any cities exist at all
-          const { data: allCities } = await supabase
-            .from('cities')
-            .select('id, name, state_id')
-            .limit(10)
-          
-          console.log('Debug - Sample cities in database:', allCities)
-          console.log('Debug - Cities with matching state_id:', allCities?.filter(c => c.state_id === stateData.id))
+          // No cities found for this state
         }
       }
 
       // Fetch all listings from all cities in this state
       if (stateData) {
-        console.log('🔄 Fetching listings for state:', stateData.name)
         const { data: listings, error: listingsError } = await supabase
           .from('listings')
           .select(`
@@ -457,14 +428,11 @@ export default async function SlugPage({ params }: SlugPageProps) {
           .order('business')
 
         if (listingsError) {
-          console.error('❌ Error fetching state listings:', listingsError)
         } else {
           stateListings = listings || []
-          console.log('✅ Fetched', stateListings.length, 'listings for state')
         }
       }
     } catch (error) {
-      console.error('Error fetching state data:', error)
     }
     
     return (
@@ -714,15 +682,9 @@ export default async function SlugPage({ params }: SlugPageProps) {
   // Handle city pages (format: {niche}-{city}) - redirect to proper city URL
   if (slug.includes('-') && parts.length > nicheParts.length) {
     // This is a city page like {niche}-{city}
-    console.log('URL parts:', parts)
     // Remove the niche parts and join the rest to get the full city name
     const cityParts = parts.slice(nicheParts.length)
-    console.log('City parts after removing niche:', cityParts)
     const cityName = cityParts.join(' ').replace(/\b\w/g, l => l.toUpperCase())
-    console.log('Final city name:', cityName)
-    console.log('=== REDIRECTING TO CITY PAGE ===')
-    console.log('URL slug:', slug)
-    console.log('Parsed city name:', cityName)
     
     // Redirect to proper city URL
     const citySlug = cityParts.join('-')
