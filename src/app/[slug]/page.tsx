@@ -264,7 +264,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
             <div 
               className="prose prose-lg max-w-none prose-p:mb-6 prose-headings:mb-4 prose-headings:mt-8 prose-h2:text-2xl prose-h3:text-xl prose-h2:font-bold prose-h3:font-semibold prose-strong:font-bold prose-a:text-blue-600 prose-a:underline hover:prose-a:text-blue-800 prose-img:rounded-lg prose-img:shadow-lg prose-img:max-w-full prose-img:h-auto"
               dangerouslySetInnerHTML={{ 
-                __html: article?.content || '<p>No content available.</p>'
+                __html: cleanArticleContent(article?.content || '') || '<p>No content available.</p>'
               }}
             />
           </div>

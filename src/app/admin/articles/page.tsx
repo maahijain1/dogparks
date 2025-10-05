@@ -14,6 +14,8 @@ export default function ArticlesPage() {
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage] = useState(20) // 20 articles per page
   const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<string | null>(null)
 
   const [formData, setFormData] = useState({
     title: '',
@@ -71,6 +73,8 @@ export default function ArticlesPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSubmitting(true)
+    setError(null)
+    setSuccess(null)
     
     try {
       const url = editingArticle ? `/api/articles/${editingArticle.id}` : '/api/articles'
@@ -83,11 +87,18 @@ export default function ArticlesPage() {
       })
 
       if (response.ok) {
+        setSuccess(editingArticle ? 'Article updated successfully!' : 'Article created successfully!')
         await fetchArticles()
+        // Clear success message after 3 seconds
+        setTimeout(() => setSuccess(null), 3000)
         resetForm() // This will close the form (default behavior)
+      } else {
+        const errorData = await response.json()
+        setError(errorData.error || 'Failed to save article. Please try again.')
       }
     } catch (error) {
       console.error('Error saving article:', error)
+      setError('Network error. Please check your connection and try again.')
     } finally {
       setSubmitting(false)
     }
@@ -102,6 +113,8 @@ export default function ArticlesPage() {
       featured_image: '',
       published: false
     })
+    setError(null)
+    setSuccess(null)
     if (closeForm) {
       setShowForm(false)
     }
@@ -235,6 +248,18 @@ export default function ArticlesPage() {
               </div>
               
               <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Error/Success Messages */}
+                {error && (
+                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                    {error}
+                  </div>
+                )}
+                {success && (
+                  <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
+                    {success}
+                  </div>
+                )}
+                
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
