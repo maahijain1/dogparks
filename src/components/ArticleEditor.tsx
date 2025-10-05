@@ -84,7 +84,7 @@ export default function ArticleEditor({ content = '', onChange, placeholder = 'S
       editor.commands.setContent(content, false)
       // Restore cursor position if possible
       if (from !== to) {
-        editor.commands.setTextSelection({ from, to)
+        editor.commands.setTextSelection({ from, to })
       }
     }
   }, [content, editor])
