@@ -60,7 +60,7 @@ export default function ArticleEditor({ content = '', onChange, placeholder = 'S
       }),
     ],
     content: contentRef.current,
-    onUpdate: useCallback(({ editor }) => {
+    onUpdate: useCallback(({ editor }: { editor: Editor }) => {
       const html = editor.getHTML()
       if (onChangeRef.current && html !== contentRef.current) {
         onChangeRef.current(html)
