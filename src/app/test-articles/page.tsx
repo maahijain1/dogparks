@@ -2,8 +2,14 @@
 
 import { useState, useEffect } from 'react'
 
+interface Article {
+  id: string
+  title: string
+  published: boolean
+}
+
 export default function TestArticlesPage() {
-  const [articles, setArticles] = useState([])
+  const [articles, setArticles] = useState<Article[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
