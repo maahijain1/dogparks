@@ -495,139 +495,114 @@ export default function HomePage() {
         )}
       </nav>
 
-      {/* Hero Section - Fresha Inspired */}
-      <section className="relative bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 text-white py-20 overflow-hidden" aria-labelledby="hero-heading">
-        {/* Background Pattern */}
+      {/* Hero Section */}
+      <section className="relative bg-gradient-to-br from-blue-50 to-purple-50 text-gray-900 py-20 overflow-hidden" aria-labelledby="hero-heading">
+        {/* Background Image */}
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-600/90 via-blue-600/90 to-indigo-700/90"></div>
-          <div className="absolute top-0 left-0 w-full h-full">
-            <div className="absolute top-20 left-10 w-32 h-32 bg-white/10 rounded-full blur-xl"></div>
-            <div className="absolute top-40 right-20 w-24 h-24 bg-yellow-300/20 rounded-full blur-lg"></div>
-            <div className="absolute bottom-20 left-1/4 w-40 h-40 bg-pink-300/10 rounded-full blur-2xl"></div>
-            <div className="absolute bottom-10 right-1/3 w-28 h-28 bg-cyan-300/15 rounded-full blur-xl"></div>
-          </div>
+          <Image
+            src="/hero-background-simple.svg"
+            alt=""
+            fill
+            className="object-cover opacity-50"
+            priority
+            sizes="100vw"
+            quality={75}
+          />
         </div>
-        
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            {/* Main Heading */}
-            <h1 id="hero-heading" className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-              <span className="bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
-                Find the Best
-              </span>
-              <br />
-              <span className="text-white">
-                {dynamicSettings.niche}
-              </span>
+            <h1 id="hero-heading" className="text-4xl md:text-6xl font-bold mb-6">
+              {generateDynamicContent(siteConfig.content.hero.title, {
+                site_name: dynamicSettings.siteName,
+                niche: dynamicSettings.niche,
+                country: dynamicSettings.country
+              })}
             </h1>
-            
-            {/* Subtitle */}
-            <p className="text-xl md:text-2xl mb-12 text-blue-100 max-w-3xl mx-auto leading-relaxed">
-              Discover top-rated {dynamicSettings.niche.toLowerCase()} in your area. 
-              Book with confidence and find the perfect match for your needs.
+            <p className="text-xl md:text-2xl mb-8 text-gray-600">
+              {generateDynamicContent(siteConfig.content.hero.subtitle, {
+                site_name: dynamicSettings.siteName,
+                niche: dynamicSettings.niche,
+                country: dynamicSettings.country
+              })}
             </p>
             
-            {/* Modern Search Bar - Fresha Style */}
-            <div className="max-w-5xl mx-auto mb-16">
-              <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-6 shadow-2xl border border-white/20">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  {/* Service Type */}
+            {/* Search Bar */}
+            <div className="max-w-4xl mx-auto">
+              <div className="flex flex-col md:flex-row gap-4">
+                <div className="flex-1">
                   <div className="relative">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Service</label>
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                      <input
-                        type="text"
-                        placeholder="Dog boarding, grooming..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                        className="w-full pl-10 pr-4 py-3 rounded-xl text-gray-900 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
-                      />
-                    </div>
-                  </div>
-                  
-                  {/* Location */}
-                  <div className="relative">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
-                    <div className="relative">
-                      <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                      <select
-                        value={selectedCity}
-                        onChange={(e) => setSelectedCity(e.target.value)}
-                        className="w-full pl-10 pr-4 py-3 rounded-xl text-gray-900 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white"
-                      >
-                        <option value="">Choose location</option>
-                        {cities.map((city) => (
-                          <option key={city.id} value={city.id}>
-                            {city.name}, {city.states?.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                  
-                  {/* Date */}
-                  <div className="relative">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Date</label>
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                     <input
-                      type="date"
-                      className="w-full px-4 py-3 rounded-xl text-gray-900 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                      type="text"
+                      placeholder={generateDynamicContent(siteConfig.content.hero.searchPlaceholder, {
+                      site_name: dynamicSettings.siteName,
+                      niche: dynamicSettings.niche,
+                      country: dynamicSettings.country
+                    })}
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                      className="w-full pl-10 pr-12 py-3 rounded-lg text-gray-900 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
-                  </div>
-                  
-                  {/* Search Button */}
-                  <div className="flex items-end">
                     <button
                       onClick={handleSearch}
-                      className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg"
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-600 text-white p-1.5 rounded-md hover:bg-blue-700 transition-colors"
                     >
-                      Search
+                      <Search className="h-3 w-3" />
                     </button>
                   </div>
+                </div>
+                <div className="md:w-64">
+                  <div className="relative">
+                    <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                    <select
+                      value={selectedCity}
+                      onChange={(e) => setSelectedCity(e.target.value)}
+                      className="w-full pl-10 pr-4 py-3 rounded-lg text-gray-900 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none"
+                    >
+                      <option value="">All Cities</option>
+                      {cities.map((city) => (
+                        <option key={city.id} value={city.id}>
+                          {city.name}, {city.states?.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  {!userLocation && !locationLoading && (
+                    <button
+                      onClick={getUserLocation}
+                      className="mt-2 w-full text-xs text-blue-600 hover:text-blue-800 font-medium"
+                    >
+                      📍 Use My Location
+                    </button>
+                  )}
+                  
                 </div>
                 
-                {/* Clear Button */}
-                {(searchQuery || selectedCity || selectedState || Object.values(filters).some(v => v !== '' && v !== false)) && (
-                  <div className="mt-4 text-center">
+                {/* Search/Clear Buttons */}
+                <div className="md:w-auto flex gap-2">
+                  <button
+                    onClick={handleSearch}
+                    className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white px-2 py-1.5 rounded text-xs font-medium flex items-center justify-center transition-colors duration-200"
+                  >
+                    <Search className="h-3 w-3 mr-1" />
+                      {generateDynamicContent(siteConfig.content.hero.searchButton, {
+                        site_name: dynamicSettings.siteName,
+                        niche: dynamicSettings.niche,
+                        country: dynamicSettings.country
+                      })}
+                  </button>
+                  
+                  {(searchQuery || selectedCity || selectedState || Object.values(filters).some(v => v !== '' && v !== false)) && (
                     <button
                       onClick={clearSearch}
-                      className="text-gray-500 hover:text-gray-700 text-sm font-medium transition-colors"
+                      className="w-full md:w-auto bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-1.5 rounded text-xs font-medium flex items-center justify-center transition-colors duration-200 border border-gray-300"
                     >
-                      Clear all filters
+                      Clear
                     </button>
-                  </div>
-                )}
-              </div>
-            </div>
-            
-            {/* Statistics */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-              <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-white mb-2">
-                  {allListings.length}+
-                </div>
-                <div className="text-blue-100 text-lg">
-                  {dynamicSettings.niche} Listed
+                  )}
                 </div>
               </div>
-              <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-white mb-2">
-                  {cities.length}+
-                </div>
-                <div className="text-blue-100 text-lg">
-                  Cities Covered
-                </div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl md:text-4xl font-bold text-white mb-2">
-                  24/7
-                </div>
-                <div className="text-blue-100 text-lg">
-                  Customer Support
-                </div>
-              </div>
-            </div>
 
               {/* Advanced Filters */}
               <div className="mt-6">
