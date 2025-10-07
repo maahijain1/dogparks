@@ -30,8 +30,16 @@ export default function SimpleArticlesPage() {
       const data = await response.json()
       console.log('Fetched articles:', data)
       console.log('Articles count:', data.length)
+      console.log('Articles type:', typeof data)
+      console.log('Is array:', Array.isArray(data))
       
-      setArticles(Array.isArray(data) ? data : [])
+      if (Array.isArray(data)) {
+        console.log('Setting articles:', data)
+        setArticles(data)
+      } else {
+        console.log('Data is not an array:', data)
+        setArticles([])
+      }
       setError(null)
     } catch (error) {
       console.error('Error fetching articles:', error)
@@ -100,6 +108,13 @@ export default function SimpleArticlesPage() {
     <div className="p-8">
       <h1 className="text-3xl font-bold mb-4">Simple Articles Admin</h1>
       <p className="mb-4">Found {articles.length} articles</p>
+      
+      <div className="mb-4 p-4 bg-yellow-100 rounded">
+        <h3 className="font-bold">Debug Info:</h3>
+        <p>Articles state: {articles.length}</p>
+        <p>Loading: {loading.toString()}</p>
+        <p>Error: {error || 'None'}</p>
+      </div>
       
       <button 
         onClick={fetchArticles}
