@@ -25,7 +25,13 @@ export async function GET(request: NextRequest) {
     console.log('API: Fetched articles count:', data?.length || 0)
     console.log('API: Articles:', data?.map(a => a.title) || [])
 
-    return NextResponse.json(data)
+    // Add cache-busting headers
+    const response = NextResponse.json(data)
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate')
+    response.headers.set('Pragma', 'no-cache')
+    response.headers.set('Expires', '0')
+    
+    return response
   } catch (error) {
     return NextResponse.json(
       { error: 'Failed to fetch articles' },
