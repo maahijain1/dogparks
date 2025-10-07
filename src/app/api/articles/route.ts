@@ -17,7 +17,13 @@ export async function GET(request: NextRequest) {
 
     const { data, error } = await query
 
-    if (error) throw error
+    if (error) {
+      console.error('Database error:', error)
+      throw error
+    }
+
+    console.log('API: Fetched articles count:', data?.length || 0)
+    console.log('API: Articles:', data?.map(a => a.title) || [])
 
     return NextResponse.json(data)
   } catch (error) {
