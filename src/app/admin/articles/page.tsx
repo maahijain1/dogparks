@@ -34,6 +34,7 @@ export default function ArticlesPage() {
   // Fetch articles
   const fetchArticles = async () => {
     try {
+      setLoading(true)
       const response = await fetch('/api/articles', {
         cache: 'no-store',
         headers: {
@@ -45,6 +46,7 @@ export default function ArticlesPage() {
       }
       const data = await response.json()
       console.log('Fetched articles:', data)
+      console.log('Articles count:', data.length)
       setArticles(Array.isArray(data) ? data : [])
     } catch (error) {
       console.error('Error fetching articles:', error)
