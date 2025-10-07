@@ -43,7 +43,16 @@ export default function ArticleEditor({ content = '', onChange, placeholder = 'S
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
-      StarterKit,
+      StarterKit.configure({
+        bulletList: {
+          keepMarks: true,
+          keepAttributes: false,
+        },
+        orderedList: {
+          keepMarks: true,
+          keepAttributes: false,
+        },
+      }),
       Image.configure({
         HTMLAttributes: {
           class: 'max-w-full h-auto rounded-lg',
@@ -70,6 +79,14 @@ export default function ArticleEditor({ content = '', onChange, placeholder = 'S
       attributes: {
         class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none min-h-[300px] p-4',
       },
+      handlePaste: (view, event, slice) => {
+        // Allow default paste behavior to preserve formatting
+        return false
+      },
+      handleDrop: (view, event, slice, moved) => {
+        // Allow default drop behavior
+        return false
+      },
     },
   })
 
@@ -81,7 +98,7 @@ export default function ArticleEditor({ content = '', onChange, placeholder = 'S
   useEffect(() => {
     if (editor && content !== editor.getHTML()) {
       const { from, to } = editor.state.selection
-      editor.commands.setContent(content, false)
+      editor.commands.setContent(content)
       // Restore cursor position if possible
       if (from !== to) {
         editor.commands.setTextSelection({ from, to })
