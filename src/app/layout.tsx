@@ -3,6 +3,8 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { siteConfig } from '@/lib/config'
 import { getSiteSettings, generateDynamicContent } from '@/lib/dynamic-config'
+import GoogleAnalytics from '@/components/GoogleAnalytics'
+import OwnerToggle from '@/components/OwnerToggle'
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -102,6 +104,8 @@ export default function RootLayout({
         <link rel="preload" href="/hero-background-simple.svg" as="image" type="image/svg+xml" />
       </head>
       <body className={inter.className}>
+        <GoogleAnalytics measurementId="G-QW1ELNERMR" />
+        <OwnerToggle />
         {children}
       </body>
     </html>
