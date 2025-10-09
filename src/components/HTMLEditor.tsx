@@ -134,9 +134,9 @@ export default function HTMLEditor({ content = '', onChange, placeholder = 'Ente
       {/* Footer */}
       <div className="border-t border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 px-4 py-2 text-xs text-gray-500 dark:text-gray-400">
         {previewMode ? (
-          <span>Preview mode - Click "Edit" to modify HTML</span>
+          <span>Preview mode - Click &quot;Edit&quot; to modify HTML</span>
         ) : (
-          <span>HTML Editor - Click "Preview" to see rendered content</span>
+          <span>HTML Editor - Click &quot;Preview&quot; to see rendered content</span>
         )}
       </div>
     </div>

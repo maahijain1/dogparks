@@ -36,7 +36,7 @@ export async function getSiteSettings(forceRefresh = false): Promise<Record<stri
     cacheTimestamp = Date.now()
 
     return settingsObj
-  } catch (error) {
+  } catch {
     // Return default values if there's an error
     return {
       site_name: 'DirectoryHub',
