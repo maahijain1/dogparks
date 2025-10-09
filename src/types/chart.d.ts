@@ -1,7 +1,9 @@
 // Chart.js type declarations
 declare global {
   interface Window {
-    Chart: any
+    Chart: {
+      new (context: CanvasRenderingContext2D, config: unknown): unknown
+    }
   }
 }
 
