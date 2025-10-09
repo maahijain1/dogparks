@@ -51,7 +51,7 @@ export default function GoogleAnalytics({ measurementId }: GoogleAnalyticsProps)
     setShouldTrack(true)
 
     // Initialize gtag if not already done
-    if (typeof window !== 'undefined' && window.gtag) {
+    if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
       window.gtag('config', measurementId, {
         page_title: document.title,
         page_location: window.location.href,
