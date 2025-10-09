@@ -338,10 +338,46 @@ export default function ArticlesPage() {
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Content *
                   </label>
-                  <ArticleEditor
-                    content={formData.content}
-                    onChange={(content) => setFormData({ ...formData, content })}
-                  />
+                  
+                  {/* Editor Mode Toggle */}
+                  <div className="mb-4 flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setEditorMode('rich')}
+                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                        editorMode === 'rich'
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
+                      }`}
+                    >
+                      Rich Text Editor
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setEditorMode('html')}
+                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                        editorMode === 'html'
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
+                      }`}
+                    >
+                      HTML Editor
+                    </button>
+                  </div>
+                  
+                  {/* Editor Component */}
+                  {editorMode === 'rich' ? (
+                    <ArticleEditor
+                      content={formData.content}
+                      onChange={(content) => setFormData({ ...formData, content })}
+                    />
+                  ) : (
+                    <HTMLEditor
+                      content={formData.content}
+                      onChange={(content) => setFormData({ ...formData, content })}
+                      placeholder="Enter your HTML content here..."
+                    />
+                  )}
                 </div>
 
                 <div className="flex items-center">
