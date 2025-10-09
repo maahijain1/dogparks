@@ -47,7 +47,7 @@ export default function ArticleRenderer({ content }: ArticleRendererProps) {
         strategy="lazyOnload"
         onLoad={() => {
           // Initialize charts after Chart.js loads
-          if (typeof window !== 'undefined' && window.Chart) {
+          if (typeof window !== 'undefined' && typeof window.Chart !== 'undefined') {
             // Chart initialization will be handled by the HTML content
             console.log('Chart.js loaded successfully')
           }
