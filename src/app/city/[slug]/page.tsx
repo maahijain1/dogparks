@@ -9,6 +9,37 @@ interface CityPageProps {
   params: Promise<{ slug: string }>
 }
 
+// Function to get state from city name
+function getStateFromCity(cityName: string): { state: string; stateAbbr: string } {
+  // Common city to state mappings
+  const cityStateMap: Record<string, { state: string; stateAbbr: string }> = {
+    'burlington': { state: 'North Carolina', stateAbbr: 'NC' },
+    'charlotte': { state: 'North Carolina', stateAbbr: 'NC' },
+    'raleigh': { state: 'North Carolina', stateAbbr: 'NC' },
+    'greensboro': { state: 'North Carolina', stateAbbr: 'NC' },
+    'winston salem': { state: 'North Carolina', stateAbbr: 'NC' },
+    'durham': { state: 'North Carolina', stateAbbr: 'NC' },
+    'fayetteville': { state: 'North Carolina', stateAbbr: 'NC' },
+    'cary': { state: 'North Carolina', stateAbbr: 'NC' },
+    'wilmington': { state: 'North Carolina', stateAbbr: 'NC' },
+    'high point': { state: 'North Carolina', stateAbbr: 'NC' },
+    'concord': { state: 'North Carolina', stateAbbr: 'NC' },
+    'asheville': { state: 'North Carolina', stateAbbr: 'NC' },
+    'gastonia': { state: 'North Carolina', stateAbbr: 'NC' },
+    'jacksonville': { state: 'North Carolina', stateAbbr: 'NC' },
+    'chapel hill': { state: 'North Carolina', stateAbbr: 'NC' },
+    'huntersville': { state: 'North Carolina', stateAbbr: 'NC' },
+    'apex': { state: 'North Carolina', stateAbbr: 'NC' },
+    'kannapolis': { state: 'North Carolina', stateAbbr: 'NC' },
+    'hickory': { state: 'North Carolina', stateAbbr: 'NC' },
+    'rocky mount': { state: 'North Carolina', stateAbbr: 'NC' },
+    // Add more cities as needed
+  }
+  
+  const cityKey = cityName.toLowerCase()
+  return cityStateMap[cityKey] || { state: '', stateAbbr: '' }
+}
+
 export async function generateMetadata({ params }: CityPageProps): Promise<Metadata> {
   const { slug } = await params
   const cityName = slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
@@ -17,9 +48,14 @@ export async function generateMetadata({ params }: CityPageProps): Promise<Metad
   const settings = await getSiteSettings()
   const niche = settings.niche || 'Dog Park'
   
-  // Format: "Niche City | Site Name"
-  const title = `${niche} ${cityName}`
-  const description = `Find the best ${niche.toLowerCase()} in ${cityName}. Browse reviews, ratings, and contact information for local businesses.`
+  // Get state information
+  const { state, stateAbbr } = getStateFromCity(cityName)
+  
+  // Format: "Niche City State | Site Name" or "Niche City | Site Name" if no state
+  const title = state ? `${niche} ${cityName} ${state}` : `${niche} ${cityName}`
+  const description = state 
+    ? `Find the best ${niche.toLowerCase()} in ${cityName}, ${stateAbbr}. Browse reviews, ratings, and contact information for local businesses.`
+    : `Find the best ${niche.toLowerCase()} in ${cityName}. Browse reviews, ratings, and contact information for local businesses.`
   
   return {
     title: title,
@@ -235,37 +271,37 @@ export default async function CityPage({ params }: CityPageProps) {
                     .slice(0, 3)
                     .map((listing) => (
                       <div key={listing.id} className="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-lg shadow-lg p-6 hover:shadow-xl transition-all duration-300 border-2 border-yellow-200 transform hover:-translate-y-1">
-                        <div className="flex justify-between items-start mb-4">
+                      <div className="flex justify-between items-start mb-4">
                           <h3 className="text-xl font-bold text-gray-900">{listing.business}</h3>
                           <span className="bg-yellow-500 text-white text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap">
-                            ⭐ Featured
-                          </span>
-                        </div>
+                          ⭐ Featured
+                        </span>
+                      </div>
                       
                         <div className="space-y-3 text-sm">
-                          {listing.address && (
+                        {listing.address && (
                             <div className="flex items-start">
                               <MapPin className="h-4 w-4 text-orange-500 mt-0.5 mr-2 flex-shrink-0" />
                               <span className="text-gray-700">{listing.address}</span>
                             </div>
-                          )}
+                        )}
                             
-                          {listing.phone && (
+                        {listing.phone && (
                             <div className="flex items-center justify-between bg-white/60 rounded-lg p-2 -mx-2">
                               <div className="flex items-center">
                                 <Phone className="h-4 w-4 text-orange-500 mr-2" />
                                 <span className="text-gray-700 font-medium">{listing.phone}</span>
                               </div>
-                              <a 
-                                href={`tel:${listing.phone}`}
+                            <a 
+                              href={`tel:${listing.phone}`}
                                 className="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 transition-colors shadow-md"
-                              >
+                            >
                                 📞 Call Now
-                              </a>
-                            </div>
-                          )}
+                            </a>
+                          </div>
+                        )}
                             
-                          {listing.website && (
+                        {listing.website && (
                             <div className="flex items-center">
                               <Globe className="h-4 w-4 text-orange-500 mr-2" />
                               <a 
@@ -274,8 +310,8 @@ export default async function CityPage({ params }: CityPageProps) {
                                 rel="noopener noreferrer"
                                 className="text-blue-600 hover:text-blue-800 font-medium hover:underline"
                               >
-                                Visit Website
-                              </a>
+                              Visit Website
+                            </a>
                             </div>
                           )}
                             
@@ -304,8 +340,8 @@ export default async function CityPage({ params }: CityPageProps) {
                               {listing.category}
                             </div>
                           )}
-                        </div>
                       </div>
+                    </div>
                   ))}
                 </div>
               </div>
@@ -327,51 +363,51 @@ export default async function CityPage({ params }: CityPageProps) {
                   })
                   .slice(3) // Skip the first 3 (featured) listings
                   .map((listing) => (
-                  <div key={listing.id} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+                <div key={listing.id} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
                     <h3 className="text-xl font-semibold text-gray-900 mb-4">{listing.business}</h3>
                   
-                    <div className="space-y-2 text-sm text-gray-600">
-                      {listing.address && (
-                        <p><span className="font-medium">Address:</span> {listing.address}</p>
-                      )}
+                  <div className="space-y-2 text-sm text-gray-600">
+                    {listing.address && (
+                      <p><span className="font-medium">Address:</span> {listing.address}</p>
+                    )}
                       
-                      {listing.phone && (
-                        <div className="flex items-center justify-between">
-                          <p><span className="font-medium">Phone:</span> {listing.phone}</p>
-                          <a 
-                            href={`tel:${listing.phone}`}
-                            className="inline-flex items-center px-3 py-1 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors"
-                          >
-                            📞 Call
-                          </a>
-                        </div>
-                      )}
+                    {listing.phone && (
+                      <div className="flex items-center justify-between">
+                        <p><span className="font-medium">Phone:</span> {listing.phone}</p>
+                        <a 
+                          href={`tel:${listing.phone}`}
+                          className="inline-flex items-center px-3 py-1 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors"
+                        >
+                          📞 Call
+                        </a>
+                      </div>
+                    )}
                       
-                      {listing.website && (
-                        <p>
-                          <span className="font-medium">Website:</span>{' '}
+                    {listing.website && (
+                      <p>
+                        <span className="font-medium">Website:</span>{' '}
                           <a 
                             href={listing.website.startsWith('http') ? listing.website : `https://${listing.website}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-blue-600 hover:underline"
                           >
-                            Visit Website
-                          </a>
-                        </p>
-                      )}
+                          Visit Website
+                        </a>
+                      </p>
+                    )}
                       
                       {listing.review_rating && Number(listing.review_rating) > 0 && (
-                        <p>
-                          <span className="font-medium">Rating:</span> {listing.review_rating}/5 
+                      <p>
+                        <span className="font-medium">Rating:</span> {listing.review_rating}/5 
                           <span className="ml-1 text-yellow-500">★</span>
-                        </p>
-                      )}
-                    </div>
+                      </p>
+                    )}
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
+          </div>
           </div>
         )}
         </div>
