@@ -39,6 +39,21 @@ export default function ArticleRenderer({ content }: ArticleRendererProps) {
     loadExternalResources()
   }, [])
 
+  useEffect(() => {
+    // Re-run scripts embedded in the HTML content after it's rendered
+    // This is important for Chart.js or any other dynamic scripts
+    const container = document.getElementById('article-content-container')
+    if (container) {
+      const scripts = container.querySelectorAll('script')
+      scripts.forEach(oldScript => {
+        const newScript = document.createElement('script')
+        Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+        newScript.appendChild(document.createTextNode(oldScript.innerHTML))
+        oldScript.parentNode?.replaceChild(newScript, oldScript)
+      })
+    }
+  }, [content])
+
   return (
     <>
       {/* Chart.js Script */}
@@ -56,6 +71,7 @@ export default function ArticleRenderer({ content }: ArticleRendererProps) {
       
       {/* Render the HTML content */}
       <div 
+        id="article-content-container"
         className="w-full"
         dangerouslySetInnerHTML={{ __html: content }}
       />
