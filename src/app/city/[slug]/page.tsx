@@ -9,8 +9,8 @@ interface CityPageProps {
   params: Promise<{ slug: string }>
 }
 
-// Function to extract state from city slug (format: city-state or city-state-abbreviation)
-function getStateFromCitySlug(slug: string): { state: string; stateAbbr: string } {
+// Function to get state information from city name or slug
+function getStateFromCity(cityName: string, slug: string): { state: string; stateAbbr: string } {
   // Common state abbreviations mapping
   const stateAbbrMap: Record<string, { state: string; stateAbbr: string }> = {
     'al': { state: 'Alabama', stateAbbr: 'AL' },
@@ -66,12 +66,95 @@ function getStateFromCitySlug(slug: string): { state: string; stateAbbr: string 
     'dc': { state: 'District of Columbia', stateAbbr: 'DC' }
   }
   
-  // Try to extract state from slug patterns like:
-  // - city-state (e.g., "burlington-nc")
-  // - city-state-full (e.g., "burlington-north-carolina")
-  const parts = slug.split('-')
+  // Comprehensive city to state mapping
+  const cityStateMap: Record<string, { state: string; stateAbbr: string }> = {
+    // North Carolina
+    'burlington': { state: 'North Carolina', stateAbbr: 'NC' },
+    'charlotte': { state: 'North Carolina', stateAbbr: 'NC' },
+    'raleigh': { state: 'North Carolina', stateAbbr: 'NC' },
+    'greensboro': { state: 'North Carolina', stateAbbr: 'NC' },
+    'durham': { state: 'North Carolina', stateAbbr: 'NC' },
+    'fayetteville': { state: 'North Carolina', stateAbbr: 'NC' },
+    'cary': { state: 'North Carolina', stateAbbr: 'NC' },
+    'wilmington': { state: 'North Carolina', stateAbbr: 'NC' },
+    'high point': { state: 'North Carolina', stateAbbr: 'NC' },
+    'concord': { state: 'North Carolina', stateAbbr: 'NC' },
+    'asheville': { state: 'North Carolina', stateAbbr: 'NC' },
+    'gastonia': { state: 'North Carolina', stateAbbr: 'NC' },
+    'jacksonville': { state: 'North Carolina', stateAbbr: 'NC' },
+    'chapel hill': { state: 'North Carolina', stateAbbr: 'NC' },
+    'huntersville': { state: 'North Carolina', stateAbbr: 'NC' },
+    'apex': { state: 'North Carolina', stateAbbr: 'NC' },
+    'kannapolis': { state: 'North Carolina', stateAbbr: 'NC' },
+    'hickory': { state: 'North Carolina', stateAbbr: 'NC' },
+    'rocky mount': { state: 'North Carolina', stateAbbr: 'NC' },
+    'clinton': { state: 'North Carolina', stateAbbr: 'NC' },
+    
+    // Texas
+    'houston': { state: 'Texas', stateAbbr: 'TX' },
+    'dallas': { state: 'Texas', stateAbbr: 'TX' },
+    'austin': { state: 'Texas', stateAbbr: 'TX' },
+    'san antonio': { state: 'Texas', stateAbbr: 'TX' },
+    'fort worth': { state: 'Texas', stateAbbr: 'TX' },
+    'el paso': { state: 'Texas', stateAbbr: 'TX' },
+    'arlington': { state: 'Texas', stateAbbr: 'TX' },
+    'corpus christi': { state: 'Texas', stateAbbr: 'TX' },
+    'plano': { state: 'Texas', stateAbbr: 'TX' },
+    'lubbock': { state: 'Texas', stateAbbr: 'TX' },
+    
+    // Florida
+    'miami': { state: 'Florida', stateAbbr: 'FL' },
+    'tampa': { state: 'Florida', stateAbbr: 'FL' },
+    'orlando': { state: 'Florida', stateAbbr: 'FL' },
+    'jacksonville': { state: 'Florida', stateAbbr: 'FL' },
+    'tallahassee': { state: 'Florida', stateAbbr: 'FL' },
+    'fort lauderdale': { state: 'Florida', stateAbbr: 'FL' },
+    'st petersburg': { state: 'Florida', stateAbbr: 'FL' },
+    'hialeah': { state: 'Florida', stateAbbr: 'FL' },
+    'port st lucie': { state: 'Florida', stateAbbr: 'FL' },
+    'cape coral': { state: 'Florida', stateAbbr: 'FL' },
+    
+    // California
+    'los angeles': { state: 'California', stateAbbr: 'CA' },
+    'san diego': { state: 'California', stateAbbr: 'CA' },
+    'san jose': { state: 'California', stateAbbr: 'CA' },
+    'san francisco': { state: 'California', stateAbbr: 'CA' },
+    'fresno': { state: 'California', stateAbbr: 'CA' },
+    'sacramento': { state: 'California', stateAbbr: 'CA' },
+    'long beach': { state: 'California', stateAbbr: 'CA' },
+    'oakland': { state: 'California', stateAbbr: 'CA' },
+    'bakersfield': { state: 'California', stateAbbr: 'CA' },
+    'anaheim': { state: 'California', stateAbbr: 'CA' },
+    
+    // New York
+    'new york': { state: 'New York', stateAbbr: 'NY' },
+    'buffalo': { state: 'New York', stateAbbr: 'NY' },
+    'rochester': { state: 'New York', stateAbbr: 'NY' },
+    'yonkers': { state: 'New York', stateAbbr: 'NY' },
+    'syracuse': { state: 'New York', stateAbbr: 'NY' },
+    'albany': { state: 'New York', stateAbbr: 'NY' },
+    'new rochelle': { state: 'New York', stateAbbr: 'NY' },
+    'mount vernon': { state: 'New York', stateAbbr: 'NY' },
+    'schenectady': { state: 'New York', stateAbbr: 'NY' },
+    'utica': { state: 'New York', stateAbbr: 'NY' },
+    
+    // Illinois
+    'chicago': { state: 'Illinois', stateAbbr: 'IL' },
+    'aurora': { state: 'Illinois', stateAbbr: 'IL' },
+    'rockford': { state: 'Illinois', stateAbbr: 'IL' },
+    'joliet': { state: 'Illinois', stateAbbr: 'IL' },
+    'naperville': { state: 'Illinois', stateAbbr: 'IL' },
+    'springfield': { state: 'Illinois', stateAbbr: 'IL' },
+    'peoria': { state: 'Illinois', stateAbbr: 'IL' },
+    'elgin': { state: 'Illinois', stateAbbr: 'IL' },
+    'waukegan': { state: 'Illinois', stateAbbr: 'IL' },
+    'cicero': { state: 'Illinois', stateAbbr: 'IL' },
+    
+    // Add more cities as needed...
+  }
   
-  // Check if last part is a state abbreviation
+  // First, try to extract state from slug if it contains state info
+  const parts = slug.split('-')
   const lastPart = parts[parts.length - 1]
   if (stateAbbrMap[lastPart.toLowerCase()]) {
     return stateAbbrMap[lastPart.toLowerCase()]
@@ -86,6 +169,12 @@ function getStateFromCitySlug(slug: string): { state: string; stateAbbr: string 
     }
   }
   
+  // If no state in URL, try to match city name to known cities
+  const cityKey = cityName.toLowerCase()
+  if (cityStateMap[cityKey]) {
+    return cityStateMap[cityKey]
+  }
+  
   // Default fallback
   return { state: '', stateAbbr: '' }
 }
@@ -93,29 +182,11 @@ function getStateFromCitySlug(slug: string): { state: string; stateAbbr: string 
 export async function generateMetadata({ params }: CityPageProps): Promise<Metadata> {
   const { slug } = await params
   
-  // Get state information from slug
-  const { state, stateAbbr } = getStateFromCitySlug(slug)
+  // Format city name from slug
+  const cityName = slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
   
-  // Extract city name by removing state parts from slug
-  let cityName = slug
-  if (state) {
-    // Remove state abbreviation or full state name from slug
-    const stateParts = state.toLowerCase().split(' ')
-    const stateSlug = stateParts.join('-')
-    const stateAbbrSlug = stateAbbr.toLowerCase()
-    
-    // Try to remove state abbreviation first
-    if (cityName.endsWith(`-${stateAbbrSlug}`)) {
-      cityName = cityName.slice(0, -(stateAbbrSlug.length + 1))
-    }
-    // Try to remove full state name
-    else if (cityName.endsWith(`-${stateSlug}`)) {
-      cityName = cityName.slice(0, -(stateSlug.length + 1))
-    }
-  }
-  
-  // Format city name properly
-  cityName = cityName.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+  // Get state information from city name and slug
+  const { state, stateAbbr } = getStateFromCity(cityName, slug)
   
   // Get dynamic settings
   const settings = await getSiteSettings()
