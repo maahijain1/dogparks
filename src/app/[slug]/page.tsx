@@ -7,6 +7,7 @@ import { Metadata } from 'next'
 import { supabase } from '@/lib/supabase'
 import { getSiteSettings } from '@/lib/dynamic-config'
 import CitySearch from '@/components/CitySearch'
+import ArticleRenderer from '@/components/ArticleRenderer'
 
 // Function to clean article content and remove empty heading tags
 function cleanArticleContent(content: string): string {
@@ -225,48 +226,57 @@ export default async function SlugPage({ params }: SlugPageProps) {
     }
     
     if (article && !articleError) {
-      // This is an article page - with basic styling
+      // This is an article page - with full width styling
       return (
         <div className="min-h-screen bg-white">
-          <div className="max-w-4xl mx-auto px-4 py-12">
+          {/* Full width container */}
+          <div className="w-full">
             {/* Back to Home Button */}
-            <div className="mb-8">
-              <Link 
-                href="/"
-                className="inline-flex items-center text-blue-600 hover:text-blue-800 hover:underline"
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Homepage
-              </Link>
+            <div className="px-4 py-6 bg-gray-50 border-b">
+              <div className="max-w-7xl mx-auto">
+                <Link 
+                  href="/"
+                  className="inline-flex items-center text-blue-600 hover:text-blue-800 hover:underline"
+                >
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Back to Homepage
+                </Link>
+              </div>
             </div>
             
-            <h1 className="text-4xl font-bold mb-8">{article.title}</h1>
+            {/* Article Header */}
+            <div className="px-4 py-8 bg-gradient-to-r from-blue-50 to-indigo-50">
+              <div className="max-w-7xl mx-auto">
+                <h1 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900">{article.title}</h1>
+                <div className="text-sm text-gray-600">
+                  Published on {new Date(article.created_at).toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                  })}
+                </div>
+              </div>
+            </div>
             
-            {/* Featured Image */}
+            {/* Featured Image - Full Width */}
             {article.featured_image ? (
-              <div className="mb-8">
+              <div className="w-full mb-8">
                 <Image
                   src={article.featured_image}
                   alt={article.title}
-                  width={800}
-                  height={400}
-                  className="w-full h-64 md:h-80 object-cover rounded-lg shadow-lg"
+                  width={1200}
+                  height={600}
+                  className="w-full h-64 md:h-96 object-cover"
                   priority
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
+                  sizes="100vw"
                 />
               </div>
-            ) : (
-              <div className="mb-8 p-8 bg-gray-100 rounded-lg text-center text-gray-500">
-                No featured image available
-              </div>
-            )}
+            ) : null}
             
-            <div 
-              className="prose prose-lg max-w-none prose-p:mb-6 prose-headings:mb-4 prose-headings:mt-8 prose-h2:text-2xl prose-h3:text-xl prose-h2:font-bold prose-h3:font-semibold prose-strong:font-bold prose-a:text-blue-600 prose-a:underline hover:prose-a:text-blue-800 prose-img:rounded-lg prose-img:shadow-lg prose-img:max-w-full prose-img:h-auto"
-              dangerouslySetInnerHTML={{ 
-                __html: cleanArticleContent(article?.content || '') || '<p>No content available.</p>'
-              }}
-            />
+            {/* Article Content - Full Width with proper HTML rendering */}
+            <div className="w-full">
+              <ArticleRenderer content={cleanArticleContent(article?.content || '') || '<p>No content available.</p>'} />
+            </div>
           </div>
         </div>
       )
