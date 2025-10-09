@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowLeft, Plus, Edit, Trash2, FileText, X } from "lucide-react";
 import { Article } from '@/types/database'
 import ArticleEditor from '@/components/ArticleEditor'
+import HTMLEditor from '@/components/HTMLEditor'
 
 export default function ArticlesPage() {
   const [articles, setArticles] = useState<Article[]>([])
@@ -24,6 +25,7 @@ export default function ArticlesPage() {
     featured_image: '',
     published: false
   })
+  const [editorMode, setEditorMode] = useState<'rich' | 'html'>('rich')
 
   // Pagination calculations
   const totalPages = Math.ceil(articles.length / itemsPerPage)
@@ -125,6 +127,7 @@ export default function ArticlesPage() {
       featured_image: '',
       published: false
     })
+    setEditorMode('rich')
     setError(null)
     setSuccess(null)
     if (closeForm) {
