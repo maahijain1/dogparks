@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Code, Eye, EyeOff, Copy, Check } from 'lucide-react'
+import { Code, Eye, Copy, Check } from 'lucide-react'
 
 interface HTMLEditorProps {
   content?: string
@@ -103,7 +103,7 @@ export default function HTMLEditor({ content = '', onChange, placeholder = 'Ente
           <div className="p-4 min-h-[300px]">
             <div className="prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto max-w-none">
               <div 
-                dangerouslySetInnerHTML={{ __html: htmlContent || '<p class="text-gray-500 italic">No content to preview</p>' }}
+                dangerouslySetInnerHTML={{ __html: htmlContent || '<p class=&quot;text-gray-500 italic&quot;>No content to preview</p>' }}
                 className="html-preview"
               />
             </div>
