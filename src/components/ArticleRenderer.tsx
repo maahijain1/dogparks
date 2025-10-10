@@ -85,14 +85,14 @@ export default function ArticleRenderer({ content }: ArticleRendererProps) {
             console.log(`Canvas ${index}:`, canvas.id, canvas)
             if (canvas.id && typeof window !== 'undefined' && window.Chart) {
               // Check if chart already exists
-              const existingChart = Chart.getChart(canvas)
+              const existingChart = (window as any).Chart.getChart(canvas)
               if (!existingChart) {
                 console.log(`Initializing chart for canvas: ${canvas.id}`)
                 
                 // Initialize specific charts based on their IDs
                 try {
                   if (canvas.id === 'anxietyStatsChart') {
-                    new Chart(canvas, {
+                    new (window as any).Chart(canvas, {
                       type: 'doughnut',
                       data: {
                         labels: ['Separation Anxiety Concern', 'Other Behavioral Concerns', 'No Major Concerns'],
@@ -118,7 +118,7 @@ export default function ArticleRenderer({ content }: ArticleRendererProps) {
                       }
                     })
                   } else if (canvas.id === 'preparationTimelineChart') {
-                    new Chart(canvas, {
+                    new (window as any).Chart(canvas, {
                       type: 'bar',
                       data: {
                         labels: ['Week 1 (Days 21-14)', 'Week 2 (Days 14-7)', 'Week 3 (Days 7-0)'],
@@ -152,7 +152,7 @@ export default function ArticleRenderer({ content }: ArticleRendererProps) {
                       }
                     })
                   } else if (canvas.id === 'facilityEvaluationChart') {
-                    new Chart(canvas, {
+                    new (window as any).Chart(canvas, {
                       type: 'radar',
                       data: {
                         labels: ['Staff-to-Dog Ratio', 'Facility Design', 'Emergency Protocols', 'Socialization Approach', 'Communication', 'Enrichment Activities'],
@@ -184,7 +184,7 @@ export default function ArticleRenderer({ content }: ArticleRendererProps) {
                       }
                     })
                   } else if (canvas.id === 'medicalNeedsChart') {
-                    new Chart(canvas, {
+                    new (window as any).Chart(canvas, {
                       type: 'bar',
                       data: {
                         labels: ['Diabetes', 'Arthritis', 'Cardiac Conditions', 'Kidney Disease', 'Seizure Disorders'],
@@ -218,7 +218,7 @@ export default function ArticleRenderer({ content }: ArticleRendererProps) {
                       }
                     })
                   } else if (canvas.id === 'successRatesChart') {
-                    new Chart(canvas, {
+                    new (window as any).Chart(canvas, {
                       type: 'bar',
                       data: {
                         labels: ['Comprehensive Preparation', 'Standard Preparation', 'Minimal Preparation', 'No Preparation'],
