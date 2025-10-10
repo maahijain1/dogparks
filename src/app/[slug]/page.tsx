@@ -189,55 +189,56 @@ export default async function SlugPage({ params }: SlugPageProps) {
     }
     
     if (article && !articleError) {
-      // This is an article page - with full width styling
+      // This is an article page - with centered content
       return (
-        <div className="min-h-screen bg-white">
-          {/* Full width container */}
-          <div className="w-full">
-            {/* Back to Home Button */}
-            <div className="px-4 py-6 bg-gray-50 border-b">
-              <div className="max-w-7xl mx-auto">
-                <Link 
-                  href="/"
-                  className="inline-flex items-center text-blue-600 hover:text-blue-800 hover:underline"
-                >
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back to Homepage
-                </Link>
+        <div className="min-h-screen bg-gray-50">
+          {/* Back to Home Button */}
+          <div className="px-4 py-6 bg-white border-b">
+            <div className="max-w-4xl mx-auto">
+              <Link 
+                href="/"
+                className="inline-flex items-center text-blue-600 hover:text-blue-800 hover:underline"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Homepage
+              </Link>
+            </div>
+          </div>
+          
+          {/* Article Header - Centered */}
+          <div className="px-4 py-8 bg-white">
+            <div className="max-w-4xl mx-auto text-center">
+              <h1 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900">{article.title}</h1>
+              <div className="text-sm text-gray-600">
+                Published on {new Date(article.created_at).toLocaleDateString('en-US', { 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric' 
+                })}
               </div>
             </div>
-            
-            {/* Article Header */}
-            <div className="px-4 py-8 bg-gradient-to-r from-blue-50 to-indigo-50">
-              <div className="max-w-7xl mx-auto">
-                <h1 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900">{article.title}</h1>
-                <div className="text-sm text-gray-600">
-                  Published on {new Date(article.created_at).toLocaleDateString('en-US', { 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
-                  })}
-                </div>
-              </div>
-            </div>
-            
-            {/* Featured Image - Full Width */}
-            {article.featured_image ? (
-              <div className="w-full mb-8">
+          </div>
+          
+          {/* Featured Image - Centered */}
+          {article.featured_image ? (
+            <div className="px-4 mb-8">
+              <div className="max-w-4xl mx-auto">
                 <Image
                   src={article.featured_image}
                   alt={article.title}
-                  width={1200}
-                  height={600}
-                  className="w-full h-64 md:h-96 object-cover"
+                  width={800}
+                  height={400}
+                  className="w-full h-64 md:h-96 object-cover rounded-lg shadow-lg"
                   priority
-                  sizes="100vw"
+                  sizes="(max-width: 768px) 100vw, 800px"
                 />
               </div>
-            ) : null}
-            
-            {/* Article Content - Full Width with proper HTML rendering */}
-            <div className="w-full">
+            </div>
+          ) : null}
+          
+          {/* Article Content - Centered with proper HTML rendering */}
+          <div className="px-4 pb-8">
+            <div className="max-w-4xl mx-auto">
               <ArticleRenderer content={cleanArticleContent(article?.content || '') || '<p>No content available.</p>'} />
             </div>
           </div>

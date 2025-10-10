@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Script from 'next/script'
 
 interface ArticleRendererProps {
@@ -8,6 +8,9 @@ interface ArticleRendererProps {
 }
 
 export default function ArticleRenderer({ content }: ArticleRendererProps) {
+  const [isChartLoaded, setIsChartLoaded] = useState(false)
+  const [isFontAwesomeLoaded, setIsFontAwesomeLoaded] = useState(false)
+
   useEffect(() => {
     // Load external CSS and JS libraries when component mounts
     const loadExternalResources = () => {
@@ -24,6 +27,7 @@ export default function ArticleRenderer({ content }: ArticleRendererProps) {
         const fontAwesomeLink = document.createElement('link')
         fontAwesomeLink.href = 'https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css'
         fontAwesomeLink.rel = 'stylesheet'
+        fontAwesomeLink.onload = () => setIsFontAwesomeLoaded(true)
         document.head.appendChild(fontAwesomeLink)
       }
 
@@ -34,6 +38,14 @@ export default function ArticleRenderer({ content }: ArticleRendererProps) {
         googleFontsLink.rel = 'stylesheet'
         document.head.appendChild(googleFontsLink)
       }
+
+      // Load custom article content CSS
+      if (!document.querySelector('link[href*="article-content.css"]')) {
+        const customCSSLink = document.createElement('link')
+        customCSSLink.href = '/styles/article-content.css'
+        customCSSLink.rel = 'stylesheet'
+        document.head.appendChild(customCSSLink)
+      }
     }
 
     loadExternalResources()
@@ -43,7 +55,7 @@ export default function ArticleRenderer({ content }: ArticleRendererProps) {
     // Re-run scripts embedded in the HTML content after it's rendered
     // This is important for Chart.js or any other dynamic scripts
     const container = document.getElementById('article-content-container')
-    if (container) {
+    if (container && isChartLoaded) {
       const scripts = container.querySelectorAll('script')
       scripts.forEach(oldScript => {
         const newScript = document.createElement('script')
@@ -52,7 +64,7 @@ export default function ArticleRenderer({ content }: ArticleRendererProps) {
         oldScript.parentNode?.replaceChild(newScript, oldScript)
       })
     }
-  }, [content])
+  }, [content, isChartLoaded])
 
   return (
     <>
@@ -63,16 +75,20 @@ export default function ArticleRenderer({ content }: ArticleRendererProps) {
         onLoad={() => {
           // Initialize charts after Chart.js loads
           if (typeof window !== 'undefined' && typeof window.Chart !== 'undefined') {
-            // Chart initialization will be handled by the HTML content
+            setIsChartLoaded(true)
             console.log('Chart.js loaded successfully')
           }
         }}
       />
       
-      {/* Render the HTML content */}
+      {/* Render the HTML content with proper styling */}
       <div 
         id="article-content-container"
-        className="w-full"
+        className="article-content-container prose prose-lg max-w-none"
+        style={{
+          fontFamily: "'Inter', sans-serif",
+          lineHeight: '1.6'
+        }}
         dangerouslySetInnerHTML={{ __html: content }}
       />
     </>

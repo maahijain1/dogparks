@@ -1,0 +1,192 @@
+/* Article Content Styling for HTML Editor */
+
+/* Ensure all HTML elements are properly styled */
+.article-content-container {
+  font-family: 'Inter', sans-serif;
+  line-height: 1.6;
+  color: #374151;
+}
+
+/* Font Awesome Icons */
+.fas, .far, .fab, .fa {
+  font-family: "Font Awesome 6 Free" !important;
+  font-weight: 900;
+  font-style: normal;
+  font-variant: normal;
+  text-rendering: auto;
+  line-height: 1;
+}
+
+/* Ensure Tailwind classes work in dynamically rendered content */
+.article-content-container * {
+  box-sizing: border-box;
+}
+
+/* Chart.js canvas styling */
+.article-content-container canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Table styling */
+.article-content-container table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+.article-content-container th,
+.article-content-container td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.article-content-container th {
+  background-color: #f9fafb;
+  font-weight: 600;
+}
+
+/* Button styling */
+.article-content-container button {
+  cursor: pointer;
+  border: none;
+  border-radius: 0.375rem;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+/* Link styling */
+.article-content-container a {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+.article-content-container a:hover {
+  color: #1d4ed8;
+}
+
+/* Image styling */
+.article-content-container img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+}
+
+/* Code styling */
+.article-content-container code {
+  background-color: #f3f4f6;
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+}
+
+.article-content-container pre {
+  background-color: #f3f4f6;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.article-content-container pre code {
+  background: none;
+  padding: 0;
+}
+
+/* Blockquote styling */
+.article-content-container blockquote {
+  border-left: 4px solid #e5e7eb;
+  padding-left: 1rem;
+  margin: 1rem 0;
+  font-style: italic;
+  color: #6b7280;
+}
+
+/* List styling */
+.article-content-container ul,
+.article-content-container ol {
+  padding-left: 1.5rem;
+  margin: 1rem 0;
+}
+
+.article-content-container li {
+  margin: 0.25rem 0;
+}
+
+/* Heading styling */
+.article-content-container h1,
+.article-content-container h2,
+.article-content-container h3,
+.article-content-container h4,
+.article-content-container h5,
+.article-content-container h6 {
+  margin: 1.5rem 0 1rem 0;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.article-content-container h1 {
+  font-size: 2.25rem;
+}
+
+.article-content-container h2 {
+  font-size: 1.875rem;
+}
+
+.article-content-container h3 {
+  font-size: 1.5rem;
+}
+
+.article-content-container h4 {
+  font-size: 1.25rem;
+}
+
+.article-content-container h5 {
+  font-size: 1.125rem;
+}
+
+.article-content-container h6 {
+  font-size: 1rem;
+}
+
+/* Paragraph styling */
+.article-content-container p {
+  margin: 1rem 0;
+}
+
+/* Ensure all custom classes work */
+.article-content-container .gradient-bg {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.article-content-container .glass-effect {
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.article-content-container .hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.article-content-container .text-shadow {
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+/* Print styles */
+@media print {
+  .article-content-container .no-print {
+    display: none !important;
+  }
+  
+  .article-content-container {
+    font-size: 12px;
+  }
+  
+  .article-content-container .container {
+    max-width: none;
+  }
+}
