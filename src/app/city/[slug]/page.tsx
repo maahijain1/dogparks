@@ -84,28 +84,55 @@ async function getStateFromCity(cityName: string, slug: string): Promise<{ state
   
   // Try to get state from database by looking up the city
   try {
+    console.log('🔍 Looking up city in database:', cityName)
+    
     const { data: cityData, error } = await supabase
       .from('cities')
       .select(`
         name,
         states (
-          name,
-          abbreviation
+          name
         )
       `)
       .ilike('name', `%${cityName}%`)
       .limit(1)
       .single()
     
+    console.log('📊 Database query result:', { cityData, error })
+    
     if (!error && cityData && cityData.states) {
       const state = Array.isArray(cityData.states) ? cityData.states[0] : cityData.states
-      return {
-        state: state.name,
-        stateAbbr: state.abbreviation
+      console.log('✅ Found state in database:', state)
+      
+      // Map state name to abbreviation
+      const stateNameToAbbr: Record<string, string> = {
+        'Alabama': 'AL', 'Alaska': 'AK', 'Arizona': 'AZ', 'Arkansas': 'AR',
+        'California': 'CA', 'Colorado': 'CO', 'Connecticut': 'CT', 'Delaware': 'DE',
+        'Florida': 'FL', 'Georgia': 'GA', 'Hawaii': 'HI', 'Idaho': 'ID',
+        'Illinois': 'IL', 'Indiana': 'IN', 'Iowa': 'IA', 'Kansas': 'KS',
+        'Kentucky': 'KY', 'Louisiana': 'LA', 'Maine': 'ME', 'Maryland': 'MD',
+        'Massachusetts': 'MA', 'Michigan': 'MI', 'Minnesota': 'MN', 'Mississippi': 'MS',
+        'Missouri': 'MO', 'Montana': 'MT', 'Nebraska': 'NE', 'Nevada': 'NV',
+        'New Hampshire': 'NH', 'New Jersey': 'NJ', 'New Mexico': 'NM', 'New York': 'NY',
+        'North Carolina': 'NC', 'North Dakota': 'ND', 'Ohio': 'OH', 'Oklahoma': 'OK',
+        'Oregon': 'OR', 'Pennsylvania': 'PA', 'Rhode Island': 'RI', 'South Carolina': 'SC',
+        'South Dakota': 'SD', 'Tennessee': 'TN', 'Texas': 'TX', 'Utah': 'UT',
+        'Vermont': 'VT', 'Virginia': 'VA', 'Washington': 'WA', 'West Virginia': 'WV',
+        'Wisconsin': 'WI', 'Wyoming': 'WY', 'District of Columbia': 'DC'
       }
+      
+      const result = {
+        state: state.name,
+        stateAbbr: stateNameToAbbr[state.name] || ''
+      }
+      
+      console.log('🎯 Returning state info:', result)
+      return result
+    } else {
+      console.log('❌ No city found in database for:', cityName)
     }
   } catch (dbError) {
-    console.log('Database lookup failed:', dbError)
+    console.log('💥 Database lookup failed:', dbError)
   }
   
   // Try using a geocoding API as fallback (you can replace with any geocoding service)
