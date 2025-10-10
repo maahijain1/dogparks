@@ -9,9 +9,9 @@ interface CityPageProps {
   params: Promise<{ slug: string }>
 }
 
-// Function to get state information from city name or slug
-function getStateFromCity(cityName: string, slug: string): { state: string; stateAbbr: string } {
-  // Common state abbreviations mapping
+// Function to get state information from city name or slug using dynamic approach
+async function getStateFromCity(cityName: string, slug: string): Promise<{ state: string; stateAbbr: string }> {
+  // State abbreviations mapping
   const stateAbbrMap: Record<string, { state: string; stateAbbr: string }> = {
     'al': { state: 'Alabama', stateAbbr: 'AL' },
     'ak': { state: 'Alaska', stateAbbr: 'AK' },
@@ -66,93 +66,6 @@ function getStateFromCity(cityName: string, slug: string): { state: string; stat
     'dc': { state: 'District of Columbia', stateAbbr: 'DC' }
   }
   
-  // Comprehensive city to state mapping
-  const cityStateMap: Record<string, { state: string; stateAbbr: string }> = {
-    // North Carolina
-    'burlington': { state: 'North Carolina', stateAbbr: 'NC' },
-    'charlotte': { state: 'North Carolina', stateAbbr: 'NC' },
-    'raleigh': { state: 'North Carolina', stateAbbr: 'NC' },
-    'greensboro': { state: 'North Carolina', stateAbbr: 'NC' },
-    'durham': { state: 'North Carolina', stateAbbr: 'NC' },
-    'fayetteville': { state: 'North Carolina', stateAbbr: 'NC' },
-    'cary': { state: 'North Carolina', stateAbbr: 'NC' },
-    'wilmington': { state: 'North Carolina', stateAbbr: 'NC' },
-    'high point': { state: 'North Carolina', stateAbbr: 'NC' },
-    'concord': { state: 'North Carolina', stateAbbr: 'NC' },
-    'asheville': { state: 'North Carolina', stateAbbr: 'NC' },
-    'gastonia': { state: 'North Carolina', stateAbbr: 'NC' },
-    'jacksonville nc': { state: 'North Carolina', stateAbbr: 'NC' },
-    'chapel hill': { state: 'North Carolina', stateAbbr: 'NC' },
-    'huntersville': { state: 'North Carolina', stateAbbr: 'NC' },
-    'apex': { state: 'North Carolina', stateAbbr: 'NC' },
-    'kannapolis': { state: 'North Carolina', stateAbbr: 'NC' },
-    'hickory': { state: 'North Carolina', stateAbbr: 'NC' },
-    'rocky mount': { state: 'North Carolina', stateAbbr: 'NC' },
-    'clinton': { state: 'North Carolina', stateAbbr: 'NC' },
-    
-    // Texas
-    'houston': { state: 'Texas', stateAbbr: 'TX' },
-    'dallas': { state: 'Texas', stateAbbr: 'TX' },
-    'austin': { state: 'Texas', stateAbbr: 'TX' },
-    'san antonio': { state: 'Texas', stateAbbr: 'TX' },
-    'fort worth': { state: 'Texas', stateAbbr: 'TX' },
-    'el paso': { state: 'Texas', stateAbbr: 'TX' },
-    'arlington': { state: 'Texas', stateAbbr: 'TX' },
-    'corpus christi': { state: 'Texas', stateAbbr: 'TX' },
-    'plano': { state: 'Texas', stateAbbr: 'TX' },
-    'lubbock': { state: 'Texas', stateAbbr: 'TX' },
-    
-    // Florida
-    'miami': { state: 'Florida', stateAbbr: 'FL' },
-    'tampa': { state: 'Florida', stateAbbr: 'FL' },
-    'orlando': { state: 'Florida', stateAbbr: 'FL' },
-    'jacksonville fl': { state: 'Florida', stateAbbr: 'FL' },
-    'tallahassee': { state: 'Florida', stateAbbr: 'FL' },
-    'fort lauderdale': { state: 'Florida', stateAbbr: 'FL' },
-    'st petersburg': { state: 'Florida', stateAbbr: 'FL' },
-    'hialeah': { state: 'Florida', stateAbbr: 'FL' },
-    'port st lucie': { state: 'Florida', stateAbbr: 'FL' },
-    'cape coral': { state: 'Florida', stateAbbr: 'FL' },
-    
-    // California
-    'los angeles': { state: 'California', stateAbbr: 'CA' },
-    'san diego': { state: 'California', stateAbbr: 'CA' },
-    'san jose': { state: 'California', stateAbbr: 'CA' },
-    'san francisco': { state: 'California', stateAbbr: 'CA' },
-    'fresno': { state: 'California', stateAbbr: 'CA' },
-    'sacramento': { state: 'California', stateAbbr: 'CA' },
-    'long beach': { state: 'California', stateAbbr: 'CA' },
-    'oakland': { state: 'California', stateAbbr: 'CA' },
-    'bakersfield': { state: 'California', stateAbbr: 'CA' },
-    'anaheim': { state: 'California', stateAbbr: 'CA' },
-    
-    // New York
-    'new york': { state: 'New York', stateAbbr: 'NY' },
-    'buffalo': { state: 'New York', stateAbbr: 'NY' },
-    'rochester': { state: 'New York', stateAbbr: 'NY' },
-    'yonkers': { state: 'New York', stateAbbr: 'NY' },
-    'syracuse': { state: 'New York', stateAbbr: 'NY' },
-    'albany': { state: 'New York', stateAbbr: 'NY' },
-    'new rochelle': { state: 'New York', stateAbbr: 'NY' },
-    'mount vernon': { state: 'New York', stateAbbr: 'NY' },
-    'schenectady': { state: 'New York', stateAbbr: 'NY' },
-    'utica': { state: 'New York', stateAbbr: 'NY' },
-    
-    // Illinois
-    'chicago': { state: 'Illinois', stateAbbr: 'IL' },
-    'aurora': { state: 'Illinois', stateAbbr: 'IL' },
-    'rockford': { state: 'Illinois', stateAbbr: 'IL' },
-    'joliet': { state: 'Illinois', stateAbbr: 'IL' },
-    'naperville': { state: 'Illinois', stateAbbr: 'IL' },
-    'springfield': { state: 'Illinois', stateAbbr: 'IL' },
-    'peoria': { state: 'Illinois', stateAbbr: 'IL' },
-    'elgin': { state: 'Illinois', stateAbbr: 'IL' },
-    'waukegan': { state: 'Illinois', stateAbbr: 'IL' },
-    'cicero': { state: 'Illinois', stateAbbr: 'IL' },
-    
-    // Add more cities as needed...
-  }
-  
   // First, try to extract state from slug if it contains state info
   const parts = slug.split('-')
   const lastPart = parts[parts.length - 1]
@@ -169,13 +82,73 @@ function getStateFromCity(cityName: string, slug: string): { state: string; stat
     }
   }
   
-  // If no state in URL, try to match city name to known cities
-  const cityKey = cityName.toLowerCase()
-  if (cityStateMap[cityKey]) {
-    return cityStateMap[cityKey]
+  // Try to get state from database by looking up the city
+  try {
+    const { data: cityData, error } = await supabase
+      .from('cities')
+      .select(`
+        name,
+        states (
+          name,
+          abbreviation
+        )
+      `)
+      .ilike('name', `%${cityName}%`)
+      .limit(1)
+      .single()
+    
+    if (!error && cityData && cityData.states) {
+      const state = Array.isArray(cityData.states) ? cityData.states[0] : cityData.states
+      return {
+        state: state.name,
+        stateAbbr: state.abbreviation
+      }
+    }
+  } catch (dbError) {
+    console.log('Database lookup failed:', dbError)
   }
   
-  // Default fallback
+  // Try using a geocoding API as fallback (you can replace with any geocoding service)
+  try {
+    // Using a free geocoding service - you can replace with Google Maps API, etc.
+    const response = await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(cityName)},US&limit=1&appid=dummy`)
+    
+    if (response.ok) {
+      const data = await response.json()
+      if (data && data.length > 0) {
+        const stateName = data[0].state
+        const stateAbbr = data[0].country // This would need to be mapped to state abbreviation
+        
+        // Map state names to abbreviations
+        const stateNameToAbbr: Record<string, string> = {
+          'Alabama': 'AL', 'Alaska': 'AK', 'Arizona': 'AZ', 'Arkansas': 'AR',
+          'California': 'CA', 'Colorado': 'CO', 'Connecticut': 'CT', 'Delaware': 'DE',
+          'Florida': 'FL', 'Georgia': 'GA', 'Hawaii': 'HI', 'Idaho': 'ID',
+          'Illinois': 'IL', 'Indiana': 'IN', 'Iowa': 'IA', 'Kansas': 'KS',
+          'Kentucky': 'KY', 'Louisiana': 'LA', 'Maine': 'ME', 'Maryland': 'MD',
+          'Massachusetts': 'MA', 'Michigan': 'MI', 'Minnesota': 'MN', 'Mississippi': 'MS',
+          'Missouri': 'MO', 'Montana': 'MT', 'Nebraska': 'NE', 'Nevada': 'NV',
+          'New Hampshire': 'NH', 'New Jersey': 'NJ', 'New Mexico': 'NM', 'New York': 'NY',
+          'North Carolina': 'NC', 'North Dakota': 'ND', 'Ohio': 'OH', 'Oklahoma': 'OK',
+          'Oregon': 'OR', 'Pennsylvania': 'PA', 'Rhode Island': 'RI', 'South Carolina': 'SC',
+          'South Dakota': 'SD', 'Tennessee': 'TN', 'Texas': 'TX', 'Utah': 'UT',
+          'Vermont': 'VT', 'Virginia': 'VA', 'Washington': 'WA', 'West Virginia': 'WV',
+          'Wisconsin': 'WI', 'Wyoming': 'WY', 'District of Columbia': 'DC'
+        }
+        
+        if (stateName && stateNameToAbbr[stateName]) {
+          return {
+            state: stateName,
+            stateAbbr: stateNameToAbbr[stateName]
+          }
+        }
+      }
+    }
+  } catch (apiError) {
+    console.log('Geocoding API failed:', apiError)
+  }
+  
+  // Default fallback - return empty state info
   return { state: '', stateAbbr: '' }
 }
 
@@ -185,8 +158,15 @@ export async function generateMetadata({ params }: CityPageProps): Promise<Metad
   // Format city name from slug
   const cityName = slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
   
-  // Get state information from city name and slug
-  const { state, stateAbbr } = getStateFromCity(cityName, slug)
+  // Get state information from city name and slug (now async)
+  const { state, stateAbbr } = await getStateFromCity(cityName, slug)
+  
+  // Debug logging
+  console.log('=== META TAG DEBUG ===')
+  console.log('Slug:', slug)
+  console.log('City Name:', cityName)
+  console.log('State:', state)
+  console.log('State Abbr:', stateAbbr)
   
   // Get dynamic settings
   const settings = await getSiteSettings()
@@ -197,6 +177,9 @@ export async function generateMetadata({ params }: CityPageProps): Promise<Metad
   const description = state 
     ? `Find the best ${niche.toLowerCase()} in ${cityName}, ${stateAbbr}. Browse reviews, ratings, and contact information for local businesses.`
     : `Find the best ${niche.toLowerCase()} in ${cityName}. Browse reviews, ratings, and contact information for local businesses.`
+  
+  console.log('Generated Title:', title)
+  console.log('Generated Description:', description)
   
   return {
     title: title,
