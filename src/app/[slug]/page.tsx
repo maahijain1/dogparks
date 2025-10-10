@@ -136,45 +136,8 @@ export async function generateMetadata({ params }: SlugPageProps): Promise<Metad
     }
   }
   
-  // Handle city pages
-  if (slug.includes('-')) {
-    const parts = slug.split('-')
-    
-    // Get current niche setting
-    const { data: nicheData } = await supabase
-      .from('site_settings')
-      .select('setting_value')
-      .eq('setting_key', 'niche')
-      .single()
-    
-    const currentNiche = nicheData?.setting_value || 'Dog Park'
-    const nicheSlug = currentNiche.toLowerCase().replace(/\s+/g, '-')
-    const nicheParts = nicheSlug.split('-')
-    
-    // Remove the niche parts and join the rest to get the full city name
-    const cityParts = parts.slice(nicheParts.length)
-    const cityName = cityParts.join(' ').replace(/\b\w/g, l => l.toUpperCase())
-    return {
-      title: `${currentNiche}s ${cityName} | ${siteName}`,
-      description: `Find the best ${currentNiche.toLowerCase()}s in ${cityName}. Discover top-rated ${currentNiche.toLowerCase()}s, read reviews, and get contact information.`,
-      keywords: `${currentNiche.toLowerCase()}s, ${cityName}, local ${currentNiche.toLowerCase()}s, ${currentNiche.toLowerCase()} directory, ${cityName} ${currentNiche.toLowerCase()}s`,
-      openGraph: {
-        title: `${currentNiche}s ${cityName}`,
-        description: `Find the best ${currentNiche.toLowerCase()}s in ${cityName}`,
-        url: `${siteConfig.siteUrl}/${slug}`,
-        siteName: siteName,
-        type: 'website',
-      },
-      twitter: {
-        card: 'summary_large_image',
-        title: `${currentNiche}s ${cityName}`,
-        description: `Find the best ${currentNiche.toLowerCase()}s in ${cityName}`,
-      },
-      alternates: {
-        canonical: `${siteConfig.siteUrl}/${slug}`,
-      },
-    }
-  }
+  // City pages are now handled by /city/[slug] route
+  // This route only handles articles and state pages
   
   return {
     title: `${siteName}`,
@@ -677,17 +640,8 @@ export default async function SlugPage({ params }: SlugPageProps) {
     )
   }
   
-  // Handle city pages (format: {niche}-{city}) - redirect to proper city URL
-  if (slug.includes('-') && parts.length > nicheParts.length) {
-    // This is a city page like {niche}-{city}
-    // Remove the niche parts and join the rest to get the full city name
-    const cityParts = parts.slice(nicheParts.length)
-    const cityName = cityParts.join(' ').replace(/\b\w/g, l => l.toUpperCase())
-    
-    // Redirect to proper city URL
-    const citySlug = cityParts.join('-')
-    redirect(`/city/${citySlug}`)
-  }
+  // City pages are now handled by /city/[slug] route
+  // This route only handles articles and state pages
 
   notFound()
 }
