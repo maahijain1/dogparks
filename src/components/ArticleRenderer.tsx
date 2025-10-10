@@ -7,9 +7,10 @@ interface ArticleRendererProps {
   content: string
 }
 
+// Chart.js is already declared in src/types/chart.d.ts
+
 export default function ArticleRenderer({ content }: ArticleRendererProps) {
   const [isChartLoaded, setIsChartLoaded] = useState(false)
-  const [isFontAwesomeLoaded, setIsFontAwesomeLoaded] = useState(false)
 
   useEffect(() => {
     // Load external CSS and JS libraries when component mounts
@@ -27,7 +28,7 @@ export default function ArticleRenderer({ content }: ArticleRendererProps) {
         const fontAwesomeLink = document.createElement('link')
         fontAwesomeLink.href = 'https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css'
         fontAwesomeLink.rel = 'stylesheet'
-        fontAwesomeLink.onload = () => setIsFontAwesomeLoaded(true)
+        fontAwesomeLink.onload = () => console.log('Font Awesome loaded')
         document.head.appendChild(fontAwesomeLink)
       }
 
@@ -85,14 +86,14 @@ export default function ArticleRenderer({ content }: ArticleRendererProps) {
             console.log(`Canvas ${index}:`, canvas.id, canvas)
             if (canvas.id && typeof window !== 'undefined' && window.Chart) {
               // Check if chart already exists
-              const existingChart = (window as any).Chart.getChart(canvas)
+              const existingChart = window.Chart.getChart(canvas)
               if (!existingChart) {
                 console.log(`Initializing chart for canvas: ${canvas.id}`)
                 
                 // Initialize specific charts based on their IDs
                 try {
                   if (canvas.id === 'anxietyStatsChart') {
-                    new (window as any).Chart(canvas, {
+                    new window.Chart(canvas, {
                       type: 'doughnut',
                       data: {
                         labels: ['Separation Anxiety Concern', 'Other Behavioral Concerns', 'No Major Concerns'],
@@ -118,7 +119,7 @@ export default function ArticleRenderer({ content }: ArticleRendererProps) {
                       }
                     })
                   } else if (canvas.id === 'preparationTimelineChart') {
-                    new (window as any).Chart(canvas, {
+                    new window.Chart(canvas, {
                       type: 'bar',
                       data: {
                         labels: ['Week 1 (Days 21-14)', 'Week 2 (Days 14-7)', 'Week 3 (Days 7-0)'],
@@ -152,7 +153,7 @@ export default function ArticleRenderer({ content }: ArticleRendererProps) {
                       }
                     })
                   } else if (canvas.id === 'facilityEvaluationChart') {
-                    new (window as any).Chart(canvas, {
+                    new window.Chart(canvas, {
                       type: 'radar',
                       data: {
                         labels: ['Staff-to-Dog Ratio', 'Facility Design', 'Emergency Protocols', 'Socialization Approach', 'Communication', 'Enrichment Activities'],
@@ -184,7 +185,7 @@ export default function ArticleRenderer({ content }: ArticleRendererProps) {
                       }
                     })
                   } else if (canvas.id === 'medicalNeedsChart') {
-                    new (window as any).Chart(canvas, {
+                    new window.Chart(canvas, {
                       type: 'bar',
                       data: {
                         labels: ['Diabetes', 'Arthritis', 'Cardiac Conditions', 'Kidney Disease', 'Seizure Disorders'],
@@ -218,7 +219,7 @@ export default function ArticleRenderer({ content }: ArticleRendererProps) {
                       }
                     })
                   } else if (canvas.id === 'successRatesChart') {
-                    new (window as any).Chart(canvas, {
+                    new window.Chart(canvas, {
                       type: 'bar',
                       data: {
                         labels: ['Comprehensive Preparation', 'Standard Preparation', 'Minimal Preparation', 'No Preparation'],
@@ -277,7 +278,7 @@ export default function ArticleRenderer({ content }: ArticleRendererProps) {
       {/* Chart.js Script */}
       <Script
         src="https://cdn.jsdelivr.net/npm/chart.js"
-        strategy="beforeInteractive"
+        strategy="lazyOnload"
         onLoad={() => {
           // Initialize charts after Chart.js loads
           if (typeof window !== 'undefined' && typeof window.Chart !== 'undefined') {

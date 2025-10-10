@@ -2,7 +2,8 @@
 declare global {
   interface Window {
     Chart: {
-      new (context: CanvasRenderingContext2D, config: unknown): unknown
+      new (canvas: HTMLCanvasElement, config: unknown): unknown
+      getChart: (canvas: HTMLCanvasElement) => unknown
     }
   }
 }
