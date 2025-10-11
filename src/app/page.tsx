@@ -1446,16 +1446,10 @@ export default function HomePage() {
                     </Link>
                   </h3>
                   
-                  <div 
-                    className="text-gray-600 text-sm mb-3 line-clamp-2 leading-relaxed"
-                    dangerouslySetInnerHTML={{ 
-                      __html: cleanArticleContent(article.content.substring(0, 200) + '...')
-                        .replace(/<img[^>]*>/gi, '') // Remove images from preview
-                        .replace(/<h[1-6][^>]*>.*?<\/h[1-6]>/gi, '') // Remove headings from preview
-                        .replace(/<ul[^>]*>.*?<\/ul>/gi, '') // Remove lists from preview
-                        .replace(/<ol[^>]*>.*?<\/ol>/gi, '') // Remove ordered lists from preview
-                    }}
-                  />
+                  <div className="text-gray-600 text-sm mb-3 line-clamp-2 leading-relaxed">
+                    {stripHtmlTags(article.content || '').substring(0, 150)}
+                    {stripHtmlTags(article.content || '').length > 150 && '...'}
+                  </div>
                   
                   <div className="flex items-center justify-between">
                     <Link 
