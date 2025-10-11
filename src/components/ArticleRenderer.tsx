@@ -9,6 +9,7 @@ interface ArticleRendererProps {
 
 export default function ArticleRenderer({ content }: ArticleRendererProps) {
   const [isChartLoaded, setIsChartLoaded] = useState(false)
+  const [isContentRendered, setIsContentRendered] = useState(false)
 
   useEffect(() => {
     // Load external CSS and JS libraries when component mounts
@@ -50,27 +51,59 @@ export default function ArticleRenderer({ content }: ArticleRendererProps) {
   }, [])
 
   useEffect(() => {
+    // Mark content as rendered
+    setIsContentRendered(true)
+  }, [content])
+
+  useEffect(() => {
     // Re-run scripts embedded in the HTML content after Chart.js loads
-    if (isChartLoaded && content) {
+    if (isChartLoaded && isContentRendered && content) {
       const timer = setTimeout(() => {
         const container = document.getElementById('article-content-container')
         if (container) {
+          console.log('Processing embedded scripts...')
+          
           // Find and re-execute all script tags in the content
           const scripts = container.querySelectorAll('script')
-          scripts.forEach(oldScript => {
-            const newScript = document.createElement('script')
-            Array.from(oldScript.attributes).forEach(attr => {
-              newScript.setAttribute(attr.name, attr.value)
-            })
-            newScript.appendChild(document.createTextNode(oldScript.innerHTML))
-            oldScript.parentNode?.replaceChild(newScript, oldScript)
+          console.log(`Found ${scripts.length} scripts to process`)
+          
+          scripts.forEach((oldScript, index) => {
+            try {
+              const newScript = document.createElement('script')
+              
+              // Copy all attributes
+              Array.from(oldScript.attributes).forEach(attr => {
+                newScript.setAttribute(attr.name, attr.value)
+              })
+              
+              // Copy script content
+              newScript.appendChild(document.createTextNode(oldScript.innerHTML))
+              
+              // Replace the old script
+              oldScript.parentNode?.replaceChild(newScript, oldScript)
+              
+              console.log(`Processed script ${index + 1}`)
+            } catch (error) {
+              console.error(`Error processing script ${index + 1}:`, error)
+            }
+          })
+          
+          // Also try to initialize any charts that might be in the content
+          const canvases = container.querySelectorAll('canvas')
+          console.log(`Found ${canvases.length} canvas elements`)
+          
+          canvases.forEach((canvas, index) => {
+            if (canvas.id && typeof window !== 'undefined' && window.Chart) {
+              console.log(`Processing canvas ${index + 1}: ${canvas.id}`)
+              // Let the embedded scripts handle chart initialization
+            }
           })
         }
-      }, 500) // Wait for Chart.js to be fully available
+      }, 1000) // Increased timeout to ensure everything is ready
       
       return () => clearTimeout(timer)
     }
-  }, [content, isChartLoaded])
+  }, [content, isChartLoaded, isContentRendered])
 
   return (
     <>
