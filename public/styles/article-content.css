@@ -234,19 +234,10 @@
   border: 1px solid #e5e7eb;
 }
 
-/* Ensure all HTML elements are visible */
-.article-content-container * {
-  visibility: visible !important;
-  opacity: 1 !important;
-}
-
-/* Force display of potentially hidden elements */
-.article-content-container .hidden {
-  display: block !important;
-}
-
-.article-content-container .invisible {
-  visibility: visible !important;
+/* Ensure basic HTML elements are visible */
+.article-content-container {
+  visibility: visible;
+  opacity: 1;
 }
 
 /* Print styles */
