@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .toc-dropdown {
+            background: #f8f9fa;
+            border: 2px solid #3498db;
+            border-radius: 12px;
+            margin: 20px;
+            overflow: hidden;
+        }
+        
+        .toc-header {
+            background: #3498db;
+            color: white;
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .toc-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        
+        .toc-content.active {
+            max-height: 500px;
+        }
+        
+        .toc-toggle {
+            transition: transform 0.3s ease;
+        }
+        
+        .toc-toggle.active {
+            transform: rotate(180deg);
+        }
+        
+        ul {
+            list-style-type: disc;
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="toc-dropdown">
+        <div class="toc-header" onclick="toggleTOC()">
+            <span>📋 Test Dropdown</span>
+            <span class="toc-toggle">▼</span>
+        </div>
+        <div class="toc-content" id="tocContent">
+            <ul>
+                <li>Item 1</li>
+                <li>Item 2</li>
+                <li>Item 3</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function toggleTOC() {
+            const tocContent = document.getElementById('tocContent');
+            const tocToggle = document.querySelector('.toc-toggle');
+            
+            if (tocContent.classList.contains('active')) {
+                tocContent.classList.remove('active');
+                tocToggle.classList.remove('active');
+            } else {
+                tocContent.classList.add('active');
+                tocToggle.classList.add('active');
+            }
+        }
+    </script>
+</body>
+</html>
+

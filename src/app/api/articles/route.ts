@@ -42,14 +42,28 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { title, content, slug, featured_image, published } = await request.json()
+    console.log('=== POST /api/articles ===')
+    
+    const body = await request.json()
+    console.log('Request body received:', {
+      title: body.title?.substring(0, 50) + '...',
+      content: body.content?.substring(0, 100) + '...',
+      slug: body.slug,
+      featured_image: body.featured_image,
+      published: body.published
+    })
+
+    const { title, content, slug, featured_image, published } = body
 
     if (!title || !content || !slug) {
+      console.error('Validation failed:', { title: !!title, content: !!content, slug: !!slug })
       return NextResponse.json(
         { error: 'Title, content, and slug are required' },
         { status: 400 }
       )
     }
+
+    console.log('Validation passed, attempting database insert...')
 
     const { data, error } = await supabase
       .from('articles')
@@ -63,12 +77,37 @@ export async function POST(request: NextRequest) {
       .select()
       .single()
 
-    if (error) throw error
+    if (error) {
+      console.error('Database error:', error)
+      console.error('Error details:', {
+        message: error.message,
+        code: error.code,
+        hint: error.hint,
+        details: error.details
+      })
+      return NextResponse.json(
+        { 
+          error: 'Database error',
+          details: error.message,
+          code: error.code
+        },
+        { status: 500 }
+      )
+    }
 
-    return NextResponse.json(data, { status: 201 })
+    console.log('Article created successfully:', data.id)
+    console.log('Returning data:', data)
+    
+    const response = NextResponse.json(data, { status: 201 })
+    console.log('Response created:', response.status)
+    return response
   } catch (error) {
+    console.error('POST /api/articles error:', error)
     return NextResponse.json(
-      { error: 'Failed to create article' },
+      { 
+        error: 'Failed to create article',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     )
   }

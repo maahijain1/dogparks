@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .dropdown {
+            border: 2px solid #3498db;
+            margin: 20px;
+            border-radius: 8px;
+        }
+        
+        .header {
+            background: #3498db;
+            color: white;
+            padding: 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        
+        .content.open {
+            max-height: 300px;
+        }
+        
+        .arrow {
+            transition: transform 0.3s ease;
+        }
+        
+        .arrow.rotated {
+            transform: rotate(180deg);
+        }
+        
+        ul {
+            padding: 20px;
+            list-style-type: disc;
+        }
+    </style>
+</head>
+<body>
+    <h1>Modern JavaScript Test</h1>
+    
+    <div class="dropdown">
+        <div class="header" id="header">
+            <span>Click Me</span>
+            <span class="arrow" id="arrow">▼</span>
+        </div>
+        <div class="content" id="content">
+            <ul>
+                <li>Item 1</li>
+                <li>Item 2</li>
+                <li>Item 3</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("Page loaded!");
+            
+            const header = document.getElementById('header');
+            const content = document.getElementById('content');
+            const arrow = document.getElementById('arrow');
+            
+            header.addEventListener('click', function() {
+                console.log("Header clicked!");
+                
+                if (content.classList.contains('open')) {
+                    content.classList.remove('open');
+                    arrow.classList.remove('rotated');
+                    console.log("Closed");
+                } else {
+                    content.classList.add('open');
+                    arrow.classList.add('rotated');
+                    console.log("Opened");
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+

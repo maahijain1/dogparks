@@ -100,7 +100,12 @@ export default function ArticlesPage() {
         body: JSON.stringify(formData)
       })
 
+      console.log('Response status:', response.status)
+      console.log('Response ok:', response.ok)
+
       if (response.ok) {
+        const responseData = await response.json()
+        console.log('Success response:', responseData)
         setSuccess(editingArticle ? 'Article updated successfully!' : 'Article created successfully!')
         await fetchArticles()
         // Clear success message after 3 seconds
@@ -108,6 +113,7 @@ export default function ArticlesPage() {
         resetForm() // This will close the form (default behavior)
       } else {
         const errorData = await response.json()
+        console.error('Error response:', errorData)
         setError(errorData.error || 'Failed to save article. Please try again.')
       }
     } catch (error) {
