@@ -107,6 +107,50 @@ export async function generateMetadata({ params }: SlugPageProps): Promise<Metad
     // Continue to other checks
   }
   
+  // Handle state pages with pattern: {niche}-{state}
+  // Example: dog-boarding-kennels-arizona → "Dog Boarding Kennels Arizona"
+  try {
+    const parts = slug.split('-')
+    if (parts.length >= 3) {
+      const nicheSlug = niche.toLowerCase().replace(/\s+/g, '-')
+      const nicheParts = nicheSlug.split('-')
+      const matchesNichePrefix = parts.slice(0, nicheParts.length).join('-') === nicheSlug
+      const isQuestionArticle = ['how', 'what', 'why', 'when', 'where', 'which'].some(prefix => slug.startsWith(prefix + '-'))
+      
+      if (slug.includes('-') && matchesNichePrefix && !isQuestionArticle) {
+        let stateName = parts.slice(nicheParts.length).join('-').replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+        // Remove parentheses suffixes like "(nsw)"
+        stateName = stateName.replace(/\s*\([^)]*\)\s*/g, '').trim()
+        
+        const title = `${niche} ${stateName}`
+        const description = `Find the best ${niche.toLowerCase()} in ${stateName}. Discover top-rated ${niche.toLowerCase()}, read reviews, and get contact information.`
+        
+        return {
+          title: title,
+          description: description,
+          keywords: `${niche.toLowerCase()}, ${stateName}, local ${niche.toLowerCase()}, ${niche.toLowerCase()} directory, ${stateName} ${niche.toLowerCase()}`,
+          openGraph: {
+            title: title,
+            description: description,
+            url: `${siteConfig.siteUrl}/${slug}`,
+            siteName: siteName,
+            type: 'website',
+          },
+          twitter: {
+            card: 'summary_large_image',
+            title: title,
+            description: description,
+          },
+          alternates: {
+            canonical: `${siteConfig.siteUrl}/${slug}`,
+          },
+        }
+      }
+    }
+  } catch {
+    // Fall through to other handlers
+  }
+  
   // Handle state pages (format: arkansas)
   if (!slug.includes('-')) {
     const stateName = slug.replace(/\b\w/g, l => l.toUpperCase())
