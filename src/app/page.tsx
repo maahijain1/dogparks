@@ -272,6 +272,7 @@ export default function HomePage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const ts = Date.now()
         // Build filter parameters
         const filterParams = new URLSearchParams()
         if (selectedCity) filterParams.set('cityId', selectedCity)
@@ -309,10 +310,10 @@ export default function HomePage() {
         if (filters.minYearsBusiness) filterParams.set('minYearsBusiness', filters.minYearsBusiness)
 
         const [statesRes, citiesRes, allListingsRes, articlesRes] = await Promise.all([
-          fetch('/api/states', { cache: 'no-store' }),
-          fetch('/api/cities', { cache: 'no-store' }),
-          fetch(`/api/listings?${filterParams.toString()}`, { cache: 'no-store' }),
-          fetch('/api/articles?published=true', { cache: 'no-store' })
+          fetch(`/api/states?_=${ts}`, { cache: 'no-store' }),
+          fetch(`/api/cities?_=${ts}`, { cache: 'no-store' }),
+          fetch(`/api/listings?${filterParams.toString()}&_=${ts}`, { cache: 'no-store' }),
+          fetch(`/api/articles?published=true&_=${ts}`, { cache: 'no-store' })
         ])
 
         // Try to fetch featured listings separately to handle potential errors
@@ -320,8 +321,8 @@ export default function HomePage() {
         try {
           // Fetch featured listings for the selected city or first city
           const featuredUrl = selectedCity 
-            ? `/api/listings?featured=true&cityId=${selectedCity}`
-            : '/api/listings?featured=true'
+            ? `/api/listings?featured=true&cityId=${selectedCity}&_=${ts}`
+            : `/api/listings?featured=true&_=${ts}`
           featuredRes = await fetch(featuredUrl)
         } catch {
           console.log('Featured listings API not available yet, using fallback')
@@ -422,7 +423,7 @@ export default function HomePage() {
     const fetchFeaturedForCity = async () => {
       if (selectedCity) {
         try {
-          const featuredRes = await fetch(`/api/listings?featured=true&cityId=${selectedCity}`)
+          const featuredRes = await fetch(`/api/listings?featured=true&cityId=${selectedCity}&_=${Date.now()}`)
           const featuredData = await featuredRes.json()
           setFeaturedListings(Array.isArray(featuredData) ? featuredData : [])
         } catch (error) {
@@ -436,7 +437,7 @@ export default function HomePage() {
       } else {
         // If no city selected, show featured from all cities (limit 3)
         try {
-          const featuredRes = await fetch('/api/listings?featured=true')
+          const featuredRes = await fetch(`/api/listings?featured=true&_=${Date.now()}`)
           const featuredData = await featuredRes.json()
           setFeaturedListings(Array.isArray(featuredData) ? featuredData.slice(0, 3) : [])
         } catch (error) {
