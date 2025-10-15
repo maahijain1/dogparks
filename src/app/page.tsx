@@ -1,5 +1,8 @@
 'use client'
 
+export const revalidate = 0
+export const dynamic = 'force-dynamic'
+
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -328,10 +331,33 @@ export default function HomePage() {
           featuredRes = null
         }
 
-        const statesData = await statesRes.json()
-        const citiesData = await citiesRes.json()
+        let statesData = await statesRes.json()
+        let citiesData = await citiesRes.json()
         const featuredData = featuredRes ? await featuredRes.json() : []
-        const allListingsData = await allListingsRes.json()
+        let allListingsData = await allListingsRes.json()
+
+        // Retry cache-busted if empty
+        if (!Array.isArray(statesData) || statesData.length === 0) {
+          try {
+            const retry = await fetch(`/api/states?_=${Date.now()}`, { cache: 'no-store' })
+            const retryJson = await retry.json()
+            if (Array.isArray(retryJson)) statesData = retryJson
+          } catch {}
+        }
+        if (!Array.isArray(citiesData) || citiesData.length === 0) {
+          try {
+            const retry = await fetch(`/api/cities?_=${Date.now()}`, { cache: 'no-store' })
+            const retryJson = await retry.json()
+            if (Array.isArray(retryJson)) citiesData = retryJson
+          } catch {}
+        }
+        if (!Array.isArray(allListingsData) || allListingsData.length === 0) {
+          try {
+            const retry = await fetch(`/api/listings?${filterParams.toString()}&_=${Date.now()}`, { cache: 'no-store' })
+            const retryJson = await retry.json()
+            if (Array.isArray(retryJson)) allListingsData = retryJson
+          } catch {}
+        }
         let articlesData = await articlesRes.json()
         // Retry with cache-busting if empty (handles stale CDN caches)
         if (!Array.isArray(articlesData) || articlesData.length === 0) {
