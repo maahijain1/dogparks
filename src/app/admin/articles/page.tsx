@@ -322,7 +322,7 @@ export default function ArticlesPage() {
                       required
                     />
                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      URL: /articles/{formData.slug || 'article-url-slug'}
+                      URL: /{formData.slug || 'article-url-slug'}
                     </p>
                   </div>
                 </div>

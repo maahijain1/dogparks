@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
     }
     
     if (articles && articles.length > 0) {
-      sampleUrls.push(`${baseUrl}/articles/${articles[0].slug}`)
+      sampleUrls.push(`${baseUrl}/${articles[0].slug}`)
     }
 
     return NextResponse.json({
