@@ -250,6 +250,23 @@ export default function HomePage() {
     setCurrentPage(1)
   }, [searchQuery, selectedCity])
 
+  // Bootstrap latest articles from localStorage to avoid empty first paint
+  useEffect(() => {
+    try {
+      const cached = localStorage.getItem('latest_articles')
+      if (cached && latestArticles.length === 0) {
+        const parsed = JSON.parse(cached)
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setLatestArticles(parsed)
+        }
+      }
+    } catch {
+      // ignore
+    }
+    // run once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
 
   // Fetch data with error boundaries
   useEffect(() => {
@@ -315,7 +332,19 @@ export default function HomePage() {
         const citiesData = await citiesRes.json()
         const featuredData = featuredRes ? await featuredRes.json() : []
         const allListingsData = await allListingsRes.json()
-        const articlesData = await articlesRes.json()
+        let articlesData = await articlesRes.json()
+        // Retry with cache-busting if empty (handles stale CDN caches)
+        if (!Array.isArray(articlesData) || articlesData.length === 0) {
+          try {
+            const retryRes = await fetch(`/api/articles?published=true&_=${Date.now()}`, { cache: 'no-store' })
+            const retryData = await retryRes.json()
+            if (Array.isArray(retryData)) {
+              articlesData = retryData
+            }
+          } catch {
+            // ignore
+          }
+        }
         
         // Debug: Check articles data
         console.log('Fetched articles count:', articlesData?.length || 0)
@@ -342,6 +371,12 @@ export default function HomePage() {
         setAllListings(allListings)
         const articlesToSet = Array.isArray(articlesData) ? articlesData : []
         setLatestArticles(articlesToSet) // All articles
+        // Persist to localStorage to improve subsequent loads
+        try {
+          localStorage.setItem('latest_articles', JSON.stringify(articlesToSet.slice(0, 50)))
+        } catch {
+          // ignore
+        }
       } catch (error) {
         // Error fetching data
         // Set empty arrays on error to prevent crashes
@@ -1397,9 +1432,7 @@ export default function HomePage() {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {articlesToShow.length === 0 ? (
-              <div className="col-span-full text-center text-gray-500">
-                No articles available
-              </div>
+              <></>
             ) : (
               articlesToShow.map((article, index) => (
               <article key={article.id} className="group bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-200">
@@ -1587,6 +1620,9 @@ export default function HomePage() {
                 <li><Link href="/about" className="text-gray-300 hover:text-white">About</Link></li>
                 <li><Link href="/get-featured" className="text-gray-300 hover:text-white">Get Featured</Link></li>
                 <li><Link href="/privacy" className="text-gray-300 hover:text-white">Privacy Policy</Link></li>
+                <li><Link href="/terms" className="text-gray-300 hover:text-white">Terms of Service</Link></li>
+                <li><Link href="/disclaimer" className="text-gray-300 hover:text-white">Disclaimer</Link></li>
+                <li><Link href="/cookie-policy" className="text-gray-300 hover:text-white">Cookie Policy</Link></li>
                 <li><Link href="/contact" className="text-gray-300 hover:text-white">Contact</Link></li>
               </ul>
             </div>

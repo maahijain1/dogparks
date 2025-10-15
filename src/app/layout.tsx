@@ -4,6 +4,7 @@ import './globals.css'
 import { siteConfig } from '@/lib/config'
 import { getSiteSettings, generateDynamicContent } from '@/lib/dynamic-config'
 import GoogleAnalytics from '@/components/GoogleAnalytics'
+import CookieConsent from '@/components/CookieConsent'
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -104,6 +105,7 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <GoogleAnalytics measurementId="G-QW1ELNERMR" />
+        <CookieConsent />
         {children}
       </body>
     </html>
