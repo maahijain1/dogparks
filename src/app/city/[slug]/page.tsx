@@ -240,10 +240,21 @@ export default async function CityPage({ params }: CityPageProps) {
   let stateData: { id: string; name: string } | null = null
   
   try {
-    // Find city by name (the way it was working yesterday)
-    console.log('Looking for city:', cityName)
+    // Parse city and state from slug (e.g., "laurel-montana" -> city: "Laurel", state: "Montana")
+    const slugParts = slug.split('-')
+    let cityPart = slugParts[0]
+    let statePart = slugParts.length > 1 ? slugParts.slice(1).join(' ') : ''
     
-    // Try exact name match first
+    // Capitalize properly
+    cityPart = cityPart.replace(/\b\w/g, l => l.toUpperCase())
+    statePart = statePart.replace(/\b\w/g, l => l.toUpperCase())
+    
+    console.log('🔍 Looking up city in database:', cityPart, statePart ? `in ${statePart}` : '')
+    
+    let foundCity = null
+    let foundState = null
+
+    // Try to find city by name and state
     const { data: cityByName, error: nameError } = await supabase
       .from('cities')
       .select(`
@@ -254,16 +265,19 @@ export default async function CityPage({ params }: CityPageProps) {
           name
         )
       `)
-      .eq('name', cityName)
+      .eq('name', cityPart)
       .single()
-
-    let foundCity = null
-    let foundState = null
 
     if (!nameError && cityByName) {
       foundCity = cityByName
       foundState = Array.isArray(cityByName.states) ? cityByName.states[0] : cityByName.states
-      console.log('✅ Found city by exact name:', cityByName.name, 'ID:', cityByName.id)
+      console.log('✅ Found city by exact name:', cityByName.name, 'ID:', cityByName.id, 'State:', foundState?.name)
+      
+      // If we have a state in the URL, verify it matches
+      if (statePart && foundState && !foundState.name.toLowerCase().includes(statePart.toLowerCase())) {
+        console.log('⚠️ State mismatch:', foundState.name, 'vs', statePart)
+        // Still use the city, but log the mismatch
+      }
     } else {
       console.log('❌ City not found by exact name, trying case-insensitive...')
       
@@ -278,16 +292,16 @@ export default async function CityPage({ params }: CityPageProps) {
             name
           )
         `)
-        .ilike('name', `%${cityName}%`)
+        .ilike('name', `%${cityPart}%`)
         .limit(1)
         .single()
 
       if (!partialError && cityByPartial) {
         foundCity = cityByPartial
         foundState = Array.isArray(cityByPartial.states) ? cityByPartial.states[0] : cityByPartial.states
-        console.log('✅ Found city by partial match:', cityByPartial.name, 'ID:', cityByPartial.id)
+        console.log('✅ Found city by partial match:', cityByPartial.name, 'ID:', cityByPartial.id, 'State:', foundState?.name)
       } else {
-        console.log('❌ City not found by any method:', cityName)
+        console.log('❌ City not found by any method:', cityPart)
       }
     }
 
