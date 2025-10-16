@@ -6,57 +6,12 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await params
-    const body = await request.json()
-
-    const { data, error } = await supabase
-      .from('listings')
-      .update(body)
-      .eq('id', id)
-      .select('*')
-      .single()
-
-    if (error) throw error
-
-    return NextResponse.json(data)
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to update listing' }, { status: 500 })
-  }
-}
-
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const { id } = await params
-    const { error } = await supabase
-      .from('listings')
-      .delete()
-      .eq('id', id)
-
-    if (error) throw error
-
-    return NextResponse.json({ success: true })
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to delete listing' }, { status: 500 })
-  }
-}
-
-import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
-
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
     const body = await request.json()
     const { id } = await params
     const { business, category, review_rating, number_of_reviews, address, website, phone, email, city_id, featured } = body
 
-    // If this is a featured toggle (only featured field is being updated)
-    if (featured !== undefined && Object.keys(body).length === 2 && body.id) {
+    // If this is a featured toggle (only featured provided)
+    if (featured !== undefined && Object.keys(body).length === 1) {
       console.log('Updating featured status for listing:', id, 'to:', featured)
       
       const { data, error } = await supabase
@@ -108,7 +63,7 @@ export async function PUT(
         phone: phone || '',
         email: email || '',
         city_id,
-        featured: featured || false
+        featured: Boolean(featured)
       })
       .eq('id', id)
       .select(`
@@ -152,7 +107,7 @@ export async function DELETE(
 
     return NextResponse.json({ message: 'Listing deleted successfully' })
   } catch (error) {
-    console.error('Error updating listing:', error)
+    console.error('Error deleting listing:', error)
     return NextResponse.json(
       { error: 'Failed to delete listing' },
       { status: 500 }
