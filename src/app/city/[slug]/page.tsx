@@ -427,6 +427,41 @@ export default async function CityPage({ params }: CityPageProps) {
     console.error('Error fetching city data:', error)
   }
 
+  // De-duplicate listings by business + address within the same city.
+  // Prefer featured, then higher rating, then higher review count.
+  if (Array.isArray(listings) && listings.length > 0) {
+    const keyFor = (l: Listing) => `${(l.business || '').toLowerCase().trim()}|${(l.address || '').toLowerCase().trim()}`
+    const bestByKey = new Map<string, Listing>()
+
+    for (const l of listings) {
+      const key = keyFor(l)
+      const existing = bestByKey.get(key)
+      if (!existing) {
+        bestByKey.set(key, l)
+        continue
+      }
+      const existingFeatured = Boolean(existing.featured)
+      const currentFeatured = Boolean(l.featured)
+      const existingRating = Number(existing.review_rating) || 0
+      const currentRating = Number(l.review_rating) || 0
+      const existingReviews = Number((existing as { number_of_reviews?: number }).number_of_reviews) || 0
+      const currentReviews = Number((l as { number_of_reviews?: number }).number_of_reviews) || 0
+
+      const isBetter = (
+        (currentFeatured && !existingFeatured) ||
+        (!currentFeatured && existingFeatured ? false : (
+          currentRating > existingRating ||
+          (currentRating === existingRating && currentReviews > existingReviews)
+        ))
+      )
+      if (isBetter) bestByKey.set(key, l)
+    }
+
+    listings = Array.from(bestByKey.values()) as Listing[]
+    totalListings = listings.length
+    featuredListings = listings.filter((l) => Boolean(l.featured)).length
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
