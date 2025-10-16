@@ -268,7 +268,7 @@ export default async function CityPage({ params }: CityPageProps) {
       .eq('name', cityPart)
 
     if (!nameError && citiesByName && citiesByName.length > 0) {
-      console.log(`🔍 Found ${citiesByName.length} cities named "${cityPart}":`, citiesByName.map(c => `${c.name}, ${Array.isArray(c.states) ? c.states[0]?.name : c.states?.name}`))
+      console.log(`🔍 Found ${citiesByName.length} cities named "${cityPart}"`)
       
       // If we have multiple cities with the same name, try to match by state
       if (citiesByName.length > 1 && statePart) {
@@ -287,7 +287,7 @@ export default async function CityPage({ params }: CityPageProps) {
           foundCity = citiesByName[0]
           foundState = Array.isArray(foundCity.states) ? foundCity.states[0] : foundCity.states
           console.log('⚠️ No state match found, using first city:', foundCity.name, 'ID:', foundCity.id, 'State:', foundState?.name)
-          console.log('⚠️ Available states:', citiesByName.map(c => Array.isArray(c.states) ? c.states[0]?.name : c.states?.name))
+          console.log('⚠️ Available states for matches omitted in log to avoid type ambiguity')
         }
       } else {
         // Single city found or no state specified, use the first one
@@ -313,7 +313,7 @@ export default async function CityPage({ params }: CityPageProps) {
         .limit(5)
 
       if (!partialError && citiesByPartial && citiesByPartial.length > 0) {
-        console.log(`🔍 Found ${citiesByPartial.length} cities with partial match:`, citiesByPartial.map(c => `${c.name}, ${Array.isArray(c.states) ? c.states[0]?.name : c.states?.name}`))
+        console.log(`🔍 Found ${citiesByPartial.length} cities with partial match for "${cityPart}"`)
         
         // If we have multiple cities, try to match by state
         if (citiesByPartial.length > 1 && statePart) {
