@@ -255,7 +255,7 @@ export default async function CityPage({ params }: CityPageProps) {
     let foundState = null
 
     // Try to find city by name and state
-    const { data: cityByName, error: nameError } = await supabase
+    const { data: citiesByName, error: nameError } = await supabase
       .from('cities')
       .select(`
         id,
@@ -266,23 +266,40 @@ export default async function CityPage({ params }: CityPageProps) {
         )
       `)
       .eq('name', cityPart)
-      .single()
 
-    if (!nameError && cityByName) {
-      foundCity = cityByName
-      foundState = Array.isArray(cityByName.states) ? cityByName.states[0] : cityByName.states
-      console.log('✅ Found city by exact name:', cityByName.name, 'ID:', cityByName.id, 'State:', foundState?.name)
+    if (!nameError && citiesByName && citiesByName.length > 0) {
+      console.log(`🔍 Found ${citiesByName.length} cities named "${cityPart}":`, citiesByName.map(c => `${c.name}, ${Array.isArray(c.states) ? c.states[0]?.name : c.states?.name}`))
       
-      // If we have a state in the URL, verify it matches
-      if (statePart && foundState && !foundState.name.toLowerCase().includes(statePart.toLowerCase())) {
-        console.log('⚠️ State mismatch:', foundState.name, 'vs', statePart)
-        // Still use the city, but log the mismatch
+      // If we have multiple cities with the same name, try to match by state
+      if (citiesByName.length > 1 && statePart) {
+        console.log('🔍 Multiple cities found, looking for state match:', statePart)
+        const matchingCity = citiesByName.find(city => {
+          const state = Array.isArray(city.states) ? city.states[0] : city.states
+          return state && state.name.toLowerCase().includes(statePart.toLowerCase())
+        })
+        
+        if (matchingCity) {
+          foundCity = matchingCity
+          foundState = Array.isArray(matchingCity.states) ? matchingCity.states[0] : matchingCity.states
+          console.log('✅ Found city by state match:', matchingCity.name, 'ID:', matchingCity.id, 'State:', foundState?.name)
+        } else {
+          // If no state match, use the first one but log the ambiguity
+          foundCity = citiesByName[0]
+          foundState = Array.isArray(foundCity.states) ? foundCity.states[0] : foundCity.states
+          console.log('⚠️ No state match found, using first city:', foundCity.name, 'ID:', foundCity.id, 'State:', foundState?.name)
+          console.log('⚠️ Available states:', citiesByName.map(c => Array.isArray(c.states) ? c.states[0]?.name : c.states?.name))
+        }
+      } else {
+        // Single city found or no state specified, use the first one
+        foundCity = citiesByName[0]
+        foundState = Array.isArray(foundCity.states) ? foundCity.states[0] : foundCity.states
+        console.log('✅ Found city by exact name:', foundCity.name, 'ID:', foundCity.id, 'State:', foundState?.name)
       }
     } else {
       console.log('❌ City not found by exact name, trying case-insensitive...')
       
       // Try case-insensitive partial match
-      const { data: cityByPartial, error: partialError } = await supabase
+      const { data: citiesByPartial, error: partialError } = await supabase
         .from('cities')
         .select(`
           id,
@@ -293,13 +310,32 @@ export default async function CityPage({ params }: CityPageProps) {
           )
         `)
         .ilike('name', `%${cityPart}%`)
-        .limit(1)
-        .single()
+        .limit(5)
 
-      if (!partialError && cityByPartial) {
-        foundCity = cityByPartial
-        foundState = Array.isArray(cityByPartial.states) ? cityByPartial.states[0] : cityByPartial.states
-        console.log('✅ Found city by partial match:', cityByPartial.name, 'ID:', cityByPartial.id, 'State:', foundState?.name)
+      if (!partialError && citiesByPartial && citiesByPartial.length > 0) {
+        console.log(`🔍 Found ${citiesByPartial.length} cities with partial match:`, citiesByPartial.map(c => `${c.name}, ${Array.isArray(c.states) ? c.states[0]?.name : c.states?.name}`))
+        
+        // If we have multiple cities, try to match by state
+        if (citiesByPartial.length > 1 && statePart) {
+          const matchingCity = citiesByPartial.find(city => {
+            const state = Array.isArray(city.states) ? city.states[0] : city.states
+            return state && state.name.toLowerCase().includes(statePart.toLowerCase())
+          })
+          
+          if (matchingCity) {
+            foundCity = matchingCity
+            foundState = Array.isArray(matchingCity.states) ? matchingCity.states[0] : matchingCity.states
+            console.log('✅ Found city by partial match + state:', matchingCity.name, 'ID:', matchingCity.id, 'State:', foundState?.name)
+          } else {
+            foundCity = citiesByPartial[0]
+            foundState = Array.isArray(foundCity.states) ? foundCity.states[0] : foundCity.states
+            console.log('⚠️ No state match in partial results, using first:', foundCity.name, 'ID:', foundCity.id, 'State:', foundState?.name)
+          }
+        } else {
+          foundCity = citiesByPartial[0]
+          foundState = Array.isArray(foundCity.states) ? foundCity.states[0] : foundCity.states
+          console.log('✅ Found city by partial match:', foundCity.name, 'ID:', foundCity.id, 'State:', foundState?.name)
+        }
       } else {
         console.log('❌ City not found by any method:', cityPart)
       }
