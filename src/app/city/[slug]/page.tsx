@@ -290,10 +290,31 @@ export default async function CityPage({ params }: CityPageProps) {
           console.log('⚠️ Available states for matches omitted in log to avoid type ambiguity')
         }
       } else {
-        // Single city found or no state specified, use the first one
-        foundCity = citiesByName[0]
-        foundState = Array.isArray(foundCity.states) ? foundCity.states[0] : foundCity.states
-        console.log('✅ Found city by exact name:', foundCity.name, 'ID:', foundCity.id, 'State:', foundState?.name)
+        // If multiple cities and no state specified, select the one with most listings
+        if (citiesByName.length > 1 && !statePart) {
+          console.log('🔍 Selecting best match by listings count (no state specified)')
+          let bestCity = citiesByName[0]
+          let bestCount = -1
+          for (const city of citiesByName) {
+            const { count, error: countError } = await supabase
+              .from('listings')
+              .select('*', { count: 'exact', head: true })
+              .eq('city_id', city.id)
+            const total = countError ? 0 : (count || 0)
+            if (total > bestCount) {
+              bestCount = total
+              bestCity = city
+            }
+          }
+          foundCity = bestCity
+          foundState = Array.isArray(bestCity.states) ? bestCity.states[0] : bestCity.states
+          console.log('✅ Picked city by listings:', bestCity.name, 'ID:', bestCity.id, 'State:', foundState?.name, 'Listings:', bestCount)
+        } else {
+          // Single city found, use it
+          foundCity = citiesByName[0]
+          foundState = Array.isArray(foundCity.states) ? foundCity.states[0] : foundCity.states
+          console.log('✅ Found city by exact name:', foundCity.name, 'ID:', foundCity.id, 'State:', foundState?.name)
+        }
       }
     } else {
       console.log('❌ City not found by exact name, trying case-insensitive...')
@@ -332,9 +353,30 @@ export default async function CityPage({ params }: CityPageProps) {
             console.log('⚠️ No state match in partial results, using first:', foundCity.name, 'ID:', foundCity.id, 'State:', foundState?.name)
           }
         } else {
-          foundCity = citiesByPartial[0]
-          foundState = Array.isArray(foundCity.states) ? foundCity.states[0] : foundCity.states
-          console.log('✅ Found city by partial match:', foundCity.name, 'ID:', foundCity.id, 'State:', foundState?.name)
+          // If multiple partial matches and no state specified, select by listings count
+          if (citiesByPartial.length > 1 && !statePart) {
+            console.log('🔍 Selecting best partial match by listings count (no state specified)')
+            let bestCity = citiesByPartial[0]
+            let bestCount = -1
+            for (const city of citiesByPartial) {
+              const { count, error: countError } = await supabase
+                .from('listings')
+                .select('*', { count: 'exact', head: true })
+                .eq('city_id', city.id)
+              const total = countError ? 0 : (count || 0)
+              if (total > bestCount) {
+                bestCount = total
+                bestCity = city
+              }
+            }
+            foundCity = bestCity
+            foundState = Array.isArray(bestCity.states) ? bestCity.states[0] : bestCity.states
+            console.log('✅ Picked partial city by listings:', bestCity.name, 'ID:', bestCity.id, 'State:', foundState?.name, 'Listings:', bestCount)
+          } else {
+            foundCity = citiesByPartial[0]
+            foundState = Array.isArray(foundCity.states) ? foundCity.states[0] : foundCity.states
+            console.log('✅ Found city by partial match:', foundCity.name, 'ID:', foundCity.id, 'State:', foundState?.name)
+          }
         }
       } else {
         console.log('❌ City not found by any method:', cityPart)
