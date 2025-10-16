@@ -427,10 +427,14 @@ export default async function CityPage({ params }: CityPageProps) {
     console.error('Error fetching city data:', error)
   }
 
-  // De-duplicate listings by business + address within the same city.
+  // De-duplicate listings by business + address + category within the same city.
   // Prefer featured, then higher rating, then higher review count.
   if (Array.isArray(listings) && listings.length > 0) {
-    const keyFor = (l: Listing) => `${(l.business || '').toLowerCase().trim()}|${(l.address || '').toLowerCase().trim()}`
+    const keyFor = (l: Listing) => [
+      (l.business || '').toLowerCase().trim(),
+      (l.address || '').toLowerCase().trim(),
+      (l.category || '').toLowerCase().trim()
+    ].join('|')
     const bestByKey = new Map<string, Listing>()
 
     for (const l of listings) {
