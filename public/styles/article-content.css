@@ -1,10 +1,20 @@
 /* Article Content Styling for HTML Editor */
 
+/* CSS Variables for customizable colors */
+:root {
+  --article-primary-color: #2563eb;
+  --article-primary-hover: #1d4ed8;
+  --article-text-color: #374151;
+  --article-heading-color: #1f2937;
+  --article-link-color: var(--article-primary-color);
+  --article-link-hover: var(--article-primary-hover);
+}
+
 /* Ensure all HTML elements are properly styled */
 .article-content-container {
   font-family: 'Inter', sans-serif;
   line-height: 1.6;
-  color: #374151;
+  color: var(--article-text-color);
 }
 
 /* Font Awesome Icons */
@@ -59,12 +69,12 @@
 
 /* Link styling */
 .article-content-container a {
-  color: #2563eb;
+  color: var(--article-link-color);
   text-decoration: underline;
 }
 
 .article-content-container a:hover {
-  color: #1d4ed8;
+  color: var(--article-link-hover);
 }
 
 /* Image styling - ensure full image display */
@@ -130,6 +140,7 @@
   margin: 1.5rem 0 1rem 0;
   font-weight: 600;
   line-height: 1.25;
+  color: var(--article-heading-color);
 }
 
 .article-content-container h1 {

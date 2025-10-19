@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowLeft, Plus, Edit, Trash2, Eye, EyeOff, FileText } from "lucide-react";
 import { Article } from '@/types/database'
 import ArticleEditor from '@/components/ArticleEditor'
+import ArticleColorPicker from '@/components/ArticleColorPicker'
 
 export default function ArticlesPage() {
   const [articles, setArticles] = useState<Article[]>([])
@@ -157,23 +158,26 @@ export default function ArticlesPage() {
                 Create and manage your articles with our rich text editor
               </p>
             </div>
-            <button
-              onClick={() => {
-                setEditingArticle(null)
-                setFormData({
-                  title: '',
-                  content: '',
-                  slug: '',
-                  featured_image: '',
-                  published: false
-                })
-                setShowForm(true)
-              }}
-              className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              <Plus className="w-5 h-5 mr-2" />
-              New Article
-            </button>
+            <div className="flex items-center space-x-4">
+              <ArticleColorPicker />
+              <button
+                onClick={() => {
+                  setEditingArticle(null)
+                  setFormData({
+                    title: '',
+                    content: '',
+                    slug: '',
+                    featured_image: '',
+                    published: false
+                  })
+                  setShowForm(true)
+                }}
+                className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <Plus className="w-5 h-5 mr-2" />
+                New Article
+              </button>
+            </div>
           </div>
         </div>
 

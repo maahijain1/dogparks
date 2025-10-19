@@ -61,7 +61,8 @@ export default function ArticleEditor({ content = '', onChange, placeholder = 'S
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: 'text-blue-600 underline',
+          class: 'underline',
+          style: 'color: var(--article-link-color);',
         },
       }),
       Placeholder.configure({

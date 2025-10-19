@@ -266,9 +266,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(data, { status: 201 })
     } else {
       // Handle single listing creation
-      const { business, category, review_rating, number_of_reviews, address, website, phone, email, city_id } = body
+      const { business, category, review_rating, number_of_reviews, address, website, phone, email, city_id, featured } = body
 
-      console.log('Creating single listing with data:', { business, category, city_id })
+      console.log('Creating single listing with data:', { business, category, city_id, featured })
 
       if (!business || !category || !city_id) {
         console.log('Validation failed:', { business: !!business, category: !!category, city_id: !!city_id })
@@ -288,7 +288,7 @@ export async function POST(request: NextRequest) {
         phone: phone || '',
         email: email || '',
         city_id,
-        featured: false // Ensure featured is set to false by default
+        featured: Boolean(featured) // Use the featured value from the request body
       }
 
       console.log('Inserting data:', insertData)

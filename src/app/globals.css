@@ -3,6 +3,12 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --article-primary-color: #2563eb;
+  --article-primary-hover: #1d4ed8;
+  --article-text-color: #374151;
+  --article-heading-color: #1f2937;
+  --article-link-color: var(--article-primary-color);
+  --article-link-hover: var(--article-primary-hover);
 }
 
 @theme inline {
@@ -86,12 +92,12 @@ img {
 }
 
 .prose a {
-  color: #2563eb !important;
+  color: var(--article-link-color) !important;
   text-decoration: underline !important;
 }
 
 .prose a:hover {
-  color: #1d4ed8 !important;
+  color: var(--article-link-hover) !important;
 }
 
 .prose ul, .prose ol {
