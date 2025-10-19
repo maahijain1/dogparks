@@ -5,7 +5,6 @@ import Link from "next/link";
 import { ArrowLeft, Plus, Edit, Trash2, Eye, EyeOff, FileText } from "lucide-react";
 import { Article } from '@/types/database'
 import ArticleEditor from '@/components/ArticleEditor'
-import ArticleColorPicker from '@/components/ArticleColorPicker'
 
 export default function ArticlesPage() {
   const [articles, setArticles] = useState<Article[]>([])
@@ -159,7 +158,6 @@ export default function ArticlesPage() {
               </p>
             </div>
             <div className="flex items-center space-x-4">
-              <ArticleColorPicker />
               <button
                 onClick={() => {
                   setEditingArticle(null)

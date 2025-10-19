@@ -6,7 +6,6 @@ import { ArrowLeft, Plus, Edit, Trash2, FileText, X } from "lucide-react";
 import { Article } from '@/types/database'
 import ArticleEditor from '@/components/ArticleEditor'
 import HTMLEditor from '@/components/HTMLEditor'
-import ArticleColorPicker from '@/components/ArticleColorPicker'
 
 export default function ArticlesPage() {
   const [articles, setArticles] = useState<Article[]>([])
@@ -234,8 +233,7 @@ export default function ArticlesPage() {
                 </p>
               </div>
             </div>
-            <div className="flex gap-3 items-center">
-              <ArticleColorPicker />
+            <div className="flex gap-3">
               <button
                 onClick={() => {
                   console.log('Manual refresh triggered')
