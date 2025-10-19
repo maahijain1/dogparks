@@ -89,7 +89,7 @@ export default function ArticleRenderer({ content }: ArticleRendererProps) {
       {/* Render the HTML content with original styling */}
       <div 
         id="article-content-container"
-        className="article-content-container prose prose-lg max-w-none"
+        className="article-content-container"
         style={{
           fontFamily: "'Inter', sans-serif",
           lineHeight: '1.6'

@@ -105,15 +105,25 @@
   color: #6b7280;
 }
 
-/* List styling */
-.article-content-container ul,
+/* List styling - ensure bullet points show */
+.article-content-container ul {
+  padding-left: 1.5rem !important;
+  margin: 1rem 0 !important;
+  list-style-type: disc !important;
+  list-style-position: outside !important;
+}
+
 .article-content-container ol {
-  padding-left: 1.5rem;
-  margin: 1rem 0;
+  padding-left: 1.5rem !important;
+  margin: 1rem 0 !important;
+  list-style-type: decimal !important;
+  list-style-position: outside !important;
 }
 
 .article-content-container li {
-  margin: 0.25rem 0;
+  margin: 0.25rem 0 !important;
+  display: list-item !important;
+  list-style-type: inherit !important;
 }
 
 /* Heading styling - preserve original HTML styling */
