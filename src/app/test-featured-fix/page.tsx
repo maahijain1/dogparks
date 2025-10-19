@@ -16,7 +16,7 @@ export default function TestFeaturedFixPage() {
     featured: true // This should now work!
   })
   const [loading, setLoading] = useState(false)
-  const [result, setResult] = useState<{ success: boolean; message: string; data?: any } | null>(null)
+  const [result, setResult] = useState<{ success: boolean; message: string; data?: Record<string, unknown> } | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
