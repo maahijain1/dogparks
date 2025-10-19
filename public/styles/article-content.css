@@ -67,14 +67,19 @@
   transition: all 0.2s;
 }
 
-/* Link styling */
+/* Link styling - Use !important to override inline styles */
 .article-content-container a {
-  color: var(--article-link-color);
+  color: var(--article-link-color) !important;
   text-decoration: underline;
 }
 
 .article-content-container a:hover {
-  color: var(--article-link-hover);
+  color: var(--article-link-hover) !important;
+}
+
+/* Override any inline link colors */
+.article-content-container a[style*="color"] {
+  color: var(--article-link-color) !important;
 }
 
 /* Image styling - ensure full image display */
@@ -189,6 +194,37 @@
 
 .article-content-container .text-shadow {
   text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+/* Override inline styles with higher specificity */
+.article-content-container * {
+  color: var(--article-text-color) !important;
+}
+
+.article-content-container h1,
+.article-content-container h2,
+.article-content-container h3,
+.article-content-container h4,
+.article-content-container h5,
+.article-content-container h6 {
+  color: var(--article-heading-color) !important;
+}
+
+.article-content-container a {
+  color: var(--article-link-color) !important;
+}
+
+.article-content-container a:hover {
+  color: var(--article-link-hover) !important;
+}
+
+/* Override specific inline styles that might be in your HTML */
+.article-content-container .toc-item a {
+  color: var(--article-link-color) !important;
+}
+
+.article-content-container .cta-box a {
+  color: var(--article-link-color) !important;
 }
 
 /* Statistics section specific styling */

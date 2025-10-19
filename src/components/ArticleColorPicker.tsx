@@ -46,6 +46,18 @@ export default function ArticleColorPicker({ onColorChange }: ArticleColorPicker
     root.style.setProperty('--article-heading-color', newColors.heading)
     root.style.setProperty('--article-link-color', newColors.primary)
     root.style.setProperty('--article-link-hover', newColors.primaryHover)
+    
+    // Force update any existing article content containers
+    const containers = document.querySelectorAll('.article-content-container')
+    containers.forEach(container => {
+      const element = container as HTMLElement
+      element.style.setProperty('--article-primary-color', newColors.primary)
+      element.style.setProperty('--article-primary-hover', newColors.primaryHover)
+      element.style.setProperty('--article-text-color', newColors.text)
+      element.style.setProperty('--article-heading-color', newColors.heading)
+      element.style.setProperty('--article-link-color', newColors.primary)
+      element.style.setProperty('--article-link-hover', newColors.primaryHover)
+    })
   }
 
   const handleColorChange = (key: keyof ArticleColors, value: string) => {

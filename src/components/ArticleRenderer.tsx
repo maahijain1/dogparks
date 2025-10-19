@@ -92,8 +92,12 @@ export default function ArticleRenderer({ content }: ArticleRendererProps) {
         className="article-content-container prose prose-lg max-w-none"
         style={{
           fontFamily: "'Inter', sans-serif",
-          lineHeight: '1.6'
-        }}
+          lineHeight: '1.6',
+          '--article-primary-color': 'var(--article-primary-color)',
+          '--article-primary-hover': 'var(--article-primary-hover)',
+          '--article-text-color': 'var(--article-text-color)',
+          '--article-heading-color': 'var(--article-heading-color)'
+        } as React.CSSProperties}
         dangerouslySetInnerHTML={{ __html: content }}
       />
     </>
