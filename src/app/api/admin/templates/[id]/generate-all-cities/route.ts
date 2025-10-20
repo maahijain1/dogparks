@@ -91,6 +91,7 @@ export async function POST(
           .from('articles')
           .select('id')
           .eq('slug', processedSlug)
+          .eq('city_id', city.id)
           .single()
 
         if (existingArticle) {
