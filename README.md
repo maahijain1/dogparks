@@ -1,5 +1,7 @@
 # Directory Management System
 
+Note: This commit is to trigger a Vercel preview deployment for diagnosing a deploy issue.
+
 A comprehensive Next.js backend system for managing business listings and articles with Supabase integration.
 
 ## Features
