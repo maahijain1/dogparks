@@ -40,6 +40,44 @@ export default function AdminHome() {
             </div>
           </Link>
 
+          {/* Generate City Articles */}
+          <button
+            className="group"
+            onClick={async () => {
+              try {
+                const confirmed = window.confirm('Generate/refresh city-specific articles and show them below listings?')
+                if (!confirmed) return
+                const res = await fetch('/api/admin/generate-city-articles', { method: 'POST' })
+                if (res.ok) {
+                  const data = await res.json()
+                  alert(`Done: ${data.count} articles processed. Check a city page to see articles below listings.`)
+                } else {
+                  const err = await res.json().catch(() => ({}))
+                  alert(`Failed: ${err.error || 'Unknown error'}`)
+                }
+              } catch (e) {
+                alert(`Error: ${e instanceof Error ? e.message : 'Unknown error'}`)
+              }
+            }}
+          >
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 p-8 border border-gray-200 dark:border-gray-700">
+              <div className="flex items-center justify-center w-16 h-16 bg-teal-100 dark:bg-teal-900 rounded-full mb-6 mx-auto group-hover:bg-teal-200 dark:group-hover:bg-teal-800 transition-colors">
+                <span className="text-teal-700 dark:text-teal-300 font-bold">AI</span>
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 text-center">
+                Generate City Articles
+              </h2>
+              <p className="text-gray-600 dark:text-gray-300 text-center mb-6">
+                Create/update unique articles for every city; they appear below listings automatically.
+              </p>
+              <div className="text-center">
+                <span className="inline-flex items-center px-6 py-3 bg-teal-600 text-white font-medium rounded-lg hover:bg-teal-700 transition-colors">
+                  Run Generator
+                </span>
+              </div>
+            </div>
+          </button>
+
           {/* Listings Section */}
           <Link href="/admin/listings" className="group">
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 p-8 border border-gray-200 dark:border-gray-700">
