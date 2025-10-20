@@ -143,7 +143,7 @@ export default function SetupTemplatesPage() {
             <h3 className="text-lg font-semibold text-blue-900 mb-2">Next Steps</h3>
             <ol className="space-y-2 text-blue-800">
               <li>1. Go to <Link href="/admin/templates" className="underline font-medium">Article Templates</Link> to create your first template</li>
-              <li>2. Use template variables like <code className="bg-blue-100 px-1 rounded">{{CITY_NAME}}</code> in your content</li>
+              <li>2. Use template variables like <code className="bg-blue-100 px-1 rounded">{'{{CITY_NAME}}'}</code> in your content</li>
               <li>3. Generate city-specific articles for all cities at once</li>
               <li>4. Your articles will be automatically indexed and SEO-optimized</li>
             </ol>
