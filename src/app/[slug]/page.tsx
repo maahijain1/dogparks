@@ -338,16 +338,19 @@ export default async function SlugPage({ params }: SlugPageProps) {
       cities?: { name: string }
     }> = []
     
+    let stateData: { id: string; name: string } | null = null
+    
     try {
       // First, try exact match
-      let { data: stateData, error: stateError } = await supabase
+      const { data: stateDataResult, error: stateError } = await supabase
         .from('states')
         .select('id, name')
         .eq('name', stateName)
         .single()
+      let hasStateError = !!stateError
       
       // If exact match fails, try case-insensitive partial match
-      if (stateError || !stateData) {
+      if (hasStateError || !stateDataResult) {
         const { data: stateDataCI, error: stateErrorCI } = await supabase
           .from('states')
           .select('id, name')
@@ -357,11 +360,15 @@ export default async function SlugPage({ params }: SlugPageProps) {
         
         if (!stateErrorCI && stateDataCI) {
           stateData = stateDataCI
-          stateError = null
+          hasStateError = false
+        } else {
+          stateData = stateDataResult
         }
+      } else {
+        stateData = stateDataResult
       }
       
-      if (stateError || !stateData) {
+      if (hasStateError || !stateData) {
         
         // Show all available states for debugging
         const { data: allStates } = await supabase

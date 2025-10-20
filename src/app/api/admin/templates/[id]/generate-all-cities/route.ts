@@ -60,30 +60,31 @@ export async function POST(
         const variables = await getTemplateVariables(city.id)
         
         // Replace variables in template content
+        const stateRel = Array.isArray(city.states) ? city.states[0] : city.states
         const processedContent = replaceTemplateVariables(template.content, {
           ...variables,
           cityName: city.name,
-          stateName: city.states?.name || 'Unknown State',
+          stateName: stateRel?.name || 'Unknown State',
           cityId: city.id,
-          stateId: city.states?.id || ''
+          stateId: stateRel?.id || ''
         })
 
         // Replace variables in title
         const processedTitle = replaceTemplateVariables(template.title, {
           ...variables,
           cityName: city.name,
-          stateName: city.states?.name || 'Unknown State',
+          stateName: stateRel?.name || 'Unknown State',
           cityId: city.id,
-          stateId: city.states?.id || ''
+          stateId: stateRel?.id || ''
         })
 
         // Replace variables in slug
         const processedSlug = replaceTemplateVariables(template.slug, {
           ...variables,
           cityName: city.name.toLowerCase().replace(/\s+/g, '-'),
-          stateName: city.states?.name?.toLowerCase().replace(/\s+/g, '-') || 'unknown-state',
+          stateName: stateRel?.name?.toLowerCase().replace(/\s+/g, '-') || 'unknown-state',
           cityId: city.id,
-          stateId: city.states?.id || ''
+          stateId: stateRel?.id || ''
         })
 
         // Check if article already exists for this city and template

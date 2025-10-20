@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import ArticleRenderer from './ArticleRenderer'
+import Link from 'next/link'
 import { FileText, ExternalLink } from 'lucide-react'
 
 interface Article {
@@ -149,13 +150,13 @@ export default function ArticlesSection({ cityId, cityName, stateId, stateName }
                     })}
                   </div>
                   
-                  <a
-                    href={`/article/${article.slug}`}
+                  <Link
+                    href={`/articles/${article.slug}`}
                     className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
                   >
                     Read More
                     <ExternalLink className="w-4 h-4 ml-1" />
-                  </a>
+                  </Link>
                 </div>
               </div>
             </article>
@@ -164,13 +165,13 @@ export default function ArticlesSection({ cityId, cityName, stateId, stateName }
 
         {articles.length > 2 && (
           <div className="text-center mt-8">
-            <a
+            <Link
               href="/articles"
               className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
             >
               View All Articles
               <ExternalLink className="w-4 h-4 ml-2" />
-            </a>
+            </Link>
           </div>
         )}
       </div>
