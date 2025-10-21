@@ -168,7 +168,7 @@ export default function AdminHome() {
                 Debug Listings
               </h2>
               <p className="text-gray-600 dark:text-gray-300 text-center mb-6">
-                Troubleshoot why listings aren't showing and test city search functionality.
+                Troubleshoot why listings aren&apos;t showing and test city search functionality.
               </p>
               <div className="text-center">
                 <span className="inline-flex items-center px-6 py-3 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors">

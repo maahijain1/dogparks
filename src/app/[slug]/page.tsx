@@ -678,7 +678,7 @@ export default async function SlugPage({ params }: SlugPageProps) {
         )}
 
         {/* Articles Section - After listings */}
-        <ArticlesSection stateId={stateData?.id} stateName={stateName} />
+        <ArticlesSection stateId={stateData?.id} />
 
         {/* Back to Home */}
         <section className="py-16 bg-white">

@@ -3,9 +3,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import ArticleRenderer from './ArticleRenderer'
-import Link from 'next/link'
 import Image from 'next/image'
-import { FileText, ExternalLink } from 'lucide-react'
 
 interface Article {
   id: string
@@ -21,12 +19,10 @@ interface Article {
 
 interface ArticlesSectionProps {
   cityId?: string
-  cityName?: string
   stateId?: string
-  stateName?: string
 }
 
-export default function ArticlesSection({ cityId, cityName, stateId, stateName }: ArticlesSectionProps) {
+export default function ArticlesSection({ cityId, stateId }: ArticlesSectionProps) {
   const [articles, setArticles] = useState<Article[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

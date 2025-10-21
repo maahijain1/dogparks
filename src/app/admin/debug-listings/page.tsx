@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ArrowLeft, Database, AlertCircle, CheckCircle, Search, Building2 } from 'lucide-react'
+import { ArrowLeft, Database, AlertCircle, CheckCircle, Search } from 'lucide-react'
 import Link from 'next/link'
 
 export default function DebugListingsPage() {
@@ -33,11 +33,11 @@ export default function DebugListingsPage() {
       
       // Test 5: Check if listings have city relationships
       const listingsWithCities = Array.isArray(listingsData) ? 
-        listingsData.filter((listing: any) => listing.cities) : []
+        listingsData.filter((listing: Record<string, unknown>) => listing.cities) : []
       
       // Test 6: Check for listings without cities
       const listingsWithoutCities = Array.isArray(listingsData) ? 
-        listingsData.filter((listing: any) => !listing.cities) : []
+        listingsData.filter((listing: Record<string, unknown>) => !listing.cities) : []
 
       setDebugInfo({
         totalListings: Array.isArray(listingsData) ? listingsData.length : 'Error',
@@ -99,7 +99,7 @@ export default function DebugListingsPage() {
               Debug Listings & Cities
             </h1>
             <p className="text-gray-600 dark:text-gray-300 mt-2">
-              Troubleshoot why listings aren't showing and test city search functionality.
+              Troubleshoot why listings aren&apos;t showing and test city search functionality.
             </p>
           </div>
 
@@ -178,24 +178,19 @@ export default function DebugListingsPage() {
                 </div>
               </div>
 
-              {/* Search Results */}
-              {debugInfo.searchResults && (
+              {Array.isArray(debugInfo.searchResults) && debugInfo.searchResults.length > 0 && (
                 <div className="mb-6">
                   <h4 className="font-semibold text-gray-800 mb-2">
-                    Search Results for &quot;{debugInfo.searchTerm}&quot;:
+                    Search Results for &quot;{String(debugInfo.searchTerm)}&quot;:
                   </h4>
                   <div className="bg-gray-50 rounded-lg p-4 max-h-60 overflow-y-auto">
-                    {Array.isArray(debugInfo.searchResults) && debugInfo.searchResults.length > 0 ? (
-                      <ul className="space-y-2">
-                        {debugInfo.searchResults.map((city: any, index: number) => (
-                          <li key={index} className="text-sm">
-                            <strong>{city.name}</strong> - {city.states?.name || 'No State'} (ID: {city.id})
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p className="text-gray-600">No cities found</p>
-                    )}
+                    <ul className="space-y-2">
+                      {debugInfo.searchResults.map((city: Record<string, unknown>, index: number) => (
+                        <li key={index} className="text-sm">
+                          <strong>{String(city.name)}</strong> - {String((city.states as Record<string, unknown>)?.name) || 'No State'} (ID: {String(city.id)})
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
               )}
@@ -208,7 +203,7 @@ export default function DebugListingsPage() {
                     <li>⚠️ No listings found - check if listings exist in database</li>
                   )}
                   {Number(debugInfo.listingsWithoutCities) > 0 && (
-                    <li>⚠️ {debugInfo.listingsWithoutCities} listings missing city relationships</li>
+                    <li>⚠️ {String(debugInfo.listingsWithoutCities)} listings missing city relationships</li>
                   )}
                   {Number(debugInfo.totalCities) === 0 && (
                     <li>⚠️ No cities found - check if cities exist in database</li>

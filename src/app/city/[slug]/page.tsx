@@ -145,7 +145,7 @@ async function getStateFromCity(cityName: string, slug: string): Promise<{ state
       const data = await response.json()
       if (data && data.length > 0) {
         const stateName = data[0].state
-        const stateAbbr = data[0].country // This would need to be mapped to state abbreviation
+        // const stateAbbr = data[0].country // This would need to be mapped to state abbreviation
         
         // Map state names to abbreviations
         const stateNameToAbbr: Record<string, string> = {
@@ -697,7 +697,7 @@ export default async function CityPage({ params }: CityPageProps) {
         )}
 
         {/* Articles Section - After listings */}
-        <ArticlesSection cityId={cityData?.id} cityName={cityData?.name || cityName} />
+          <ArticlesSection cityId={cityData?.id} />
         </div>
     </div>
   )

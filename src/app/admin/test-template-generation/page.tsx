@@ -18,7 +18,7 @@ export default function TestTemplateGenerationPage() {
   const [selectedTemplate, setSelectedTemplate] = useState<string>('')
   const [loading, setLoading] = useState(false)
   const [generating, setGenerating] = useState(false)
-  const [result, setResult] = useState<{ success: boolean; message: string; details?: any } | null>(null)
+  const [result, setResult] = useState<{ success: boolean; message: string; details?: Record<string, unknown> } | null>(null)
 
   useEffect(() => {
     fetchTemplates()
@@ -207,9 +207,9 @@ export default function TestTemplateGenerationPage() {
             <h3 className="font-semibold text-blue-800 mb-2">How Template Generation Works:</h3>
             <ol className="text-sm text-blue-700 space-y-2">
               <li>1. Select a template from the list above</li>
-              <li>2. Click "Generate Articles for All Cities"</li>
+              <li>2. Click &quot;Generate Articles for All Cities&quot;</li>
               <li>3. The system will create unique articles for each city</li>
-              <li>4. Template variables like {{CITY_NAME}} will be replaced with actual city data</li>
+              <li>4. Template variables like &#123;&#123;CITY_NAME&#125;&#125; will be replaced with actual city data</li>
               <li>5. Articles will appear on city pages below the listings</li>
             </ol>
           </div>
