@@ -44,16 +44,27 @@ export default function ArticlesSection({ cityId, cityName, stateId, stateName }
 
         // If we have a cityId, filter by city-specific articles
         if (cityId) {
-          query = query.eq('city_id', cityId)
+          // Check if city_id column exists by trying to filter
+          try {
+            query = query.eq('city_id', cityId)
+          } catch (error) {
+            // If city_id column doesn't exist, fall back to showing all published articles
+            console.warn('city_id column not found, showing all articles')
+          }
         } else if (stateId) {
           // For state pages, get articles from all cities in that state
-          const { data: stateCities } = await supabase
-            .from('cities')
-            .select('id')
-            .eq('state_id', stateId)
-          
-          if (stateCities && stateCities.length > 0) {
-            query = query.in('city_id', stateCities.map(c => c.id))
+          try {
+            const { data: stateCities } = await supabase
+              .from('cities')
+              .select('id')
+              .eq('state_id', stateId)
+            
+            if (stateCities && stateCities.length > 0) {
+              query = query.in('city_id', stateCities.map(c => c.id))
+            }
+          } catch (error) {
+            // If city_id column doesn't exist, fall back to showing all published articles
+            console.warn('city_id column not found, showing all articles')
           }
         }
 

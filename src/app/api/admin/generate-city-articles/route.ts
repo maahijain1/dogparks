@@ -76,18 +76,56 @@ export async function POST(_request: NextRequest) {
           <p>Browse local listings below, then check back for fresh updates and guides created for ${cityName} residents.</p>
         `.replace(/\n\s+/g, '\n')
 
+        // Check if city_id column exists by trying to query it
+        let hasCityIdColumn = true
+        try {
+          const { error: testError } = await supabase
+            .from('articles')
+            .select('city_id')
+            .limit(1)
+          
+          if (testError && testError.message.includes('column "city_id" does not exist')) {
+            hasCityIdColumn = false
+          }
+        } catch (err) {
+          hasCityIdColumn = false
+        }
+
         // Does an article already exist for this city+slug?
-        const { data: existing } = await supabase
-          .from('articles')
-          .select('id')
-          .eq('slug', slug)
-          .eq('city_id', city.id)
-          .single()
+        let existing = null
+        if (hasCityIdColumn) {
+          const { data: existingData } = await supabase
+            .from('articles')
+            .select('id')
+            .eq('slug', slug)
+            .eq('city_id', city.id)
+            .single()
+          existing = existingData
+        } else {
+          // Fallback: check by slug only
+          const { data: existingData } = await supabase
+            .from('articles')
+            .select('id')
+            .eq('slug', slug)
+            .single()
+          existing = existingData
+        }
 
         if (existing) {
+          const updateData: any = { 
+            title, 
+            content, 
+            updated_at: new Date().toISOString(), 
+            published: true 
+          }
+          
+          if (hasCityIdColumn) {
+            updateData.city_id = city.id
+          }
+
           const { error: updateError } = await supabase
             .from('articles')
-            .update({ title, content, updated_at: new Date().toISOString(), published: true })
+            .update(updateData)
             .eq('id', existing.id)
 
           if (updateError) {
@@ -96,16 +134,21 @@ export async function POST(_request: NextRequest) {
             results.push({ city: cityName, action: 'updated', slug })
           }
         } else {
+          const insertData: any = {
+            title,
+            content,
+            slug,
+            featured_image: '',
+            published: true
+          }
+          
+          if (hasCityIdColumn) {
+            insertData.city_id = city.id
+          }
+
           const { error: insertError } = await supabase
             .from('articles')
-            .insert({
-              title,
-              content,
-              slug,
-              featured_image: '',
-              published: true,
-              city_id: city.id
-            })
+            .insert(insertData)
 
           if (insertError) {
             errors.push(`${cityName}: create failed — ${insertError.message}`)
