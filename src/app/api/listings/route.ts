@@ -25,8 +25,8 @@ export async function GET(request: NextRequest) {
     const minPrice = searchParams.get('minPrice')
     const maxPrice = searchParams.get('maxPrice')
     const priceType = searchParams.get('priceType') // night, week, month
-    const maxDistance = searchParams.get('maxDistance') // in miles
-    const userLat = searchParams.get('userLat')
+    // const maxDistance = searchParams.get('maxDistance') // in miles
+    // const userLat = searchParams.get('userLat')
     const userLng = searchParams.get('userLng')
     const outdoorSpace = searchParams.get('outdoorSpace')
     const indoorSpace = searchParams.get('indoorSpace')

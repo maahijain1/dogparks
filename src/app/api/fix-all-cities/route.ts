@@ -80,7 +80,7 @@ export async function POST() {
         })
       } else {
         // Test listings
-        const { data: listings, error: listingsError } = await supabase
+        const { data: listings } = await supabase
           .from('listings')
           .select('id, business, featured')
           .eq('city_id', foundCity.id)

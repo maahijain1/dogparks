@@ -139,7 +139,7 @@ export async function POST(request: NextRequest) {
 
         // Check for duplicates based on multiple criteria
         const businessSimilarity = calculateSimilarity(listing1.business, listing2.business)
-        const addressSimilar = areAddressesSimilar(listing1.address, listing2.address)
+        areAddressesSimilar(listing1.address, listing2.address)
         const phoneSame = arePhonesSame(listing1.phone, listing2.phone)
 
         // MUCH MORE CONSERVATIVE duplicate criteria - only very obvious duplicates

@@ -10,7 +10,7 @@ export async function POST() {
     
     // We can't directly run DDL from the API, so let's work around it
     // First, let's check what columns exist
-    const { data: cities, error: citiesError } = await supabase
+    const { error: citiesError } = await supabase
       .from('cities')
       .select('*')
       .limit(1)
@@ -25,7 +25,7 @@ export async function POST() {
     }
 
     // Step 2: Check if slug column exists by trying to select it
-    const { data: slugTest, error: slugError } = await supabase
+    const { error: slugError } = await supabase
       .from('cities')
       .select('slug')
       .limit(1)
