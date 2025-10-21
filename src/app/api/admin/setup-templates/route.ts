@@ -3,7 +3,7 @@ import { supabaseAdmin as supabase } from '@/lib/supabase'
 import fs from 'fs'
 import path from 'path'
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     // Read the SQL migration file
     const sqlPath = path.join(process.cwd(), 'src/lib/create-templates-table.sql')
@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     // Execute each SQL statement
     for (const statement of statements) {
       try {
-        const { data, error } = await supabase.rpc('exec_sql', {
+        const { error } = await supabase.rpc('exec_sql', {
           sql: statement
         })
         

@@ -4,7 +4,7 @@ import { supabaseAdmin as supabase } from '@/lib/supabase'
 // Minimal, self-contained generator that does NOT require the article_templates table
 // It creates/updates a single city-specific article per city and attaches city_id
 
-export async function POST(_request: NextRequest) {
+export async function POST() {
   try {
     // Fetch all cities with their state
     const { data: cities, error: citiesError } = await supabase
@@ -87,7 +87,7 @@ export async function POST(_request: NextRequest) {
           if (testError && testError.message.includes('column "city_id" does not exist')) {
             hasCityIdColumn = false
           }
-        } catch (err) {
+        } catch {
           hasCityIdColumn = false
         }
 
@@ -112,7 +112,7 @@ export async function POST(_request: NextRequest) {
         }
 
         if (existing) {
-          const updateData: any = { 
+          const updateData: Record<string, unknown> = { 
             title, 
             content, 
             updated_at: new Date().toISOString(), 
@@ -134,7 +134,7 @@ export async function POST(_request: NextRequest) {
             results.push({ city: cityName, action: 'updated', slug })
           }
         } else {
-          const insertData: any = {
+          const insertData: Record<string, unknown> = {
             title,
             content,
             slug,

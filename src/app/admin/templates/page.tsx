@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from "next/link";
-import { ArrowLeft, Plus, Edit, Trash2, Copy, Eye, FileText } from "lucide-react";
+import { ArrowLeft, Plus, Edit, Trash2, Copy, FileText } from "lucide-react";
 import ArticleEditor from '@/components/ArticleEditor'
 import { getAvailableVariables } from '@/lib/template-variables'
 

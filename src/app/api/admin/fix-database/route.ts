@@ -3,7 +3,7 @@ import { supabaseAdmin as supabase } from '@/lib/supabase'
 import { readFileSync } from 'fs'
 import { join } from 'path'
 
-export async function POST(_request: NextRequest) {
+export async function POST() {
   try {
     // Read the SQL file
     const sqlPath = join(process.cwd(), 'src', 'lib', 'fix-articles-table.sql')
