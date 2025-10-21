@@ -3,14 +3,23 @@ import { supabaseAdmin as supabase } from '@/lib/supabase'
 
 export async function GET() {
   try {
+    // First check if the article_templates table exists
     const { data, error } = await supabase
       .from('article_templates')
       .select('*')
       .order('created_at', { ascending: false })
 
-    if (error) throw error
+    if (error) {
+      // If table doesn't exist, return empty array instead of error
+      if (error.message.includes('relation "article_templates" does not exist') || 
+          error.message.includes('table "article_templates" does not exist')) {
+        console.log('article_templates table does not exist yet, returning empty array')
+        return NextResponse.json([])
+      }
+      throw error
+    }
 
-    return NextResponse.json(data)
+    return NextResponse.json(data || [])
   } catch (error) {
     console.error('Error fetching templates:', error)
     return NextResponse.json(

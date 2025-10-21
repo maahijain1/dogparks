@@ -38,12 +38,14 @@ export default function TemplatesPage() {
   const fetchTemplates = async () => {
     try {
       setLoading(true)
+      setError(null)
       const response = await fetch('/api/admin/templates')
       if (response.ok) {
         const data = await response.json()
         setTemplates(data)
       } else {
-        setError('Failed to fetch templates')
+        const errorData = await response.json().catch(() => ({}))
+        setError(errorData.error || 'Failed to fetch templates')
       }
     } catch (error) {
       setError('Error fetching templates')
@@ -257,6 +259,41 @@ export default function TemplatesPage() {
           <div className="text-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
             <p className="mt-2 text-gray-600">Loading templates...</p>
+          </div>
+        ) : templates.length === 0 ? (
+          <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+            <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">No Templates Found</h3>
+            <p className="text-gray-600 mb-6">
+              {error ? (
+                <>
+                  Database setup may be required. Try running the database fix first.
+                  <br />
+                  <Link href="/admin/fix-database" className="text-blue-600 hover:text-blue-800 underline">
+                    Go to Fix Database
+                  </Link>
+                </>
+              ) : (
+                'Create your first template to get started with automated article generation.'
+              )}
+            </p>
+            <button
+              onClick={() => {
+                setEditingTemplate(null)
+                setFormData({
+                  title: '',
+                  content: '',
+                  slug: '',
+                  description: '',
+                  is_active: true
+                })
+                setShowForm(true)
+              }}
+              className="inline-flex items-center px-6 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors"
+            >
+              <Plus className="w-5 h-5 mr-2" />
+              Create First Template
+            </button>
           </div>
         ) : (
           <div className="grid gap-6">
