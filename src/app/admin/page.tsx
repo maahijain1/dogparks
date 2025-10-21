@@ -158,6 +158,26 @@ export default function AdminHome() {
             </div>
           </Link>
 
+          {/* Debug Listings Section */}
+          <Link href="/admin/debug-listings" className="group">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 p-8 border border-gray-200 dark:border-gray-700">
+              <div className="flex items-center justify-center w-16 h-16 bg-purple-100 dark:bg-purple-900 rounded-full mb-6 mx-auto group-hover:bg-purple-200 dark:group-hover:bg-purple-800 transition-colors">
+                <Building2 className="w-8 h-8 text-purple-600 dark:text-purple-400" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 text-center">
+                Debug Listings
+              </h2>
+              <p className="text-gray-600 dark:text-gray-300 text-center mb-6">
+                Troubleshoot why listings aren't showing and test city search functionality.
+              </p>
+              <div className="text-center">
+                <span className="inline-flex items-center px-6 py-3 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors">
+                  Debug Listings
+                </span>
+              </div>
+            </div>
+          </Link>
+
           {/* Debug Templates Section */}
           <Link href="/admin/debug-templates" className="group">
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 p-8 border border-gray-200 dark:border-gray-700">
