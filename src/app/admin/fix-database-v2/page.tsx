@@ -144,7 +144,7 @@ export default function FixDatabaseV2Page() {
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mt-6">
             <h3 className="font-semibold text-yellow-800 mb-2">How to Fix Database Issues:</h3>
             <ol className="text-sm text-yellow-700 space-y-2">
-              <li>1. Click "Check Database Schema" above</li>
+              <li>1. Click &quot;Check Database Schema&quot; above</li>
               <li>2. If SQL commands are provided, copy them</li>
               <li>3. Go to your Supabase dashboard → SQL Editor</li>
               <li>4. Paste and run the SQL commands</li>

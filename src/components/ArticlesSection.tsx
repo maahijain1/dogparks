@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import ArticleRenderer from './ArticleRenderer'
 import Link from 'next/link'
+import Image from 'next/image'
 import { FileText, ExternalLink } from 'lucide-react'
 
 interface Article {
@@ -135,11 +136,12 @@ export default function ArticlesSection({ cityId, cityName, stateId, stateName }
             <article key={article.id} className="bg-gray-50 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
               {article.featured_image && (
                 <div className="aspect-w-16 aspect-h-9">
-                  <img
+                  <Image
                     src={article.featured_image}
                     alt={article.title}
+                    width={400}
+                    height={192}
                     className="w-full h-48 object-cover"
-                    loading="lazy"
                   />
                 </div>
               )}

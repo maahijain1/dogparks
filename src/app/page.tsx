@@ -9,18 +9,18 @@ import { siteConfig } from '@/lib/config'
 import { getSiteSettings, generateDynamicContent } from '@/lib/dynamic-config'
 
 // Function to clean article content and remove empty heading tags
-function cleanArticleContent(content: string): string {
-  if (!content) return ''
-  
-  // Remove empty heading tags (h1, h2, h3, h4, h5, h6) that have no content or only whitespace
-  return content
-    .replace(/<h[1-6][^>]*>\s*<\/h[1-6]>/gi, '') // Remove empty heading tags
-    .replace(/<h[1-6][^>]*>\s*&nbsp;\s*<\/h[1-6]>/gi, '') // Remove heading tags with only &nbsp;
-    .replace(/<h[1-6][^>]*>\s*<br\s*\/?>\s*<\/h[1-6]>/gi, '') // Remove heading tags with only <br>
-    .replace(/<h[1-6][^>]*>\s*<p>\s*<\/p>\s*<\/h[1-6]>/gi, '') // Remove heading tags with empty paragraphs
-    .replace(/\s+/g, ' ') // Clean up multiple spaces
-    .trim()
-}
+// function cleanArticleContent(content: string): string {
+//   if (!content) return ''
+//   
+//   // Remove empty heading tags (h1, h2, h3, h4, h5, h6) that have no content or only whitespace
+//   return content
+//     .replace(/<h[1-6][^>]*>\s*<\/h[1-6]>/gi, '') // Remove empty heading tags
+//     .replace(/<h[1-6][^>]*>\s*&nbsp;\s*<\/h[1-6]>/gi, '') // Remove heading tags with only &nbsp;
+//     .replace(/<h[1-6][^>]*>\s*<br\s*\/?>\s*<\/h[1-6]>/gi, '') // Remove heading tags with only <br>
+//     .replace(/<h[1-6][^>]*>\s*<p>\s*<\/p>\s*<\/h[1-6]>/gi, '') // Remove heading tags with empty paragraphs
+//     .replace(/\s+/g, ' ') // Clean up multiple spaces
+//     .trim()
+// }
 
 // Function to strip HTML tags for meta descriptions
 function stripHtmlTags(html: string): string {
@@ -401,7 +401,7 @@ export default function HomePage() {
         } catch {
           // ignore
         }
-      } catch (error) {
+      } catch {
         // Error fetching data
         // Set empty arrays on error to prevent crashes
         setCities([])
@@ -1280,7 +1280,7 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
             {(() => {
               const listingsToShow = filteredListings.filter(listing => !listing.featured)
-              const totalPages = Math.ceil(listingsToShow.length / itemsPerPage)
+              // const totalPages = Math.ceil(listingsToShow.length / itemsPerPage)
               const startIndex = (currentPage - 1) * itemsPerPage
               const endIndex = startIndex + itemsPerPage
               const paginatedListings = listingsToShow.slice(startIndex, endIndex)
