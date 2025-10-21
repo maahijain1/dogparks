@@ -1,7 +1,7 @@
 'use client'
 
 import Link from "next/link";
-import { FileText, MapPin, Settings, Copy, Play, Building2 } from "lucide-react";
+import { FileText, MapPin, Settings, Copy } from "lucide-react";
 import AdminHeader from "@/components/AdminHeader";
 
 export default function AdminHome() {
@@ -19,7 +19,7 @@ export default function AdminHome() {
           </p>
         </div>
 
-        <div className="max-w-6xl mx-auto grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="max-w-6xl mx-auto grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* Articles Section */}
           <Link href="/admin/articles" className="group">
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 p-8 border border-gray-200 dark:border-gray-700">
@@ -39,44 +39,6 @@ export default function AdminHome() {
               </div>
             </div>
           </Link>
-
-          {/* Generate City Articles */}
-          <button
-            className="group"
-            onClick={async () => {
-              try {
-                const confirmed = window.confirm('Generate/refresh city-specific articles and show them below listings?')
-                if (!confirmed) return
-                const res = await fetch('/api/admin/generate-city-articles', { method: 'POST' })
-                if (res.ok) {
-                  const data = await res.json()
-                  alert(`Done: ${data.count} articles processed. Check a city page to see articles below listings.`)
-                } else {
-                  const err = await res.json().catch(() => ({}))
-                  alert(`Failed: ${err.error || 'Unknown error'}`)
-                }
-              } catch (e) {
-                alert(`Error: ${e instanceof Error ? e.message : 'Unknown error'}`)
-              }
-            }}
-          >
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 p-8 border border-gray-200 dark:border-gray-700">
-              <div className="flex items-center justify-center w-16 h-16 bg-teal-100 dark:bg-teal-900 rounded-full mb-6 mx-auto group-hover:bg-teal-200 dark:group-hover:bg-teal-800 transition-colors">
-                <span className="text-teal-700 dark:text-teal-300 font-bold">AI</span>
-              </div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 text-center">
-                Generate City Articles
-              </h2>
-              <p className="text-gray-600 dark:text-gray-300 text-center mb-6">
-                Create/update unique articles for every city; they appear below listings automatically.
-              </p>
-              <div className="text-center">
-                <span className="inline-flex items-center px-6 py-3 bg-teal-600 text-white font-medium rounded-lg hover:bg-teal-700 transition-colors">
-                  Run Generator
-                </span>
-              </div>
-            </div>
-          </button>
 
           {/* Listings Section */}
           <Link href="/admin/listings" className="group">
@@ -118,106 +80,6 @@ export default function AdminHome() {
             </div>
           </Link>
 
-          {/* Database Fix Section */}
-          <Link href="/admin/fix-database" className="group">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 p-8 border border-gray-200 dark:border-gray-700">
-              <div className="flex items-center justify-center w-16 h-16 bg-red-100 dark:bg-red-900 rounded-full mb-6 mx-auto group-hover:bg-red-200 dark:group-hover:bg-red-800 transition-colors">
-                <Settings className="w-8 h-8 text-red-600 dark:text-red-400" />
-              </div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 text-center">
-                Fix Database
-              </h2>
-              <p className="text-gray-600 dark:text-gray-300 text-center mb-6">
-                Fix database schema issues. Add missing columns for city articles and templates.
-              </p>
-              <div className="text-center">
-                <span className="inline-flex items-center px-6 py-3 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors">
-                  Fix Database
-                </span>
-              </div>
-            </div>
-          </Link>
-
-          {/* Database Checker V2 Section */}
-          <Link href="/admin/fix-database-v2" className="group">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 p-8 border border-gray-200 dark:border-gray-700">
-              <div className="flex items-center justify-center w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full mb-6 mx-auto group-hover:bg-blue-200 dark:group-hover:bg-blue-800 transition-colors">
-                <Settings className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-              </div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 text-center">
-                Database Checker
-              </h2>
-              <p className="text-gray-600 dark:text-gray-300 text-center mb-6">
-                Advanced database schema checker with exact SQL commands to fix issues.
-              </p>
-              <div className="text-center">
-                <span className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors">
-                  Check Database
-                </span>
-              </div>
-            </div>
-          </Link>
-
-          {/* Debug Listings Section */}
-          <Link href="/admin/debug-listings" className="group">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 p-8 border border-gray-200 dark:border-gray-700">
-              <div className="flex items-center justify-center w-16 h-16 bg-purple-100 dark:bg-purple-900 rounded-full mb-6 mx-auto group-hover:bg-purple-200 dark:group-hover:bg-purple-800 transition-colors">
-                <Building2 className="w-8 h-8 text-purple-600 dark:text-purple-400" />
-              </div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 text-center">
-                Debug Listings
-              </h2>
-              <p className="text-gray-600 dark:text-gray-300 text-center mb-6">
-                Troubleshoot why listings aren&apos;t showing and test city search functionality.
-              </p>
-              <div className="text-center">
-                <span className="inline-flex items-center px-6 py-3 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors">
-                  Debug Listings
-                </span>
-              </div>
-            </div>
-          </Link>
-
-          {/* Test Template Generation Section */}
-          <Link href="/admin/test-template-generation" className="group">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 p-8 border border-gray-200 dark:border-gray-700">
-              <div className="flex items-center justify-center w-16 h-16 bg-green-100 dark:bg-green-900 rounded-full mb-6 mx-auto group-hover:bg-green-200 dark:group-hover:bg-green-800 transition-colors">
-                <Play className="w-8 h-8 text-green-600 dark:text-green-400" />
-              </div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 text-center">
-                Generate Articles
-              </h2>
-              <p className="text-gray-600 dark:text-gray-300 text-center mb-6">
-                Generate articles from your templates for all cities. Create unique content for each city.
-              </p>
-              <div className="text-center">
-                <span className="inline-flex items-center px-6 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors">
-                  Generate Articles
-                </span>
-              </div>
-            </div>
-          </Link>
-
-          {/* Debug Templates Section */}
-          <Link href="/admin/debug-templates" className="group">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 p-8 border border-gray-200 dark:border-gray-700">
-              <div className="flex items-center justify-center w-16 h-16 bg-yellow-100 dark:bg-yellow-900 rounded-full mb-6 mx-auto group-hover:bg-yellow-200 dark:group-hover:bg-yellow-800 transition-colors">
-                <Settings className="w-8 h-8 text-yellow-600 dark:text-yellow-400" />
-              </div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 text-center">
-                Debug Templates
-              </h2>
-              <p className="text-gray-600 dark:text-gray-300 text-center mb-6">
-                Debug template creation issues. Test if templates are working properly.
-              </p>
-              <div className="text-center">
-                <span className="inline-flex items-center px-6 py-3 bg-yellow-600 text-white font-medium rounded-lg hover:bg-yellow-700 transition-colors">
-                  Debug Templates
-                </span>
-              </div>
-            </div>
-          </Link>
-
           {/* Fix All Issues Section */}
           <Link href="/admin/fix-all-issues" className="group">
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 p-8 border border-gray-200 dark:border-gray-700">
@@ -233,6 +95,26 @@ export default function AdminHome() {
               <div className="text-center">
                 <span className="inline-flex items-center px-6 py-3 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors">
                   Fix All Issues
+                </span>
+              </div>
+            </div>
+          </Link>
+
+          {/* Fix Articles Section */}
+          <Link href="/admin/fix-articles" className="group">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 p-8 border border-gray-200 dark:border-gray-700">
+              <div className="flex items-center justify-center w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full mb-6 mx-auto group-hover:bg-blue-200 dark:group-hover:bg-blue-800 transition-colors">
+                <FileText className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 text-center">
+                Fix Articles
+              </h2>
+              <p className="text-gray-600 dark:text-gray-300 text-center mb-6">
+                Debug and fix articles display issues. Check database status and generate articles for all cities.
+              </p>
+              <div className="text-center">
+                <span className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors">
+                  Fix Articles
                 </span>
               </div>
             </div>

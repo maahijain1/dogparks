@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{CITY_NAME}} {{NICHE}} Services | {{SITE_NAME}}</title>
+    <meta name="description" content="Professional {{NICHE}} services in {{CITY_NAME}}. Expert {{NICHE}} solutions with fast, reliable service. Call {{PHONE_NUMBER}} for free estimates.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+        
+        .header .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 1rem;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: #e74c3c;
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: background 0.3s ease;
+            margin: 10px;
+        }
+        
+        .cta-button:hover {
+            background: #c0392b;
+        }
+        
+        /* Main Content */
+        .main-content {
+            background: white;
+            margin: 2rem 0;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .hero-section {
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('{{HERO_IMAGE}}');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+        
+        .hero-section h2 {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        
+        .hero-section p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+        }
+        
+        .content-section {
+            padding: 3rem 2rem;
+        }
+        
+        .content-section h3 {
+            color: #2c3e50;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 0.5rem;
+        }
+        
+        .content-section p {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            line-height: 1.7;
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .service-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+            transition: transform 0.3s ease;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .service-card h4 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+        
+        .service-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .service-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #ecf0f1;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+        
+        .service-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #27ae60;
+            font-weight: bold;
+        }
+        
+        .area-info {
+            background: #ecf0f1;
+            padding: 2rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+        }
+        
+        .area-info h4 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-size: 1.4rem;
+        }
+        
+        .area-info p {
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .contact-section {
+            background: #2c3e50;
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+        
+        .contact-section h3 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .contact-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .contact-item {
+            background: rgba(255,255,255,0.1);
+            padding: 1.5rem;
+            border-radius: 8px;
+        }
+        
+        .contact-item h4 {
+            margin-bottom: 0.5rem;
+            color: #3498db;
+        }
+        
+        .phone-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+        
+        .guarantee {
+            background: #27ae60;
+            color: white;
+            padding: 1rem;
+            border-radius: 5px;
+            text-align: center;
+            margin: 1rem 0;
+            font-weight: bold;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .hero-section h2 {
+                font-size: 1.8rem;
+            }
+            
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .contact-info {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <h1>Professional {{NICHE}} Services in {{CITY_NAME}}</h1>
+            <p class="subtitle">Serving {{CITY_NAME}} with professional {{NICHE}} services</p>
+            <a href="tel:{{PHONE_NUMBER}}" class="cta-button">Call {{PHONE_NUMBER}} Now</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="main-content">
+            <div class="hero-section">
+                <h2>Local {{NICHE}} Experts</h2>
+                <p>When you need reliable {{NICHE}} in {{CITY_NAME}}, trust the local experts at {{SITE_NAME}}. Our team has been serving the {{ZIP_CODE}} area for over {{YEARS_IN_BUSINESS}} years, providing fast, professional {{NICHE}} solutions for both emergency situations and planned maintenance.</p>
+                <p>From minor {{NICHE}} repairs to extensive {{NICHE}} restoration, our experienced technicians understand the unique {{NICHE}} challenges faced by {{CITY_NAME}} residents. We use premium materials designed to withstand {{STATE_NAME}}'s diverse weather conditions while maintaining your property's aesthetic appeal.</p>
+            </div>
+
+            <div class="content-section">
+                <h3>Expert {{NICHE}} Services in {{CITY_NAME}}</h3>
+                <p>Our comprehensive {{NICHE}} services include:</p>
+                
+                <div class="services-grid">
+                    <div class="service-card">
+                        <h4>Emergency Services</h4>
+                        <ul class="service-list">
+                            <li>Emergency {{NICHE}} repairs</li>
+                            <li>Storm damage restoration</li>
+                            <li>24/7 emergency response</li>
+                            <li>Rapid response team</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="service-card">
+                        <h4>Professional Services</h4>
+                        <ul class="service-list">
+                            <li>{{NICHE}} replacement and repair</li>
+                            <li>Preventive maintenance</li>
+                            <li>Quality inspections</li>
+                            <li>Expert consultations</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="service-card">
+                        <h4>Specialized Solutions</h4>
+                        <ul class="service-list">
+                            <li>Custom {{NICHE}} solutions</li>
+                            <li>Advanced technology</li>
+                            <li>Eco-friendly options</li>
+                            <li>Warranty protection</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <p>As your neighbors in {{CITY_NAME}}, we take pride in maintaining the beauty and integrity of {{CITY_NAME}} properties. Every {{NICHE}} project comes with our satisfaction guarantee and is backed by our comprehensive warranty.</p>
+            </div>
+
+            <div class="area-info">
+                <h4>About {{CITY_NAME}}</h4>
+                <p><strong>Zip Code:</strong> {{ZIP_CODE}}</p>
+                <p><strong>Service Area:</strong> {{CITY_NAME}} and surrounding neighborhoods</p>
+                <p><strong>Population:</strong> {{POPULATION}}</p>
+                <p><strong>Established:</strong> {{CITY_ESTABLISHED}}</p>
+                
+                <h4 style="margin-top: 1.5rem;">Nearby Areas We Serve</h4>
+                <p>Proudly serving {{CITY_NAME}} and surrounding {{STATE_NAME}} neighborhoods including {{NEARBY_AREAS}}. Our service area extends throughout {{COUNTY_NAME}} County, providing quick response times for both scheduled and emergency {{NICHE}} services.</p>
+            </div>
+
+            <div class="content-section">
+                <h3>Why Choose {{SITE_NAME}} in {{CITY_NAME}}?</h3>
+                <div class="services-grid">
+                    <div class="service-card">
+                        <h4>Local Expertise</h4>
+                        <p>We understand {{CITY_NAME}}'s unique {{NICHE}} needs and local building codes. Our team has extensive experience working in {{CITY_NAME}} and surrounding areas.</p>
+                    </div>
+                    
+                    <div class="service-card">
+                        <h4>Fast Response</h4>
+                        <p>When you need {{NICHE}} services in {{CITY_NAME}}, we're just a phone call away. Our local team provides rapid response times for all {{CITY_NAME}} residents.</p>
+                    </div>
+                    
+                    <div class="service-card">
+                        <h4>Quality Guarantee</h4>
+                        <p>Every {{NICHE}} project in {{CITY_NAME}} comes with our satisfaction guarantee. We stand behind our work with comprehensive warranties.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="contact-section">
+            <h3>Get {{NICHE}} Service in {{CITY_NAME}}</h3>
+            <p>Contact us today for professional service and free estimates</p>
+            <a href="tel:{{PHONE_NUMBER}}" class="cta-button">Call Now</a>
+            
+            <div class="guarantee">
+                Free Estimates • Licensed & Insured • {{YEARS_IN_BUSINESS}} Years Experience
+            </div>
+            
+            <div class="contact-info">
+                <div class="contact-item">
+                    <h4>{{SITE_NAME}}</h4>
+                    <p>Professional {{NICHE}} services you can trust in {{CITY_NAME}}.</p>
+                    <p class="phone-number">{{PHONE_NUMBER}}</p>
+                    <p>Serving {{CITY_NAME}} & Surrounding Areas</p>
+                </div>
+                
+                <div class="contact-item">
+                    <h4>Service Areas</h4>
+                    <p>{{CITY_NAME}}</p>
+                    <p>{{NEARBY_CITIES}}</p>
+                    <p>And all of {{COUNTY_NAME}} County</p>
+                </div>
+                
+                <div class="contact-item">
+                    <h4>Our Services</h4>
+                    <p>Emergency {{NICHE}}</p>
+                    <p>Preventive Maintenance</p>
+                    <p>Quality Inspections</p>
+                    <p>Expert Consultations</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
