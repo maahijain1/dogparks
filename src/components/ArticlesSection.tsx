@@ -129,12 +129,12 @@ export default function ArticlesSection({ cityId, stateId }: ArticlesSectionProp
               </div>
             )}
             
-            <div className="text-center">
+            <div className="text-left">
               <h2 className="text-3xl font-bold text-gray-900 mb-6">
                 {article.title}
               </h2>
               
-              <div className="prose prose-lg max-w-none text-gray-700 mx-auto">
+              <div className="prose prose-lg max-w-none text-gray-700">
                 <ArticleRenderer content={article.content} />
               </div>
               
