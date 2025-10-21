@@ -1,7 +1,7 @@
 'use client'
 
 import Link from "next/link";
-import { FileText, MapPin, Settings, Copy } from "lucide-react";
+import { FileText, MapPin, Settings, Copy, Play, Building2 } from "lucide-react";
 import AdminHeader from "@/components/AdminHeader";
 
 export default function AdminHome() {
@@ -173,6 +173,26 @@ export default function AdminHome() {
               <div className="text-center">
                 <span className="inline-flex items-center px-6 py-3 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors">
                   Debug Listings
+                </span>
+              </div>
+            </div>
+          </Link>
+
+          {/* Test Template Generation Section */}
+          <Link href="/admin/test-template-generation" className="group">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 p-8 border border-gray-200 dark:border-gray-700">
+              <div className="flex items-center justify-center w-16 h-16 bg-green-100 dark:bg-green-900 rounded-full mb-6 mx-auto group-hover:bg-green-200 dark:group-hover:bg-green-800 transition-colors">
+                <Play className="w-8 h-8 text-green-600 dark:text-green-400" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 text-center">
+                Generate Articles
+              </h2>
+              <p className="text-gray-600 dark:text-gray-300 text-center mb-6">
+                Generate articles from your templates for all cities. Create unique content for each city.
+              </p>
+              <div className="text-center">
+                <span className="inline-flex items-center px-6 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors">
+                  Generate Articles
                 </span>
               </div>
             </div>
