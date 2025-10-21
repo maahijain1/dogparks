@@ -118,76 +118,40 @@ export default function ArticlesSection({ cityId, cityName, stateId, stateName }
 
   return (
     <section className="py-16 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <div className="flex items-center justify-center mb-4">
-            <FileText className="w-8 h-8 text-blue-600 mr-3" />
-            <h2 className="text-3xl font-bold text-gray-900">
-              Articles About {cityName || stateName}
-            </h2>
-          </div>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Discover helpful articles and insights about {cityName || stateName} and the local area
-          </p>
-        </div>
-
-        <div className="grid gap-8 lg:grid-cols-2">
-          {articles.map((article) => (
-            <article key={article.id} className="bg-gray-50 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-              {article.featured_image && (
-                <div className="aspect-w-16 aspect-h-9">
-                  <Image
-                    src={article.featured_image}
-                    alt={article.title}
-                    width={400}
-                    height={192}
-                    className="w-full h-48 object-cover"
-                  />
-                </div>
-              )}
-              
-              <div className="p-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-3 line-clamp-2">
-                  {article.title}
-                </h3>
-                
-                <div className="prose prose-sm max-w-none text-gray-600 mb-4">
-                  <ArticleRenderer content={article.content} />
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="text-sm text-gray-500">
-                    {new Date(article.created_at).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
-                    })}
-                  </div>
-                  
-                  <Link
-                    href={`/articles/${article.slug}`}
-                    className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
-                  >
-                    Read More
-                    <ExternalLink className="w-4 h-4 ml-1" />
-                  </Link>
-                </div>
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        {articles.map((article) => (
+          <article key={article.id} className="mb-12">
+            {article.featured_image && (
+              <div className="mb-6">
+                <Image
+                  src={article.featured_image}
+                  alt={article.title}
+                  width={800}
+                  height={400}
+                  className="w-full h-64 object-cover rounded-lg"
+                />
               </div>
-            </article>
-          ))}
-        </div>
-
-        {articles.length > 2 && (
-          <div className="text-center mt-8">
-            <Link
-              href="/articles"
-              className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              View All Articles
-              <ExternalLink className="w-4 h-4 ml-2" />
-            </Link>
-          </div>
-        )}
+            )}
+            
+            <div className="text-center">
+              <h2 className="text-3xl font-bold text-gray-900 mb-6">
+                {article.title}
+              </h2>
+              
+              <div className="prose prose-lg max-w-none text-gray-700 mx-auto">
+                <ArticleRenderer content={article.content} />
+              </div>
+              
+              <div className="mt-6 text-sm text-gray-500">
+                {new Date(article.created_at).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                })}
+              </div>
+            </div>
+          </article>
+        ))}
       </div>
     </section>
   )
