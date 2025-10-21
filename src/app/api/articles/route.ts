@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
     response.headers.set('Expires', '0')
     
     return response
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Failed to fetch articles' },
       { status: 500 }

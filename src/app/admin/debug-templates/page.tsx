@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { ArrowLeft, Database, AlertCircle, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
 
 export default function DebugTemplatesPage() {
-  const [debugInfo, setDebugInfo] = useState<any>(null)
+  const [debugInfo, setDebugInfo] = useState<Record<string, unknown> | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -49,8 +49,8 @@ export default function DebugTemplatesPage() {
         templatesAfterCreateData: templatesData2
       })
 
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error')
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Unknown error')
     } finally {
       setLoading(false)
     }
@@ -129,7 +129,7 @@ export default function DebugTemplatesPage() {
 
                 <div className="flex items-center gap-2">
                   <span className="font-medium">Initial Templates Count:</span>
-                  <span className="text-gray-600">{debugInfo.templatesCount}</span>
+                  <span className="text-gray-600">{String(debugInfo.templatesCount)}</span>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -146,7 +146,7 @@ export default function DebugTemplatesPage() {
 
                 <div className="flex items-center gap-2">
                   <span className="font-medium">Templates After Creation:</span>
-                  <span className="text-gray-600">{debugInfo.templatesAfterCreate}</span>
+                  <span className="text-gray-600">{String(debugInfo.templatesAfterCreate)}</span>
                 </div>
 
                 {!debugInfo.createTemplateSuccess && (

@@ -47,7 +47,7 @@ export default function ArticlesSection({ cityId, cityName, stateId, stateName }
           // Check if city_id column exists by trying to filter
           try {
             query = query.eq('city_id', cityId)
-          } catch (error) {
+          } catch {
             // If city_id column doesn't exist, fall back to showing all published articles
             console.warn('city_id column not found, showing all articles')
           }
@@ -62,7 +62,7 @@ export default function ArticlesSection({ cityId, cityName, stateId, stateName }
             if (stateCities && stateCities.length > 0) {
               query = query.in('city_id', stateCities.map(c => c.id))
             }
-          } catch (error) {
+          } catch {
             // If city_id column doesn't exist, fall back to showing all published articles
             console.warn('city_id column not found, showing all articles')
           }
@@ -139,6 +139,7 @@ export default function ArticlesSection({ cityId, cityName, stateId, stateName }
                     src={article.featured_image}
                     alt={article.title}
                     className="w-full h-48 object-cover"
+                    loading="lazy"
                   />
                 </div>
               )}
