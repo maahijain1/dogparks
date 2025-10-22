@@ -1,7 +1,7 @@
 'use client'
 
 import Link from "next/link";
-import { FileText, MapPin, Settings, Copy } from "lucide-react";
+import { FileText, MapPin, Settings, Copy, Database } from "lucide-react";
 import AdminHeader from "@/components/AdminHeader";
 
 export default function AdminHome() {
@@ -95,6 +95,26 @@ export default function AdminHome() {
               <div className="text-center">
                 <span className="inline-flex items-center px-6 py-3 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors">
                   Fix All Issues
+                </span>
+              </div>
+            </div>
+          </Link>
+
+          {/* Debug All States Section */}
+          <Link href="/admin/debug-all-states" className="group">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 p-8 border border-gray-200 dark:border-gray-700">
+              <div className="flex items-center justify-center w-16 h-16 bg-purple-100 dark:bg-purple-900 rounded-full mb-6 mx-auto group-hover:bg-purple-200 dark:group-hover:bg-purple-800 transition-colors">
+                <Database className="w-8 h-8 text-purple-600 dark:text-purple-400" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 text-center">
+                Debug All States
+              </h2>
+              <p className="text-gray-600 dark:text-gray-300 text-center mb-6">
+                Check articles and featured listings across all states to identify which states are missing content.
+              </p>
+              <div className="text-center">
+                <span className="inline-flex items-center px-6 py-3 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors">
+                  Debug States
                 </span>
               </div>
             </div>
