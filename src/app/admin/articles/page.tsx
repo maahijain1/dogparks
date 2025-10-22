@@ -37,7 +37,7 @@ export default function ArticlesPage() {
   const fetchArticles = async () => {
     try {
       setLoading(true)
-      const response = await fetch('/api/articles', {
+      const response = await fetch('/api/articles?exclude_city_articles=true', {
         cache: 'no-store',
         headers: {
           'Cache-Control': 'no-cache'

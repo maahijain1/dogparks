@@ -5,6 +5,7 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const published = searchParams.get('published')
+    const excludeCityArticles = searchParams.get('exclude_city_articles') === 'true'
 
     let query = supabase
       .from('articles')
@@ -13,6 +14,17 @@ export async function GET(request: NextRequest) {
 
     if (published !== null) {
       query = query.eq('published', published === 'true')
+    }
+
+    // If excludeCityArticles is true, only show manually created articles (no city_id)
+    if (excludeCityArticles) {
+      // Check if city_id column exists first
+      try {
+        query = query.is('city_id', null)
+      } catch {
+        // If city_id column doesn't exist, show all articles
+        console.log('city_id column not found, showing all articles')
+      }
     }
 
     const { data, error } = await query

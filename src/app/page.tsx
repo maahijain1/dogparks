@@ -313,7 +313,7 @@ export default function HomePage() {
           fetch(`/api/states?_=${ts}`, { cache: 'no-store' }),
           fetch(`/api/cities?_=${ts}`, { cache: 'no-store' }),
           fetch(`/api/listings?${filterParams.toString()}&_=${ts}`, { cache: 'no-store' }),
-          fetch(`/api/articles?published=true&_=${ts}`, { cache: 'no-store' })
+          fetch(`/api/articles?published=true&exclude_city_articles=true&_=${ts}`, { cache: 'no-store' })
         ])
 
         // Try to fetch featured listings separately to handle potential errors
@@ -360,7 +360,7 @@ export default function HomePage() {
         // Retry with cache-busting if empty (handles stale CDN caches)
         if (!Array.isArray(articlesData) || articlesData.length === 0) {
           try {
-            const retryRes = await fetch(`/api/articles?published=true&_=${Date.now()}`, { cache: 'no-store' })
+            const retryRes = await fetch(`/api/articles?published=true&exclude_city_articles=true&_=${Date.now()}`, { cache: 'no-store' })
             const retryData = await retryRes.json()
             if (Array.isArray(retryData)) {
               articlesData = retryData

@@ -22,7 +22,7 @@ export default function ArticlesPage() {
   // Fetch articles
   const fetchArticles = async () => {
     try {
-      const response = await fetch('/api/articles')
+      const response = await fetch('/api/articles?exclude_city_articles=true')
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
