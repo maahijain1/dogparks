@@ -100,6 +100,26 @@ export default function AdminHome() {
             </div>
           </Link>
 
+          {/* Fix Everything Section */}
+          <Link href="/admin/fix-everything" className="group">
+            <div className="bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-900 dark:to-emerald-900 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 p-8 border-2 border-green-300 dark:border-green-700">
+              <div className="flex items-center justify-center w-16 h-16 bg-green-200 dark:bg-green-800 rounded-full mb-6 mx-auto group-hover:bg-green-300 dark:group-hover:bg-green-700 transition-colors">
+                <Database className="w-8 h-8 text-green-700 dark:text-green-300" />
+              </div>
+              <h2 className="text-2xl font-bold text-green-900 dark:text-green-100 mb-4 text-center">
+                🔧 Fix Everything
+              </h2>
+              <p className="text-green-800 dark:text-green-200 text-center mb-6 font-medium">
+                Run comprehensive fix to publish all articles, ensure featured listings, and fix display issues.
+              </p>
+              <div className="text-center">
+                <span className="inline-flex items-center px-6 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors shadow-lg">
+                  Fix All Issues
+                </span>
+              </div>
+            </div>
+          </Link>
+
           {/* Debug All States Section */}
           <Link href="/admin/debug-all-states" className="group">
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 p-8 border border-gray-200 dark:border-gray-700">
