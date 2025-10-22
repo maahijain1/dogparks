@@ -100,6 +100,29 @@ export default function AdminHome() {
             </div>
           </Link>
 
+          {/* Nuclear Fix Section - MOST PROMINENT */}
+          <Link href="/admin/nuclear-fix" className="group">
+            <div className="bg-gradient-to-br from-purple-100 via-pink-100 to-red-100 dark:from-purple-900 dark:via-pink-900 dark:to-red-900 rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:-translate-y-3 p-8 border-4 border-purple-400 dark:border-purple-600 relative overflow-hidden">
+              <div className="absolute top-0 right-0 bg-red-500 text-white px-4 py-1 text-xs font-bold transform rotate-12 translate-x-8 translate-y-2">
+                DIRECT FIX
+              </div>
+              <div className="flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full mb-6 mx-auto group-hover:scale-110 transition-transform shadow-lg">
+                <Database className="w-10 h-10 text-white animate-pulse" />
+              </div>
+              <h2 className="text-2xl font-bold text-purple-900 dark:text-purple-100 mb-4 text-center">
+                ⚡ NUCLEAR FIX
+              </h2>
+              <p className="text-purple-800 dark:text-purple-200 text-center mb-6 font-bold text-lg">
+                DIRECT DATABASE FIX - Generate ALL articles + Fix ALL featured listings in ONE CLICK!
+              </p>
+              <div className="text-center">
+                <span className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-lg rounded-lg hover:from-purple-700 hover:to-pink-700 transition-colors shadow-xl">
+                  FIX EVERYTHING NOW
+                </span>
+              </div>
+            </div>
+          </Link>
+
           {/* Fix Everything Section */}
           <Link href="/admin/fix-everything" className="group">
             <div className="bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-900 dark:to-emerald-900 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 p-8 border-2 border-green-300 dark:border-green-700">
