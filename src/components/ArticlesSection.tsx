@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { supabase } from '@/lib/supabase'
+import { supabaseAdmin as supabase } from '@/lib/supabase'
 import ArticleRenderer from './ArticleRenderer'
 import Image from 'next/image'
 
@@ -33,6 +33,8 @@ export default function ArticlesSection({ cityId, stateId }: ArticlesSectionProp
         setLoading(true)
         setError(null)
 
+        console.log('🔍 ArticlesSection: Fetching articles for cityId:', cityId, 'stateId:', stateId)
+
         let query = supabase
           .from('articles')
           .select('*')
@@ -41,14 +43,17 @@ export default function ArticlesSection({ cityId, stateId }: ArticlesSectionProp
 
         // If we have a cityId, filter by city-specific articles
         if (cityId) {
+          console.log('🔍 ArticlesSection: Filtering by cityId:', cityId)
           // Check if city_id column exists by trying to filter
           try {
             query = query.eq('city_id', cityId)
-          } catch {
+            console.log('🔍 ArticlesSection: Added city_id filter')
+          } catch (err) {
             // If city_id column doesn't exist, fall back to showing all published articles
-            console.warn('city_id column not found, showing all articles')
+            console.warn('city_id column not found, showing all articles', err)
           }
         } else if (stateId) {
+          console.log('🔍 ArticlesSection: Filtering by stateId:', stateId)
           // For state pages, get articles from all cities in that state
           try {
             const { data: stateCities } = await supabase
@@ -56,21 +61,27 @@ export default function ArticlesSection({ cityId, stateId }: ArticlesSectionProp
               .select('id')
               .eq('state_id', stateId)
             
+            console.log('🔍 ArticlesSection: Found cities for state:', stateCities)
+            
             if (stateCities && stateCities.length > 0) {
               query = query.in('city_id', stateCities.map(c => c.id))
+              console.log('🔍 ArticlesSection: Added state cities filter')
             }
-          } catch {
+          } catch (err) {
             // If city_id column doesn't exist, fall back to showing all published articles
-            console.warn('city_id column not found, showing all articles')
+            console.warn('city_id column not found, showing all articles', err)
           }
         }
 
+        console.log('🔍 ArticlesSection: Executing query...')
         const { data, error } = await query
 
         if (error) {
+          console.error('🔍 ArticlesSection: Query error:', error)
           throw error
         }
 
+        console.log('🔍 ArticlesSection: Found articles:', data?.length || 0, data)
         setArticles(data || [])
       } catch (error) {
         console.error('Error fetching articles:', error)
