@@ -130,10 +130,14 @@ export default function TemplatesPage() {
       })
       
       if (response.ok) {
+        const result = await response.json()
+        console.log('Delete result:', result)
         setSuccess('Template deleted successfully!')
         await fetchTemplates()
       } else {
-        setError('Failed to delete template')
+        const errorData = await response.json()
+        console.error('Delete failed:', errorData)
+        setError(`Failed to delete template: ${errorData.error || 'Unknown error'}`)
       }
     } catch (error) {
       setError('Error deleting template')

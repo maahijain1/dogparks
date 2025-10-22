@@ -39,6 +39,10 @@ export async function GET() {
       .select('id, name')
       .limit(10)
 
+    if (citiesError) {
+      console.error('Error fetching cities:', citiesError)
+    }
+
     // Check if any articles have city_id
     const articlesWithCityId = articles?.filter(article => article.city_id) || []
 

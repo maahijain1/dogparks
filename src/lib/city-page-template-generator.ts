@@ -56,8 +56,8 @@ export async function getCityTemplateData(cityId: string): Promise<CityTemplateD
       .neq('id', cityId)
       .limit(5)
 
-    // Get listings count for this city
-    const { count: listingsCount } = await supabase
+    // Get listings count for this city (not used but kept for potential future use)
+    await supabase
       .from('listings')
       .select('*', { count: 'exact', head: true })
       .eq('city_id', cityId)
@@ -102,131 +102,48 @@ export async function getCityTemplateData(cityId: string): Promise<CityTemplateD
 }
 
 export function generateCityPageContent(templateData: CityTemplateData): string {
-  const template = `
-    <div class="header">
+  // Read the full HTML template
+  const fs = require('fs') // eslint-disable-line @typescript-eslint/no-require-imports
+  const path = require('path') // eslint-disable-line @typescript-eslint/no-require-imports
+  
+  try {
+    const templatePath = path.join(process.cwd(), 'src', 'lib', 'city-page-template.html')
+    const template = fs.readFileSync(templatePath, 'utf8')
+    
+    // Replace all template variables
+    return template
+      .replace(/\{\{CITY_NAME\}\}/g, templateData.CITY_NAME)
+      .replace(/\{\{STATE_NAME\}\}/g, templateData.STATE_NAME)
+      .replace(/\{\{ZIP_CODE\}\}/g, templateData.ZIP_CODE)
+      .replace(/\{\{POPULATION\}\}/g, templateData.POPULATION)
+      .replace(/\{\{CITY_ESTABLISHED\}\}/g, templateData.CITY_ESTABLISHED)
+      .replace(/\{\{COUNTY_NAME\}\}/g, templateData.COUNTY_NAME)
+      .replace(/\{\{NEARBY_AREAS\}\}/g, templateData.NEARBY_AREAS)
+      .replace(/\{\{NEARBY_CITIES\}\}/g, templateData.NEARBY_CITIES)
+      .replace(/\{\{SITE_NAME\}\}/g, templateData.SITE_NAME)
+      .replace(/\{\{NICHE\}\}/g, templateData.NICHE)
+      .replace(/\{\{PHONE_NUMBER\}\}/g, templateData.PHONE_NUMBER)
+      .replace(/\{\{YEARS_IN_BUSINESS\}\}/g, templateData.YEARS_IN_BUSINESS)
+      .replace(/\{\{HERO_IMAGE\}\}/g, templateData.HERO_IMAGE)
+  } catch (error) {
+    console.error('Error reading template file:', error)
+    // Fallback to the original template
+    return `
+      <div class="header">
+        <div class="container">
+          <h1>Professional ${templateData.NICHE} Services in ${templateData.CITY_NAME}</h1>
+          <p class="subtitle">Serving ${templateData.CITY_NAME} with professional ${templateData.NICHE} services</p>
+          <a href="tel:${templateData.PHONE_NUMBER}" class="cta-button">Call ${templateData.PHONE_NUMBER} Now</a>
+        </div>
+      </div>
       <div class="container">
-        <h1>Professional ${templateData.NICHE} Services in ${templateData.CITY_NAME}</h1>
-        <p class="subtitle">Serving ${templateData.CITY_NAME} with professional ${templateData.NICHE} services</p>
-        <a href="tel:${templateData.PHONE_NUMBER}" class="cta-button">Call ${templateData.PHONE_NUMBER} Now</a>
-      </div>
-    </div>
-
-    <div class="container">
-      <div class="main-content">
-        <div class="hero-section">
-          <h2>Local ${templateData.NICHE} Experts</h2>
-          <p>When you need reliable ${templateData.NICHE} in ${templateData.CITY_NAME}, trust the local experts at ${templateData.SITE_NAME}. Our team has been serving the ${templateData.ZIP_CODE} area for over ${templateData.YEARS_IN_BUSINESS} years, providing fast, professional ${templateData.NICHE} solutions for both emergency situations and planned maintenance.</p>
-          <p>From minor ${templateData.NICHE} repairs to extensive ${templateData.NICHE} restoration, our experienced technicians understand the unique ${templateData.NICHE} challenges faced by ${templateData.CITY_NAME} residents. We use premium materials designed to withstand ${templateData.STATE_NAME}'s diverse weather conditions while maintaining your property's aesthetic appeal.</p>
-        </div>
-
-        <div class="content-section">
-          <h3>Expert ${templateData.NICHE} Services in ${templateData.CITY_NAME}</h3>
-          <p>Our comprehensive ${templateData.NICHE} services include:</p>
-          
-          <div class="services-grid">
-            <div class="service-card">
-              <h4>Emergency Services</h4>
-              <ul class="service-list">
-                <li>Emergency ${templateData.NICHE} repairs</li>
-                <li>Storm damage restoration</li>
-                <li>24/7 emergency response</li>
-                <li>Rapid response team</li>
-              </ul>
-            </div>
-            
-            <div class="service-card">
-              <h4>Professional Services</h4>
-              <ul class="service-list">
-                <li>${templateData.NICHE} replacement and repair</li>
-                <li>Preventive maintenance</li>
-                <li>Quality inspections</li>
-                <li>Expert consultations</li>
-              </ul>
-            </div>
-            
-            <div class="service-card">
-              <h4>Specialized Solutions</h4>
-              <ul class="service-list">
-                <li>Custom ${templateData.NICHE} solutions</li>
-                <li>Advanced technology</li>
-                <li>Eco-friendly options</li>
-                <li>Warranty protection</li>
-              </ul>
-            </div>
-          </div>
-
-          <p>As your neighbors in ${templateData.CITY_NAME}, we take pride in maintaining the beauty and integrity of ${templateData.CITY_NAME} properties. Every ${templateData.NICHE} project comes with our satisfaction guarantee and is backed by our comprehensive warranty.</p>
-        </div>
-
-        <div class="area-info">
-          <h4>About ${templateData.CITY_NAME}</h4>
-          <p><strong>Zip Code:</strong> ${templateData.ZIP_CODE}</p>
-          <p><strong>Service Area:</strong> ${templateData.CITY_NAME} and surrounding neighborhoods</p>
-          <p><strong>Population:</strong> ${templateData.POPULATION}</p>
-          <p><strong>Established:</strong> ${templateData.CITY_ESTABLISHED}</p>
-          
-          <h4 style="margin-top: 1.5rem;">Nearby Areas We Serve</h4>
-          <p>Proudly serving ${templateData.CITY_NAME} and surrounding ${templateData.STATE_NAME} neighborhoods including ${templateData.NEARBY_AREAS}. Our service area extends throughout ${templateData.COUNTY_NAME} County, providing quick response times for both scheduled and emergency ${templateData.NICHE} services.</p>
-        </div>
-
-        <div class="content-section">
-          <h3>Why Choose ${templateData.SITE_NAME} in ${templateData.CITY_NAME}?</h3>
-          <div class="services-grid">
-            <div class="service-card">
-              <h4>Local Expertise</h4>
-              <p>We understand ${templateData.CITY_NAME}'s unique ${templateData.NICHE} needs and local building codes. Our team has extensive experience working in ${templateData.CITY_NAME} and surrounding areas.</p>
-            </div>
-            
-            <div class="service-card">
-              <h4>Fast Response</h4>
-              <p>When you need ${templateData.NICHE} services in ${templateData.CITY_NAME}, we're just a phone call away. Our local team provides rapid response times for all ${templateData.CITY_NAME} residents.</p>
-            </div>
-            
-            <div class="service-card">
-              <h4>Quality Guarantee</h4>
-              <p>Every ${templateData.NICHE} project in ${templateData.CITY_NAME} comes with our satisfaction guarantee. We stand behind our work with comprehensive warranties.</p>
-            </div>
-          </div>
+        <div class="main-content">
+          <h2>Professional ${templateData.NICHE} Services in ${templateData.CITY_NAME}</h2>
+          <p>We provide comprehensive ${templateData.NICHE} services in ${templateData.CITY_NAME} and surrounding areas.</p>
         </div>
       </div>
-
-      <div class="contact-section">
-        <h3>Get ${templateData.NICHE} Service in ${templateData.CITY_NAME}</h3>
-        <p>Contact us today for professional service and free estimates</p>
-        <a href="tel:${templateData.PHONE_NUMBER}" class="cta-button">Call Now</a>
-        
-        <div class="guarantee">
-          Free Estimates • Licensed & Insured • ${templateData.YEARS_IN_BUSINESS} Years Experience
-        </div>
-        
-        <div class="contact-info">
-          <div class="contact-item">
-            <h4>${templateData.SITE_NAME}</h4>
-            <p>Professional ${templateData.NICHE} services you can trust in ${templateData.CITY_NAME}.</p>
-            <p class="phone-number">${templateData.PHONE_NUMBER}</p>
-            <p>Serving ${templateData.CITY_NAME} & Surrounding Areas</p>
-          </div>
-          
-          <div class="contact-item">
-            <h4>Service Areas</h4>
-            <p>${templateData.CITY_NAME}</p>
-            <p>${templateData.NEARBY_CITIES}</p>
-            <p>And all of ${templateData.COUNTY_NAME} County</p>
-          </div>
-          
-          <div class="contact-item">
-            <h4>Our Services</h4>
-            <p>Emergency ${templateData.NICHE}</p>
-            <p>Preventive Maintenance</p>
-            <p>Quality Inspections</p>
-            <p>Expert Consultations</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  `
-
-  return template
+    `
+  }
 }
 
 export function getCityPageStyles(): string {
