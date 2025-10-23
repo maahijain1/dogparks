@@ -1,7 +1,7 @@
 'use client'
 
 import Link from "next/link";
-import { FileText, MapPin, Settings, Copy, Database } from "lucide-react";
+import { FileText, MapPin, Settings, Copy, Database, Zap } from "lucide-react";
 import AdminHeader from "@/components/AdminHeader";
 
 export default function AdminHome() {
@@ -20,6 +20,29 @@ export default function AdminHome() {
         </div>
 
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {/* DIRECT FIX Section - MOST PROMINENT */}
+          <Link href="/admin/direct-fix" className="group">
+            <div className="bg-gradient-to-br from-red-100 via-orange-100 to-yellow-100 dark:from-red-900 dark:via-orange-900 dark:to-yellow-900 rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:-translate-y-3 p-8 border-4 border-red-400 dark:border-red-600 relative overflow-hidden">
+              <div className="absolute top-0 right-0 bg-red-600 text-white px-4 py-1 text-xs font-bold transform rotate-12 translate-x-8 translate-y-2">
+                FAST FIX
+              </div>
+              <div className="flex items-center justify-center w-20 h-20 bg-gradient-to-br from-red-500 to-orange-500 rounded-full mb-6 mx-auto group-hover:scale-110 transition-transform shadow-lg">
+                <Zap className="w-10 h-10 text-white animate-pulse" />
+              </div>
+              <h2 className="text-2xl font-bold text-red-900 dark:text-red-100 mb-4 text-center">
+                ⚡ DIRECT FIX
+              </h2>
+              <p className="text-red-800 dark:text-red-200 text-center mb-6 font-bold text-base">
+                SIMPLE & FAST - Generate ALL articles with correct city names!
+              </p>
+              <div className="text-center">
+                <span className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-red-600 to-orange-600 text-white font-bold rounded-lg hover:from-red-700 hover:to-orange-700 transition-colors shadow-xl">
+                  FIX NOW
+                </span>
+              </div>
+            </div>
+          </Link>
+
           {/* Articles Section */}
           <Link href="/admin/articles" className="group">
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 p-8 border border-gray-200 dark:border-gray-700">
