@@ -58,10 +58,12 @@ export async function POST() {
 
         // Get template data
         const templateData = await getCityTemplateData(city.id)
+        console.log(`🔍 Generating content for ${cityName} with niche: ${templateData.NICHE}`)
         const content = generateCityPageContent(templateData)
+        console.log(`📝 Content preview: ${content.substring(0, 200)}...`)
         const styles = getCityPageStyles()
         const fullContent = styles + content
-        const title = `Professional ${templateData.NICHE} Services in ${cityName} | ${templateData.SITE_NAME}`
+        const title = `Quality Dog Boarding in ${cityName}, ${stateName}`
 
         // Check if article exists for this city
         const { data: existingArticle } = await supabase

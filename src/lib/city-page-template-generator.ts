@@ -18,6 +18,8 @@ export interface CityTemplateData {
 
 export async function getCityTemplateData(cityId: string): Promise<CityTemplateData> {
   try {
+    console.log(`🔍 Getting template data for city ID: ${cityId}`)
+    
     // Get city data with state information
     const { data: cityData, error: cityError } = await supabase
       .from('cities')
@@ -34,8 +36,11 @@ export async function getCityTemplateData(cityId: string): Promise<CityTemplateD
       .single()
 
     if (cityError || !cityData) {
+      console.error(`❌ City not found for ID ${cityId}:`, cityError)
       throw new Error(`City not found: ${cityError?.message}`)
     }
+    
+    console.log(`✅ Found city: ${cityData.name}`)
 
     // Get site settings
     const { data: siteSettings } = await supabase
@@ -81,10 +86,12 @@ export async function getCityTemplateData(cityId: string): Promise<CityTemplateD
       HERO_IMAGE: '/hero-background.jpg' // Default hero image
     }
   } catch (error) {
-    console.error('Error getting city template data:', error)
-    // Return default data
+    console.error(`❌ CRITICAL ERROR getting city template data for cityId: ${cityId}`, error)
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace')
+    
+    // Return default data but with cityId in the name so we know which failed
     return {
-      CITY_NAME: 'Unknown City',
+      CITY_NAME: `Unknown City (ID: ${cityId})`,
       STATE_NAME: 'Unknown State',
       ZIP_CODE: '00000',
       POPULATION: '10,000+',
@@ -93,7 +100,7 @@ export async function getCityTemplateData(cityId: string): Promise<CityTemplateD
       NEARBY_AREAS: 'Surrounding areas',
       NEARBY_CITIES: 'Nearby cities',
       SITE_NAME: 'Professional Services',
-      NICHE: 'Service',
+      NICHE: 'Dog Boarding',
       PHONE_NUMBER: '(555) 123-4567',
       YEARS_IN_BUSINESS: '10+',
       HERO_IMAGE: '/hero-background.jpg'
