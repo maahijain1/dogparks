@@ -4,7 +4,6 @@ import { Listing } from '@/types/database'
 import { MapPin, Star, Phone, Globe, Mail } from 'lucide-react'
 import Link from 'next/link'
 import { getSiteSettings } from '@/lib/dynamic-config'
-import ArticlesSection from '@/components/ArticlesSection'
 
 interface CityPageProps {
   params: Promise<{ slug: string }>
@@ -695,9 +694,6 @@ export default async function CityPage({ params }: CityPageProps) {
           </div>
           </div>
         )}
-
-        {/* Articles Section - After listings */}
-          <ArticlesSection cityId={cityData?.id} />
         </div>
     </div>
   )

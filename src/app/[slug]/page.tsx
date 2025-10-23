@@ -8,7 +8,6 @@ import { supabase } from '@/lib/supabase'
 import { getSiteSettings } from '@/lib/dynamic-config'
 import CitySearch from '@/components/CitySearch'
 import ArticleRenderer from '@/components/ArticleRenderer'
-import ArticlesSection from '@/components/ArticlesSection'
 
 // Function to clean article content and remove empty heading tags
 function cleanArticleContent(content: string): string {
@@ -676,9 +675,6 @@ export default async function SlugPage({ params }: SlugPageProps) {
             </div>
           </section>
         )}
-
-        {/* Articles Section - After listings */}
-        <ArticlesSection stateId={stateData?.id} />
 
         {/* Back to Home */}
         <section className="py-16 bg-white">

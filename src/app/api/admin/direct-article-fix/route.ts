@@ -5,18 +5,10 @@ export async function POST() {
   try {
     console.log('🔥 DIRECT ARTICLE FIX - Starting...')
     
-    // Step 1: Get ALL cities with their state names
+    // Step 1: Get ALL cities
     const { data: cities, error: citiesError } = await supabase
       .from('cities')
-      .select(`
-        id,
-        name,
-        slug,
-        states!inner (
-          id,
-          name
-        )
-      `)
+      .select('id, name, slug, state_id')
       .order('name')
     
     if (citiesError) {
@@ -24,18 +16,37 @@ export async function POST() {
       return NextResponse.json({
         success: false,
         error: 'Failed to fetch cities',
-        details: citiesError.message
+        details: citiesError.message,
+        hint: 'Check Supabase connection and RLS policies'
       }, { status: 500 })
     }
     
     if (!cities || cities.length === 0) {
       return NextResponse.json({
         success: false,
-        error: 'No cities found in database'
+        error: 'No cities found in database',
+        hint: 'Cities table might be empty or RLS policies blocking access'
       }, { status: 404 })
     }
     
     console.log(`✅ Found ${cities.length} cities`)
+    
+    // Step 2: Get ALL states
+    const { data: states, error: statesError } = await supabase
+      .from('states')
+      .select('id, name')
+    
+    if (statesError) {
+      console.error('Error fetching states:', statesError)
+      return NextResponse.json({
+        success: false,
+        error: 'Failed to fetch states',
+        details: statesError.message
+      }, { status: 500 })
+    }
+    
+    // Create state lookup map
+    const stateMap = new Map(states?.map(s => [s.id, s.name]) || [])
     
     //Step 2: Get site settings for niche
     const { data: settings } = await supabase
@@ -56,8 +67,7 @@ export async function POST() {
     for (const city of cities) {
       try {
         const cityName = city.name
-        const stateData = Array.isArray(city.states) ? city.states[0] : city.states
-        const stateName = stateData?.name || 'Unknown'
+        const stateName = stateMap.get(city.state_id) || 'Unknown'
         
         const title = `Quality ${niche} in ${cityName}, ${stateName}`
         const slug = `about-${cityName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${stateName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`
