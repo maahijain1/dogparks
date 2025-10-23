@@ -743,15 +743,6 @@ export default async function CityPage({ params }: CityPageProps) {
             <h2 className="text-2xl font-bold text-gray-900 mb-6">
               Explore {niche} in Other Cities
             </h2>
-            {/* Debug info */}
-            <div className="mb-4 p-4 bg-yellow-100 border border-yellow-400 rounded">
-              <p className="text-sm text-yellow-800">
-                Debug: randomCities.length = {randomCities.length}
-                {randomCities.length > 0 && (
-                  <span> | First city: {randomCities[0].name}</span>
-                )}
-              </p>
-            </div>
             {randomCities.length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 {randomCities.map((city) => {
