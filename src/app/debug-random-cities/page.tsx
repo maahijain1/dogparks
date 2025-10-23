@@ -1,10 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 
 export default function DebugRandomCities() {
-  const [cities, setCities] = useState<any[]>([])
+  const [cities, setCities] = useState<Array<{id: string; name: string; slug: string; state_id: string; state_name?: string}>>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -116,12 +117,12 @@ export default function DebugRandomCities() {
         </div>
 
         <div className="mt-6">
-          <a 
+          <Link 
             href="/city/central-city" 
             className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
             Test Central City Page
-          </a>
+          </Link>
         </div>
       </div>
     </div>

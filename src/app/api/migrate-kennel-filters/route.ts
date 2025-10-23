@@ -3,7 +3,7 @@ import { supabase } from '@/lib/supabase'
 import fs from 'fs'
 import path from 'path'
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
     console.log('🔄 Starting kennel filters migration...')
     
@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
         console.log(`SQL: ${statement.substring(0, 100)}...`)
         
         try {
-          const { data, error } = await supabase.rpc('exec_sql', { sql: statement })
+          const { error } = await supabase.rpc('exec_sql', { sql: statement })
           if (error) {
             console.error(`❌ Error in statement ${i + 1}:`, error)
             results.push({ statement: i + 1, success: false, error: error.message })
