@@ -466,6 +466,31 @@ export default async function CityPage({ params }: CityPageProps) {
     featuredListings = listings.filter((l) => Boolean(l.featured)).length
   }
 
+  // Fetch random cities for interlinking (excluding current city)
+  let randomCities: Array<{ id: string; name: string; slug: string; states: { name: string } | Array<{ name: string }> }> = []
+  try {
+    const { data: allCities } = await supabase
+      .from('cities')
+      .select(`
+        id,
+        name,
+        slug,
+        states (
+          name
+        )
+      `)
+      .neq('id', cityData?.id || '')
+      .limit(100) // Get 100 cities to randomize from
+
+    if (allCities && allCities.length > 0) {
+      // Shuffle and take 10 random cities
+      const shuffled = [...allCities].sort(() => 0.5 - Math.random())
+      randomCities = shuffled.slice(0, 10)
+    }
+  } catch (error) {
+    console.error('Error fetching random cities:', error)
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -693,6 +718,40 @@ export default async function CityPage({ params }: CityPageProps) {
             </div>
           </div>
           </div>
+        )}
+
+        {/* Random City Interlinking Section */}
+        {randomCities.length > 0 && (
+          <section className="py-12 bg-white border-t border-gray-200">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                Explore {niche} in Other Cities
+              </h2>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                {randomCities.map((city) => {
+                  const cityStateName = Array.isArray(city.states) ? city.states[0]?.name : city.states?.name
+                  const citySlug = city.slug || city.name.toLowerCase().replace(/\s+/g, '-')
+                  return (
+                    <Link
+                      key={city.id}
+                      href={`/city/${citySlug}`}
+                      className="block p-4 bg-gray-50 rounded-lg hover:bg-blue-50 hover:shadow-md transition-all duration-200 border border-gray-200 hover:border-blue-300"
+                    >
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                        <div className="min-w-0">
+                          <p className="font-medium text-gray-900 truncate">{city.name}</p>
+                          {cityStateName && (
+                            <p className="text-xs text-gray-600 truncate">{cityStateName}</p>
+                          )}
+                        </div>
+                      </div>
+                    </Link>
+                  )
+                })}
+              </div>
+            </div>
+          </section>
         )}
         </div>
     </div>
