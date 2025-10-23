@@ -16,31 +16,51 @@ export interface CityTemplateData {
   HERO_IMAGE: string
 }
 
-export async function getCityTemplateData(cityId: string): Promise<CityTemplateData> {
+export async function getCityTemplateData(cityId: string, cityName?: string, stateName?: string): Promise<CityTemplateData> {
   try {
-    console.log(`🔍 Getting template data for city ID: ${cityId}`)
+    console.log(`🔍 Getting template data for city ID: ${cityId}, cityName: ${cityName}, stateName: ${stateName}`)
     
-    // Get city data with state information
-    const { data: cityData, error: cityError } = await supabase
-      .from('cities')
-      .select(`
-        id,
-        name,
-        slug,
-        states (
+    let finalCityName = cityName
+    let finalStateName = stateName
+    let stateId: string | undefined
+    
+    // Only query database if we don't have the city name already
+    if (!finalCityName || !finalStateName) {
+      console.log('⚠️ City/State name not provided, querying database...')
+      // Get city data with state information
+      const { data: cityData, error: cityError } = await supabase
+        .from('cities')
+        .select(`
           id,
-          name
-        )
-      `)
-      .eq('id', cityId)
-      .single()
+          name,
+          slug,
+          states (
+            id,
+            name
+          )
+        `)
+        .eq('id', cityId)
+        .single()
 
-    if (cityError || !cityData) {
-      console.error(`❌ City not found for ID ${cityId}:`, cityError)
-      throw new Error(`City not found: ${cityError?.message}`)
+      if (cityError || !cityData) {
+        console.error(`❌ City not found for ID ${cityId}:`, cityError)
+        throw new Error(`City not found: ${cityError?.message}`)
+      }
+      
+      finalCityName = cityData.name
+      finalStateName = String((cityData.states as unknown as Record<string, unknown>)?.name) || 'Unknown State'
+      stateId = String((cityData.states as unknown as Record<string, unknown>)?.id)
+      console.log(`✅ Found city from DB: ${finalCityName}, ${finalStateName}`)
+    } else {
+      console.log(`✅ Using provided city name: ${finalCityName}, ${finalStateName}`)
+      // Get state ID for nearby cities query
+      const { data: stateData } = await supabase
+        .from('states')
+        .select('id')
+        .eq('name', finalStateName)
+        .single()
+      stateId = stateData?.id
     }
-    
-    console.log(`✅ Found city: ${cityData.name}`)
 
     // Get site settings
     const { data: siteSettings } = await supabase
@@ -54,36 +74,31 @@ export async function getCityTemplateData(cityId: string): Promise<CityTemplateD
     }, {} as Record<string, string>) || {}
 
     // Get nearby cities (within same state)
-    const { data: nearbyCities } = await supabase
-      .from('cities')
-      .select('name')
-      .eq('state_id', (cityData.states as unknown as Record<string, unknown>)?.id)
-      .neq('id', cityId)
-      .limit(5)
-
-    // Get listings count for this city (not used but kept for potential future use)
-    await supabase
-      .from('listings')
-      .select('*', { count: 'exact', head: true })
-      .eq('city_id', cityId)
-
-    const stateName = (cityData.states as unknown as Record<string, unknown>)?.name
-    const nearbyCitiesList = nearbyCities?.map(c => c.name).join(', ') || ''
+    let nearbyCitiesList = ''
+    if (stateId) {
+      const { data: nearbyCities } = await supabase
+        .from('cities')
+        .select('name')
+        .eq('state_id', stateId)
+        .neq('id', cityId)
+        .limit(5)
+      nearbyCitiesList = nearbyCities?.map(c => c.name).join(', ') || ''
+    }
 
     return {
-      CITY_NAME: cityData.name,
-      STATE_NAME: String(stateName) || 'Unknown State',
-      ZIP_CODE: '28027', // Default zip code - you might want to add this to your cities table
-      POPULATION: '15,000+', // Default population - you might want to add this to your cities table
-      CITY_ESTABLISHED: '1900s', // Default - you might want to add this to your cities table
-      COUNTY_NAME: `${cityData.name} County`, // Default county name
+      CITY_NAME: finalCityName || 'Unknown City',
+      STATE_NAME: finalStateName || 'Unknown State',
+      ZIP_CODE: '28027', // Default zip code
+      POPULATION: '15,000+', // Default population
+      CITY_ESTABLISHED: '1900s', // Default
+      COUNTY_NAME: `${finalCityName} County`, // Default county name
       NEARBY_AREAS: nearbyCitiesList || 'Surrounding neighborhoods',
       NEARBY_CITIES: nearbyCitiesList || 'Nearby cities',
       SITE_NAME: settings.site_name || 'Professional Services',
-      NICHE: settings.niche || 'Service',
+      NICHE: settings.niche || 'Dog Boarding',
       PHONE_NUMBER: settings.phone_number || '(555) 123-4567',
       YEARS_IN_BUSINESS: '15+',
-      HERO_IMAGE: '/hero-background.jpg' // Default hero image
+      HERO_IMAGE: '/hero-background.jpg'
     }
   } catch (error) {
     console.error(`❌ CRITICAL ERROR getting city template data for cityId: ${cityId}`, error)
