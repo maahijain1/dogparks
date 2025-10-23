@@ -467,19 +467,14 @@ export default async function CityPage({ params }: CityPageProps) {
   }
 
   // Fetch random cities for interlinking (excluding current city)
-  let randomCities: Array<{ id: string; name: string; slug: string; states: { name: string } | Array<{ name: string }> }> = []
+  let randomCities: Array<{ id: string; name: string; slug: string; state_name?: string }> = []
   try {
     console.log('🔍 Fetching random cities for interlinking...')
+    
+    // First get cities without the join
     const { data: allCities, error: citiesError } = await supabase
       .from('cities')
-      .select(`
-        id,
-        name,
-        slug,
-        states (
-          name
-        )
-      `)
+      .select('id, name, slug, state_id')
       .neq('id', cityData?.id || '')
       .limit(100) // Get 100 cities to randomize from
 
@@ -487,8 +482,22 @@ export default async function CityPage({ params }: CityPageProps) {
       console.error('❌ Error fetching random cities:', citiesError)
     } else if (allCities && allCities.length > 0) {
       console.log(`✅ Found ${allCities.length} cities for randomization`)
+      
+      // Get states separately for better reliability
+      const { data: states } = await supabase
+        .from('states')
+        .select('id, name')
+      
+      const stateMap = new Map(states?.map(s => [s.id, s.name]) || [])
+      
+      // Add state names to cities
+      const citiesWithStates = allCities.map(city => ({
+        ...city,
+        state_name: stateMap.get(city.state_id)
+      }))
+      
       // Shuffle and take 10 random cities
-      const shuffled = [...allCities].sort(() => 0.5 - Math.random())
+      const shuffled = [...citiesWithStates].sort(() => 0.5 - Math.random())
       randomCities = shuffled.slice(0, 10)
       console.log(`✅ Selected ${randomCities.length} random cities:`, randomCities.map(c => c.name))
     } else {
@@ -736,7 +745,6 @@ export default async function CityPage({ params }: CityPageProps) {
             {randomCities.length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 {randomCities.map((city) => {
-                  const cityStateName = Array.isArray(city.states) ? city.states[0]?.name : city.states?.name
                   const citySlug = city.slug || city.name.toLowerCase().replace(/\s+/g, '-')
                   return (
                     <Link
@@ -748,8 +756,8 @@ export default async function CityPage({ params }: CityPageProps) {
                         <MapPin className="w-4 h-4 text-blue-600 flex-shrink-0" />
                         <div className="min-w-0">
                           <p className="font-medium text-gray-900 truncate">{city.name}</p>
-                          {cityStateName && (
-                            <p className="text-xs text-gray-600 truncate">{cityStateName}</p>
+                          {city.state_name && (
+                            <p className="text-xs text-gray-600 truncate">{city.state_name}</p>
                           )}
                         </div>
                       </div>
