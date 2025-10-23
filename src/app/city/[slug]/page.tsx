@@ -469,7 +469,8 @@ export default async function CityPage({ params }: CityPageProps) {
   // Fetch random cities for interlinking (excluding current city)
   let randomCities: Array<{ id: string; name: string; slug: string; states: { name: string } | Array<{ name: string }> }> = []
   try {
-    const { data: allCities } = await supabase
+    console.log('🔍 Fetching random cities for interlinking...')
+    const { data: allCities, error: citiesError } = await supabase
       .from('cities')
       .select(`
         id,
@@ -482,13 +483,19 @@ export default async function CityPage({ params }: CityPageProps) {
       .neq('id', cityData?.id || '')
       .limit(100) // Get 100 cities to randomize from
 
-    if (allCities && allCities.length > 0) {
+    if (citiesError) {
+      console.error('❌ Error fetching random cities:', citiesError)
+    } else if (allCities && allCities.length > 0) {
+      console.log(`✅ Found ${allCities.length} cities for randomization`)
       // Shuffle and take 10 random cities
       const shuffled = [...allCities].sort(() => 0.5 - Math.random())
       randomCities = shuffled.slice(0, 10)
+      console.log(`✅ Selected ${randomCities.length} random cities:`, randomCities.map(c => c.name))
+    } else {
+      console.log('⚠️ No cities found for randomization')
     }
   } catch (error) {
-    console.error('Error fetching random cities:', error)
+    console.error('❌ Error fetching random cities:', error)
   }
 
   return (
@@ -721,12 +728,12 @@ export default async function CityPage({ params }: CityPageProps) {
         )}
 
         {/* Random City Interlinking Section */}
-        {randomCities.length > 0 && (
-          <section className="py-12 bg-white border-t border-gray-200">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                Explore {niche} in Other Cities
-              </h2>
+        <section className="py-12 bg-white border-t border-gray-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">
+              Explore {niche} in Other Cities
+            </h2>
+            {randomCities.length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 {randomCities.map((city) => {
                   const cityStateName = Array.isArray(city.states) ? city.states[0]?.name : city.states?.name
@@ -750,9 +757,20 @@ export default async function CityPage({ params }: CityPageProps) {
                   )
                 })}
               </div>
-            </div>
-          </section>
-        )}
+            ) : (
+              <div className="text-center py-8">
+                <p className="text-gray-600 mb-4">Discover more cities with {niche.toLowerCase()} services</p>
+                <Link 
+                  href="/" 
+                  className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  <MapPin className="w-4 h-4 mr-2" />
+                  Browse All Cities
+                </Link>
+              </div>
+            )}
+          </div>
+        </section>
         </div>
     </div>
   )
