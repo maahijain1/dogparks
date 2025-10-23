@@ -102,12 +102,12 @@ export async function getCityTemplateData(cityId: string): Promise<CityTemplateD
 }
 
 export function generateCityPageContent(templateData: CityTemplateData): string {
-  // Read the full HTML template
+  // Read the dog boarding specific template
   const fs = require('fs') // eslint-disable-line @typescript-eslint/no-require-imports
   const path = require('path') // eslint-disable-line @typescript-eslint/no-require-imports
   
   try {
-    const templatePath = path.join(process.cwd(), 'src', 'lib', 'city-page-template.html')
+    const templatePath = path.join(process.cwd(), 'src', 'lib', 'city-page-template-dog-boarding.html')
     const template = fs.readFileSync(templatePath, 'utf8')
     
     // Replace all template variables
