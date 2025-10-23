@@ -474,7 +474,7 @@ export default async function CityPage({ params }: CityPageProps) {
     // First get cities without the join
     const { data: allCities, error: citiesError } = await supabase
       .from('cities')
-      .select('id, name, slug, state_id')
+      .select('id, name, state_id')
       .neq('id', cityData?.id || '')
       .limit(100) // Get 100 cities to randomize from
 
@@ -490,9 +490,10 @@ export default async function CityPage({ params }: CityPageProps) {
       
       const stateMap = new Map(states?.map(s => [s.id, s.name]) || [])
       
-      // Add state names to cities
+      // Add state names to cities and generate slugs
       const citiesWithStates = allCities.map(city => ({
         ...city,
+        slug: city.name.toLowerCase().replace(/\s+/g, '-'),
         state_name: stateMap.get(city.state_id)
       }))
       
@@ -742,6 +743,15 @@ export default async function CityPage({ params }: CityPageProps) {
             <h2 className="text-2xl font-bold text-gray-900 mb-6">
               Explore {niche} in Other Cities
             </h2>
+            {/* Debug info */}
+            <div className="mb-4 p-4 bg-yellow-100 border border-yellow-400 rounded">
+              <p className="text-sm text-yellow-800">
+                Debug: randomCities.length = {randomCities.length}
+                {randomCities.length > 0 && (
+                  <span> | First city: {randomCities[0].name}</span>
+                )}
+              </p>
+            </div>
             {randomCities.length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 {randomCities.map((city) => {

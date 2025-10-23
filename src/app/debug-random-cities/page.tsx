@@ -17,7 +17,7 @@ export default function DebugRandomCities() {
         // First get cities without the join
         const { data: allCities, error: citiesError } = await supabase
           .from('cities')
-          .select('id, name, slug, state_id')
+          .select('id, name, state_id')
           .limit(100) // Get 100 cities to randomize from
 
         console.log('Cities query result:', { allCities, citiesError })
@@ -42,9 +42,10 @@ export default function DebugRandomCities() {
             const stateMap = new Map(states?.map(s => [s.id, s.name]) || [])
             console.log('State map:', stateMap)
             
-            // Add state names to cities
+            // Add state names to cities and generate slugs
             const citiesWithStates = allCities.map(city => ({
               ...city,
+              slug: city.name.toLowerCase().replace(/\s+/g, '-'),
               state_name: stateMap.get(city.state_id)
             }))
             
