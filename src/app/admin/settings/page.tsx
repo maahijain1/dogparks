@@ -10,7 +10,7 @@ export default function SettingsPage() {
     siteName: 'DirectoryHub',
     niche: 'Dog Park',
     country: 'USA',
-    adsenseId: ''
+    adsenseId: 'ca-pub-7485448000854503'
   })
   const [loading, setLoading] = useState(false)
   const [saved, setSaved] = useState(false)

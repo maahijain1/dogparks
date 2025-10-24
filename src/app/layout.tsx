@@ -103,6 +103,13 @@ export default function RootLayout({
         
         {/* Preload critical resources */}
         <link rel="preload" href="/hero-background-simple.svg" as="image" type="image/svg+xml" />
+        
+        {/* Google AdSense */}
+        <script 
+          async 
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7485448000854503"
+          crossOrigin="anonymous"
+        />
       </head>
       <body className={inter.className}>
         <GoogleAnalytics measurementId="G-QW1ELNERMR" />

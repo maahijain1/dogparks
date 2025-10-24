@@ -45,9 +45,9 @@ export default async function ServerAdSense({
         data-full-width-responsive={responsive ? 'true' : 'false'}
       />
       <script
-        async
-        src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseId}`}
-        crossOrigin="anonymous"
+        dangerouslySetInnerHTML={{
+          __html: `(window.adsbygoogle = window.adsbygoogle || []).push({});`,
+        }}
       />
     </div>
   )

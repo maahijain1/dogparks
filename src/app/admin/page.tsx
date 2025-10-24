@@ -1,7 +1,7 @@
 'use client'
 
 import Link from "next/link";
-import { FileText, MapPin, Settings, Trash2 } from "lucide-react";
+import { FileText, MapPin, Settings, Trash2, Zap } from "lucide-react";
 import AdminHeader from "@/components/AdminHeader";
 
 export default function AdminHome() {
@@ -19,7 +19,7 @@ export default function AdminHome() {
           </p>
         </div>
 
-        <div className="max-w-6xl mx-auto grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="max-w-6xl mx-auto grid md:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Articles Section */}
           <Link href="/admin/articles" className="group">
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 p-8 border border-gray-200 dark:border-gray-700">
@@ -95,6 +95,26 @@ export default function AdminHome() {
               <div className="text-center">
                 <span className="inline-flex items-center px-6 py-3 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors">
                   Delete Articles
+                </span>
+              </div>
+            </div>
+          </Link>
+
+          {/* Bulk Remove Section */}
+          <Link href="/admin/bulk-remove-urls" className="group">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 p-8 border border-gray-200 dark:border-gray-700">
+              <div className="flex items-center justify-center w-16 h-16 bg-orange-100 dark:bg-orange-900 rounded-full mb-6 mx-auto group-hover:bg-orange-200 dark:group-hover:bg-orange-800 transition-colors">
+                <Zap className="w-8 h-8 text-orange-600 dark:text-orange-400" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 text-center">
+                Bulk Remove
+              </h2>
+              <p className="text-gray-600 dark:text-gray-300 text-center mb-6">
+                Delete 1000+ about-* articles at once and get Google removal instructions.
+              </p>
+              <div className="text-center">
+                <span className="inline-flex items-center px-6 py-3 bg-orange-600 text-white font-medium rounded-lg hover:bg-orange-700 transition-colors">
+                  Bulk Delete
                 </span>
               </div>
             </div>

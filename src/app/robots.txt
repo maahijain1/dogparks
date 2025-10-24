@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+
+# Block about-* articles that cause duplicate content
+Disallow: /about-*
+
+# Block debug and admin pages
+Disallow: /admin/
+Disallow: /debug-*
+Disallow: /test-*
+Disallow: /fix-*
+Disallow: /emergency-*
+Disallow: /setup-*
+
+Sitemap: https://www.dogboardingkennels.us/sitemap.xml
