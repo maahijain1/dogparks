@@ -1,16 +1,13 @@
-'use client'
-
-import { useState, useEffect } from 'react'
+import { Metadata } from 'next'
 import { supabase } from '@/lib/supabase'
 import { Listing } from '@/types/database'
 import { MapPin, Star, Phone, Globe, Mail } from 'lucide-react'
 import Link from 'next/link'
 import { getSiteSettings } from '@/lib/dynamic-config'
-import AdSenseBanner from '@/components/AdSenseBanner'
-import { useAdSense } from '@/hooks/useAdSense'
+import ServerAdSense from '@/components/ServerAdSense'
 
 interface CityPageProps {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }
 
 // Function to get state information from city name or slug using dynamic approach
@@ -574,6 +571,13 @@ export default async function CityPage({ params }: CityPageProps) {
           </div>
         ) : (
           <div className="space-y-8">
+            {/* AdSense Banner 1 - Top of Listings */}
+            <ServerAdSense 
+              adSlot="1234567894" 
+              className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4"
+              adStyle={{ display: 'block', width: '100%', height: '250px' }}
+            />
+
             {/* Featured Listings */}
             {listings.filter(l => Boolean(l.featured)).length > 0 && (
               <div>
@@ -678,6 +682,13 @@ export default async function CityPage({ params }: CityPageProps) {
               </div>
             )}
 
+            {/* AdSense Banner 2 - Between Featured and All Listings */}
+            <ServerAdSense 
+              adSlot="1234567895" 
+              className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4"
+              adStyle={{ display: 'block', width: '100%', height: '250px' }}
+            />
+
             {/* All Listings */}
             <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-6">
@@ -740,6 +751,13 @@ export default async function CityPage({ params }: CityPageProps) {
           </div>
           </div>
         )}
+
+        {/* AdSense Banner 3 - Before Random Cities */}
+        <ServerAdSense 
+          adSlot="1234567896" 
+          className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4"
+          adStyle={{ display: 'block', width: '100%', height: '250px' }}
+        />
 
         {/* Random City Interlinking Section */}
         <section className="py-12 bg-white border-t border-gray-200">
