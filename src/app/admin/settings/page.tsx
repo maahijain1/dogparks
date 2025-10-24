@@ -9,7 +9,8 @@ export default function SettingsPage() {
   const [settings, setSettings] = useState({
     siteName: 'DirectoryHub',
     niche: 'Dog Park',
-    country: 'USA'
+    country: 'USA',
+    adsenseId: ''
   })
   const [loading, setLoading] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -24,7 +25,8 @@ export default function SettingsPage() {
           setSettings({
             siteName: data.site_name || 'DirectoryHub',
             niche: data.niche || 'Dog Park',
-            country: data.country || 'USA'
+            country: data.country || 'USA',
+            adsenseId: data.adsense_id || ''
           })
         }
       } catch (error) {
@@ -33,7 +35,8 @@ export default function SettingsPage() {
         setSettings({
           siteName: 'DirectoryHub',
           niche: 'Dog Park',
-          country: 'USA'
+          country: 'USA',
+          adsenseId: ''
         })
       }
     }
@@ -54,7 +57,8 @@ export default function SettingsPage() {
         body: JSON.stringify({
           site_name: settings.siteName,
           niche: settings.niche,
-          country: settings.country
+          country: settings.country,
+          adsense_id: settings.adsenseId
         })
       })
 
@@ -168,6 +172,23 @@ export default function SettingsPage() {
               </select>
               <p className="text-sm text-gray-500 mt-1">
                 The country/region your directory serves
+              </p>
+            </div>
+
+            {/* AdSense ID */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Google AdSense ID
+              </label>
+              <input
+                type="text"
+                value={settings.adsenseId}
+                onChange={(e) => handleChange('adsenseId', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="ca-pub-xxxxxxxxxxxxxxxx"
+              />
+              <p className="text-sm text-gray-500 mt-1">
+                Your Google AdSense Publisher ID (starts with ca-pub-). Leave empty to disable ads.
               </p>
             </div>
 

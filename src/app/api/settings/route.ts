@@ -32,7 +32,7 @@ export async function GET() {
 export async function PUT(request: Request) {
   try {
     const body = await request.json()
-    const { site_name, niche, country, email } = body
+    const { site_name, niche, country, email, adsense_id } = body
 
     // Validate required fields
     if (!site_name || !niche || !country) {
@@ -49,6 +49,11 @@ export async function PUT(request: Request) {
     // Add email if provided
     if (email) {
       updates.push({ setting_key: 'email', setting_value: email })
+    }
+
+    // Add AdSense ID if provided
+    if (adsense_id !== undefined) {
+      updates.push({ setting_key: 'adsense_id', setting_value: adsense_id || '' })
     }
 
     for (const update of updates) {

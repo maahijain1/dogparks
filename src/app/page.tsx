@@ -7,6 +7,8 @@ import { Search, MapPin, Star, Phone, Mail, Menu, X } from 'lucide-react'
 import { Listing, Article, City, State } from '@/types/database'
 import { siteConfig } from '@/lib/config'
 import { getSiteSettings, generateDynamicContent } from '@/lib/dynamic-config'
+import AdSenseBanner from '@/components/AdSenseBanner'
+import { useAdSense } from '@/hooks/useAdSense'
 
 // Function to clean article content and remove empty heading tags
 // function cleanArticleContent(content: string): string {
@@ -48,6 +50,7 @@ export default function HomePage() {
   const [allListings, setAllListings] = useState<(Listing & { cities: City & { states: State } })[]>([])
   const [latestArticles, setLatestArticles] = useState<Article[]>([])
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const { adsenseId } = useAdSense()
   const [loading, setLoading] = useState(true)
   const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null)
   const [locationLoading, setLocationLoading] = useState(false)
@@ -1101,6 +1104,14 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* AdSense Banner 1 - After Hero */}
+      <AdSenseBanner 
+        adSlot="1234567890" 
+        adsenseId={adsenseId}
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4"
+        adStyle={{ display: 'block', width: '100%', height: '250px' }}
+      />
+
       {/* Featured Listings */}
       <section className="py-16 bg-gray-50" aria-labelledby="featured-listings">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1178,7 +1189,15 @@ export default function HomePage() {
             </div>
           )}
         </div>
-        </section>
+      </section>
+
+      {/* AdSense Banner 2 - Between Featured and Browse */}
+      <AdSenseBanner 
+        adSlot="1234567891" 
+        adsenseId={adsenseId}
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4"
+        adStyle={{ display: 'block', width: '100%', height: '250px' }}
+      />
 
       {/* Browse by State */}
       <section className="py-16 bg-gray-50">
@@ -1243,6 +1262,14 @@ export default function HomePage() {
           )}
         </div>
       </section>
+
+      {/* AdSense Banner 3 - Between Browse and All Listings */}
+      <AdSenseBanner 
+        adSlot="1234567892" 
+        adsenseId={adsenseId}
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4"
+        adStyle={{ display: 'block', width: '100%', height: '250px' }}
+      />
 
         {/* All Listings */}
       <section className="py-16">
@@ -1435,6 +1462,14 @@ export default function HomePage() {
           })()}
         </div>
       </section>
+
+      {/* AdSense Banner 4 - Between All Listings and Knowledge Hub */}
+      <AdSenseBanner 
+        adSlot="1234567893" 
+        adsenseId={adsenseId}
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4"
+        adStyle={{ display: 'block', width: '100%', height: '250px' }}
+      />
 
       {/* Knowledge Hub */}
       <section className="py-16 bg-gradient-to-br from-indigo-50 via-white to-cyan-50">

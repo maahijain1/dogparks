@@ -1,12 +1,16 @@
-import { Metadata } from 'next'
+'use client'
+
+import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { Listing } from '@/types/database'
 import { MapPin, Star, Phone, Globe, Mail } from 'lucide-react'
 import Link from 'next/link'
 import { getSiteSettings } from '@/lib/dynamic-config'
+import AdSenseBanner from '@/components/AdSenseBanner'
+import { useAdSense } from '@/hooks/useAdSense'
 
 interface CityPageProps {
-  params: Promise<{ slug: string }>
+  params: { slug: string }
 }
 
 // Function to get state information from city name or slug using dynamic approach
