@@ -475,8 +475,8 @@ export default async function CityPage({ params }: CityPageProps) {
       cityData = { id: '', name: cityName }
       stateData = statePart ? { id: '', name: statePart } : null
     }
-  } catch (error) {
-    console.error('Error fetching city data:', error)
+  } catch {
+    console.error('Error fetching city data')
     // Set fallback data even on error
     cityData = { id: '', name: cityName }
     const slugParts = slug.split('-')

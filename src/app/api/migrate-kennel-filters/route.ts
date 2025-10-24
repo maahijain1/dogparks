@@ -3,7 +3,7 @@ import { supabase } from '@/lib/supabase'
 import fs from 'fs'
 import path from 'path'
 
-export async function POST(_request: NextRequest) {
+export async function POST() {
   try {
     console.log('🔄 Starting kennel filters migration...')
     
