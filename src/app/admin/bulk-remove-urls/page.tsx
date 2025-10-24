@@ -90,7 +90,7 @@ export default function BulkRemoveURLsPage() {
                 <div className="bg-white p-3 rounded border font-mono text-sm">
                   <code>https://www.dogboardingkennels.us/about-*</code>
                 </div>
-                <p>This single pattern will remove ALL about-* URLs from Google's index!</p>
+                <p>This single pattern will remove ALL about-* URLs from Google&apos;s index!</p>
                 <p><strong>Steps:</strong></p>
                 <ol className="list-decimal list-inside ml-4 space-y-1">
                   <li>Go to <a href="https://search.google.com/search-console/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Google Search Console</a></li>

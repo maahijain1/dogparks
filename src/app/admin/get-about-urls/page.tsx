@@ -102,7 +102,7 @@ export default function GetAboutURLsPage() {
               <h3 className="text-lg font-medium text-yellow-900 mb-2">How to Remove from Google Index</h3>
               <div className="text-sm text-yellow-800 space-y-2">
                 <p><strong>Step 1:</strong> Go to <a href="https://search.google.com/search-console/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Google Search Console</a></p>
-                <p><strong>Step 2:</strong> Go to "Removals" → "New Request" → "Temporarily remove URL"</p>
+                <p><strong>Step 2:</strong> Go to &quot;Removals&quot; → &quot;New Request&quot; → &quot;Temporarily remove URL&quot;</p>
                 <p><strong>Step 3:</strong> Copy and paste the URLs below (one by one or in bulk)</p>
                 <p><strong>Step 4:</strong> Submit the removal requests</p>
               </div>
