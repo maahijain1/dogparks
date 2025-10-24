@@ -186,6 +186,37 @@ export async function generateMetadata({ params }: CityPageProps): Promise<Metad
   // Format city name from slug
   const cityName = slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
   
+  // Check if city exists in database first
+  try {
+    const { data: cityExists } = await supabase
+      .from('cities')
+      .select('id')
+      .ilike('name', `%${cityName}%`)
+      .limit(1)
+      .single()
+    
+    if (!cityExists) {
+      return {
+        title: 'City Not Found',
+        description: 'The requested city page could not be found.',
+        robots: {
+          index: false,
+          follow: false,
+        },
+      }
+    }
+  } catch (error) {
+    // If database check fails, return 404 metadata
+    return {
+      title: 'City Not Found',
+      description: 'The requested city page could not be found.',
+      robots: {
+        index: false,
+        follow: false,
+      },
+    }
+  }
+  
   // Get state information from city name and slug (now async)
   const { state, stateAbbr } = await getStateFromCity(cityName, slug)
   
