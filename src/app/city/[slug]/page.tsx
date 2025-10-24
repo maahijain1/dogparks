@@ -212,9 +212,25 @@ export async function generateMetadata({ params }: CityPageProps): Promise<Metad
   return {
     title: title,
     description: description,
+    alternates: {
+      canonical: `https://www.dogboardingkennels.us/city/${slug}`
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
+    },
     openGraph: {
       title: title,
       description: description,
+      url: `https://www.dogboardingkennels.us/city/${slug}`,
+      type: 'website',
     },
   }
 }
@@ -266,7 +282,7 @@ export default async function CityPage({ params }: CityPageProps) {
           name
         )
       `)
-      .eq('name', cityPart)
+      .ilike('name', `%${cityPart}%`)
 
     if (!nameError && citiesByName && citiesByName.length > 0) {
       console.log(`🔍 Found ${citiesByName.length} cities named "${cityPart}"`)
@@ -423,9 +439,18 @@ export default async function CityPage({ params }: CityPageProps) {
       listings = []
       totalListings = 0
       featuredListings = 0
+      
+      // Set fallback data to avoid "Unknown City" display
+      cityData = { id: '', name: cityName }
+      stateData = statePart ? { id: '', name: statePart } : null
     }
   } catch (error) {
     console.error('Error fetching city data:', error)
+    // Set fallback data even on error
+    cityData = { id: '', name: cityName }
+    const slugParts = slug.split('-')
+    const statePart = slugParts.length > 1 ? slugParts.slice(1).join(' ').replace(/\b\w/g, l => l.toUpperCase()) : ''
+    stateData = statePart ? { id: '', name: statePart } : null
   }
 
   // De-duplicate listings by business + address + category within the same city.
