@@ -2,7 +2,21 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl
+  const { pathname, host, origin } = request.nextUrl
+  const primaryHost = 'www.dogboardingkennels.us'
+
+  // 1) Force primary domain: redirect vercel.app or non-primary hosts
+  if (host !== primaryHost && !host.endsWith('.dogboardingkennels.us')) {
+    const url = new URL(request.nextUrl)
+    url.host = primaryHost
+    return NextResponse.redirect(url, 301)
+  }
+
+  // 2) For any non-primary host that slips through, add X-Robots-Tag noindex
+  const response = NextResponse.next()
+  if (host !== primaryHost) {
+    response.headers.set('X-Robots-Tag', 'noindex, nofollow')
+  }
   
   // Handle {niche}-{city} URLs - redirect to /city/{city}
   // This catches patterns like boarding-kennels-albury, boarding-kennels-newcastle, etc.
@@ -23,7 +37,7 @@ export function middleware(request: NextRequest) {
     }
   }
   
-  return NextResponse.next()
+  return response
 }
 
 export const config = {

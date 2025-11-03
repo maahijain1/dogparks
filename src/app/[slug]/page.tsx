@@ -98,6 +98,17 @@ export async function generateMetadata({ params }: SlugPageProps): Promise<Metad
           title: article.title,
           description: article.excerpt || (article.content ? stripHtmlTags(article.content || '').substring(0, 160) : 'No description available'),
         },
+        robots: {
+          index: true,
+          follow: true,
+          googleBot: {
+            index: true,
+            follow: true,
+            'max-video-preview': -1,
+            'max-image-preview': 'large',
+            'max-snippet': -1,
+          },
+        },
         alternates: {
           canonical: `${siteConfig.siteUrl}/${slug}`,
         },
@@ -129,6 +140,17 @@ export async function generateMetadata({ params }: SlugPageProps): Promise<Metad
           title: title,
           description: description,
           keywords: `${niche.toLowerCase()}, ${stateName}, local ${niche.toLowerCase()}, ${niche.toLowerCase()} directory, ${stateName} ${niche.toLowerCase()}`,
+          robots: {
+            index: true,
+            follow: true,
+            googleBot: {
+              index: true,
+              follow: true,
+              'max-video-preview': -1,
+              'max-image-preview': 'large',
+              'max-snippet': -1,
+            },
+          },
           openGraph: {
             title: title,
             description: description,
@@ -162,6 +184,17 @@ export async function generateMetadata({ params }: SlugPageProps): Promise<Metad
       title: title,
       description: description,
       keywords: `${niche.toLowerCase()}, ${stateName}, local ${niche.toLowerCase()}, ${niche.toLowerCase()} directory, ${stateName} ${niche.toLowerCase()}`,
+      robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+          index: true,
+          follow: true,
+          'max-video-preview': -1,
+          'max-image-preview': 'large',
+          'max-snippet': -1,
+        },
+      },
       openGraph: {
         title: title,
         description: description,

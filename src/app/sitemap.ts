@@ -5,16 +5,19 @@ import { getSiteSettings } from '@/lib/dynamic-config'
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Get dynamic site URL from settings
   const settings = await getSiteSettings()
-  const baseUrl = settings.site_url || 'https://dogparks.vercel.app'
+  const baseUrl = settings.site_url || 'https://www.dogboardingkennels.us'
   const niche = settings.niche || 'Dog Park'
   const nicheSlug = niche.toLowerCase().replace(/\s+/g, '-')
   
   try {
-    // Get all published articles
-    const { data: articles } = await supabase
+    // Get all published articles (exclude about-* articles that cause duplicate content)
+    const { data: allArticles } = await supabase
       .from('articles')
       .select('slug, updated_at')
       .eq('published', true)
+    
+    // Filter out about-* articles
+    const articles = allArticles?.filter(article => !article.slug.startsWith('about-'))
 
     // Get all states
     const { data: states } = await supabase
@@ -53,7 +56,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         changeFrequency: 'yearly',
         priority: 0.3,
       },
-      // Articles
+      // Articles (excluding about-* articles)
       ...(articles?.map((article) => ({
         url: `${baseUrl}/${article.slug}`,
         lastModified: new Date(article.updated_at),

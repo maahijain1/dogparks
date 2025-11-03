@@ -4,7 +4,7 @@ import { getSiteSettings } from '@/lib/dynamic-config'
 export default async function robots(): Promise<MetadataRoute.Robots> {
   // Get dynamic site URL from settings
   const settings = await getSiteSettings()
-  const baseUrl = settings.site_url || 'https://directoryhub.com'
+  const baseUrl = settings.site_url || 'https://www.dogboardingkennels.us'
   
   return {
     rules: {
@@ -21,6 +21,7 @@ export default async function robots(): Promise<MetadataRoute.Robots> {
         '/fix-*',
         '/setup-*',
         '/emergency-*',
+        '/about-*',  // Block duplicate content articles
       ],
     },
     sitemap: `${baseUrl}/sitemap.xml`,
