@@ -12,11 +12,8 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(url, 301)
   }
 
-  // 2) For any non-primary host that slips through, add X-Robots-Tag noindex
+  // 2) Proceed without sending X-Robots-Tag headers so all hosts are indexable
   const response = NextResponse.next()
-  if (host !== primaryHost) {
-    response.headers.set('X-Robots-Tag', 'noindex, nofollow')
-  }
   
   // Handle {niche}-{city} URLs - redirect to /city/{city}
   // This catches patterns like boarding-kennels-albury, boarding-kennels-newcastle, etc.
