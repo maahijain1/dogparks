@@ -581,7 +581,7 @@ export default async function CityPage({ params }: CityPageProps) {
           '@type': 'PostalAddress',
           streetAddress: listing.address || '',
           addressLocality: cityData?.name || cityName,
-          addressRegion: stateData?.name || state || '',
+          addressRegion: stateData?.name || '',
           addressCountry: 'USA',
         },
         aggregateRating: listing.review_rating
