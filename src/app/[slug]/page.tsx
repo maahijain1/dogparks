@@ -70,6 +70,7 @@ export async function generateMetadata({ params }: SlugPageProps): Promise<Metad
   const settings = await getSiteSettings()
   const siteName = settings.site_name || 'DirectoryHub'
   const niche = settings.niche || 'Dog Park'
+  const baseUrl = settings.site_url || 'https://www.dogboardingkennels.us'
   
   // First, check if this is an article
   try {
@@ -88,7 +89,7 @@ export async function generateMetadata({ params }: SlugPageProps): Promise<Metad
         openGraph: {
           title: article.title,
           description: article.excerpt || (article.content ? stripHtmlTags(article.content || '').substring(0, 160) : 'No description available'),
-          url: `${siteConfig.siteUrl}/${slug}`,
+          url: `${baseUrl}/${slug}`,
           siteName: siteName,
           type: 'article',
           images: article.featured_image ? [{ url: article.featured_image }] : undefined,
@@ -110,7 +111,7 @@ export async function generateMetadata({ params }: SlugPageProps): Promise<Metad
           },
         },
         alternates: {
-          canonical: `${siteConfig.siteUrl}/${slug}`,
+          canonical: `${baseUrl}/${slug}`,
         },
       }
     }
@@ -154,7 +155,7 @@ export async function generateMetadata({ params }: SlugPageProps): Promise<Metad
           openGraph: {
             title: title,
             description: description,
-            url: `${siteConfig.siteUrl}/${slug}`,
+            url: `${baseUrl}/${slug}`,
             siteName: siteName,
             type: 'website',
           },
@@ -164,7 +165,7 @@ export async function generateMetadata({ params }: SlugPageProps): Promise<Metad
             description: description,
           },
           alternates: {
-            canonical: `${siteConfig.siteUrl}/${slug}`,
+            canonical: `${baseUrl}/${slug}`,
           },
         }
       }
@@ -198,7 +199,7 @@ export async function generateMetadata({ params }: SlugPageProps): Promise<Metad
       openGraph: {
         title: title,
         description: description,
-        url: `${siteConfig.siteUrl}/${slug}`,
+        url: `${baseUrl}/${slug}`,
         siteName: siteName,
         type: 'website',
       },
@@ -208,7 +209,7 @@ export async function generateMetadata({ params }: SlugPageProps): Promise<Metad
         description: description,
       },
       alternates: {
-        canonical: `${siteConfig.siteUrl}/${slug}`,
+        canonical: `${baseUrl}/${slug}`,
       },
     }
   }

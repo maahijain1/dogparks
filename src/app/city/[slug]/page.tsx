@@ -230,6 +230,7 @@ export async function generateMetadata({ params }: CityPageProps): Promise<Metad
   // Get dynamic settings
   const settings = await getSiteSettings()
   const niche = settings.niche || 'Dog Park'
+  const baseUrl = settings.site_url || 'https://www.dogboardingkennels.us'
   
   // Format: "Niche City State | Site Name" or "Niche City | Site Name" if no state
   const title = state ? `${niche} ${cityName} ${state}` : `${niche} ${cityName}`
@@ -244,7 +245,7 @@ export async function generateMetadata({ params }: CityPageProps): Promise<Metad
     title: title,
     description: description,
     alternates: {
-      canonical: `https://www.dogboardingkennels.us/city/${slug}`
+      canonical: `${baseUrl}/city/${slug}`
     },
     robots: {
       index: true,
@@ -260,7 +261,7 @@ export async function generateMetadata({ params }: CityPageProps): Promise<Metad
     openGraph: {
       title: title,
       description: description,
-      url: `https://www.dogboardingkennels.us/city/${slug}`,
+      url: `${baseUrl}/city/${slug}`,
       type: 'website',
     },
   }
@@ -565,8 +566,43 @@ export default async function CityPage({ params }: CityPageProps) {
     console.error('❌ Error fetching random cities:', error)
   }
 
+  const structuredListings = Array.isArray(listings)
+    ? listings.slice(0, 20).map((listing) => ({
+        '@context': 'https://schema.org',
+        '@type': 'LocalBusiness',
+        name: listing.business,
+        url: listing.website
+          ? listing.website.startsWith('http')
+            ? listing.website
+            : `https://${listing.website}`
+          : undefined,
+        telephone: listing.phone || undefined,
+        address: {
+          '@type': 'PostalAddress',
+          streetAddress: listing.address || '',
+          addressLocality: cityData?.name || cityName,
+          addressRegion: stateData?.name || state || '',
+          addressCountry: 'USA',
+        },
+        aggregateRating: listing.review_rating
+          ? {
+              '@type': 'AggregateRating',
+              ratingValue: Number(listing.review_rating),
+              reviewCount: Number((listing as { number_of_reviews?: number }).number_of_reviews) || 0,
+            }
+          : undefined,
+        priceRange: listing.price_per_night ? `$${listing.price_per_night}+` : undefined,
+        description: listing.category || undefined,
+      }))
+    : []
+
+  const structuredDataJson = structuredListings.length > 0 ? JSON.stringify(structuredListings) : ''
+
   return (
     <div className="min-h-screen bg-gray-50">
+      {structuredDataJson && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: structuredDataJson }} />
+      )}
       {/* Header */}
       <div className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -807,6 +843,23 @@ export default async function CityPage({ params }: CityPageProps) {
           </div>
           </div>
         )}
+
+        <noscript>
+          <div className="bg-white rounded-lg shadow-sm p-6 mt-8 border border-gray-200">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              Featured {niche} in {cityData?.name || cityName}
+            </h2>
+            <ul className="space-y-2 list-disc list-inside text-gray-700">
+              {listings.slice(0, 10).map((listing) => (
+                <li key={listing.id}>
+                  <span className="font-medium">{listing.business}</span>
+                  {listing.phone && <> — {listing.phone}</>}
+                  {listing.address && ` (${listing.address})`}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </noscript>
 
         {/* AdSense Banner 3 - Before Random Cities */}
         <ServerAdSense 

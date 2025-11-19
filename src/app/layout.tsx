@@ -17,6 +17,7 @@ const inter = Inter({
 export async function generateMetadata(): Promise<Metadata> {
   // Get dynamic settings (force refresh for meta tags)
   const settings = await getSiteSettings(true)
+  const baseUrl = settings.site_url || 'https://www.dogboardingkennels.us'
   
   // Generate dynamic content
   const dynamicTitle = generateDynamicContent(siteConfig.seo.homepage.title, {
@@ -58,7 +59,7 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       title: dynamicTitle,
       description: dynamicDescription,
-      url: siteConfig.siteUrl,
+      url: baseUrl,
       siteName: settings.site_name || 'DirectoryHub',
       locale: 'en_US',
       type: 'website',
@@ -71,7 +72,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: dynamicDescription,
     },
     alternates: {
-      canonical: siteConfig.siteUrl,
+      canonical: baseUrl,
     },
     verification: {
       google: 'your-google-verification-code', // Add your Google Search Console verification code
