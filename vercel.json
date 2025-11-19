@@ -1,19 +1,23 @@
 {
-  // Redirect any vercel.app host to primary domain
   "redirects": [
     {
       "source": "/(.*)",
       "has": [
-        { "type": "host", "value": ".*\.vercel\.app$" }
+        {
+          "type": "host",
+          "value": ".*\\.vercel\\.app$"
+        }
       ],
       "destination": "https://www.dogboardingkennels.us/$1",
       "permanent": true
     },
     {
-      // Redirect apex (non-www) to www
       "source": "/(.*)",
       "has": [
-        { "type": "host", "value": "dogboardingkennels.us" }
+        {
+          "type": "host",
+          "value": "dogboardingkennels.us"
+        }
       ],
       "destination": "https://www.dogboardingkennels.us/$1",
       "permanent": true
