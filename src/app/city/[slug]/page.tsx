@@ -4,7 +4,6 @@ import { Listing } from '@/types/database'
 import { MapPin, Star, Phone, Globe, Mail } from 'lucide-react'
 import Link from 'next/link'
 import { getSiteSettings } from '@/lib/dynamic-config'
-import ServerAdSense from '@/components/ServerAdSense'
 
 interface CityPageProps {
   params: Promise<{ slug: string }>
@@ -66,14 +65,14 @@ async function getStateFromCity(cityName: string, slug: string): Promise<{ state
     'wy': { state: 'Wyoming', stateAbbr: 'WY' },
     'dc': { state: 'District of Columbia', stateAbbr: 'DC' }
   }
-  
+
   // First, try to extract state from slug if it contains state info
   const parts = slug.split('-')
   const lastPart = parts[parts.length - 1]
   if (stateAbbrMap[lastPart.toLowerCase()]) {
     return stateAbbrMap[lastPart.toLowerCase()]
   }
-  
+
   // Check if last two parts form a state name
   if (parts.length >= 2) {
     const lastTwoParts = parts.slice(-2).join('-')
@@ -82,11 +81,11 @@ async function getStateFromCity(cityName: string, slug: string): Promise<{ state
       return stateAbbrMap[stateKey]
     }
   }
-  
+
   // Try to get state from database by looking up the city
   try {
     console.log('🔍 Looking up city in database:', cityName)
-    
+
     const { data: cityData, error } = await supabase
       .from('cities')
       .select(`
@@ -98,13 +97,13 @@ async function getStateFromCity(cityName: string, slug: string): Promise<{ state
       .ilike('name', `%${cityName}%`)
       .limit(1)
       .single()
-    
+
     console.log('📊 Database query result:', { cityData, error })
-    
+
     if (!error && cityData && cityData.states) {
       const state = Array.isArray(cityData.states) ? cityData.states[0] : cityData.states
       console.log('✅ Found state in database:', state)
-      
+
       // Map state name to abbreviation
       const stateNameToAbbr: Record<string, string> = {
         'Alabama': 'AL', 'Alaska': 'AK', 'Arizona': 'AZ', 'Arkansas': 'AR',
@@ -121,12 +120,12 @@ async function getStateFromCity(cityName: string, slug: string): Promise<{ state
         'Vermont': 'VT', 'Virginia': 'VA', 'Washington': 'WA', 'West Virginia': 'WV',
         'Wisconsin': 'WI', 'Wyoming': 'WY', 'District of Columbia': 'DC'
       }
-      
+
       const result = {
         state: state.name,
         stateAbbr: stateNameToAbbr[state.name] || ''
       }
-      
+
       console.log('🎯 Returning state info:', result)
       return result
     } else {
@@ -135,18 +134,18 @@ async function getStateFromCity(cityName: string, slug: string): Promise<{ state
   } catch (dbError) {
     console.log('💥 Database lookup failed:', dbError)
   }
-  
+
   // Try using a geocoding API as fallback (you can replace with any geocoding service)
   try {
     // Using a free geocoding service - you can replace with Google Maps API, etc.
     const response = await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(cityName)},US&limit=1&appid=dummy`)
-    
+
     if (response.ok) {
       const data = await response.json()
       if (data && data.length > 0) {
         const stateName = data[0].state
         // const stateAbbr = data[0].country // This would need to be mapped to state abbreviation
-        
+
         // Map state names to abbreviations
         const stateNameToAbbr: Record<string, string> = {
           'Alabama': 'AL', 'Alaska': 'AK', 'Arizona': 'AZ', 'Arkansas': 'AR',
@@ -163,7 +162,7 @@ async function getStateFromCity(cityName: string, slug: string): Promise<{ state
           'Vermont': 'VT', 'Virginia': 'VA', 'Washington': 'WA', 'West Virginia': 'WV',
           'Wisconsin': 'WI', 'Wyoming': 'WY', 'District of Columbia': 'DC'
         }
-        
+
         if (stateName && stateNameToAbbr[stateName]) {
           return {
             state: stateName,
@@ -175,17 +174,17 @@ async function getStateFromCity(cityName: string, slug: string): Promise<{ state
   } catch (apiError) {
     console.log('Geocoding API failed:', apiError)
   }
-  
+
   // Default fallback - return empty state info
   return { state: '', stateAbbr: '' }
 }
 
 export async function generateMetadata({ params }: CityPageProps): Promise<Metadata> {
   const { slug } = await params
-  
+
   // Format city name from slug
   const cityName = slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
-  
+
   // Check if city exists in database first
   try {
     const { data: cityExists } = await supabase
@@ -194,7 +193,7 @@ export async function generateMetadata({ params }: CityPageProps): Promise<Metad
       .ilike('name', `%${cityName}%`)
       .limit(1)
       .single()
-    
+
     if (!cityExists) {
       return {
         title: 'City Not Found',
@@ -216,31 +215,31 @@ export async function generateMetadata({ params }: CityPageProps): Promise<Metad
       },
     }
   }
-  
+
   // Get state information from city name and slug (now async)
   const { state, stateAbbr } = await getStateFromCity(cityName, slug)
-  
+
   // Debug logging
   console.log('=== META TAG DEBUG ===')
   console.log('Slug:', slug)
   console.log('City Name:', cityName)
   console.log('State:', state)
   console.log('State Abbr:', stateAbbr)
-  
+
   // Get dynamic settings
   const settings = await getSiteSettings()
   const niche = settings.niche || 'Dog Park'
   const baseUrl = settings.site_url || 'https://www.dogboardingkennels.us'
-  
+
   // Format: "Niche City State | Site Name" or "Niche City | Site Name" if no state
   const title = state ? `${niche} ${cityName} ${state}` : `${niche} ${cityName}`
-  const description = state 
+  const description = state
     ? `Find the best ${niche.toLowerCase()} in ${cityName}, ${stateAbbr}. Browse reviews, ratings, and contact information for local businesses.`
     : `Find the best ${niche.toLowerCase()} in ${cityName}. Browse reviews, ratings, and contact information for local businesses.`
-  
+
   console.log('Generated Title:', title)
   console.log('Generated Description:', description)
-  
+
   return {
     title: title,
     description: description,
@@ -270,36 +269,36 @@ export async function generateMetadata({ params }: CityPageProps): Promise<Metad
 export default async function CityPage({ params }: CityPageProps) {
   const { slug } = await params
   const cityName = slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
-  
-  
-  
+
+
+
   console.log('=== CITY PAGE DEBUG ===')
   console.log('URL slug:', slug)
   console.log('Parsed city name:', cityName)
-  
+
   // Get dynamic settings
   const settings = await getSiteSettings()
   const niche = settings.niche || 'Dog Park'
-  
+
   // Fetch listings for this city
   let listings: Listing[] = []
   let totalListings = 0
   let featuredListings = 0
   let cityData: { id: string; name: string } | null = null
   let stateData: { id: string; name: string } | null = null
-  
+
   try {
     // Parse city and state from slug (e.g., "laurel-montana" -> city: "Laurel", state: "Montana")
     const slugParts = slug.split('-')
     let cityPart = slugParts[0]
     let statePart = slugParts.length > 1 ? slugParts.slice(1).join(' ') : ''
-    
+
     // Capitalize properly
     cityPart = cityPart.replace(/\b\w/g, l => l.toUpperCase())
     statePart = statePart.replace(/\b\w/g, l => l.toUpperCase())
-    
+
     console.log('🔍 Looking up city in database:', cityPart, statePart ? `in ${statePart}` : '')
-    
+
     let foundCity = null
     let foundState = null
 
@@ -318,7 +317,7 @@ export default async function CityPage({ params }: CityPageProps) {
 
     if (!nameError && citiesByName && citiesByName.length > 0) {
       console.log(`🔍 Found ${citiesByName.length} cities named "${cityPart}"`)
-      
+
       // If we have multiple cities with the same name, try to match by state
       if (citiesByName.length > 1 && statePart) {
         console.log('🔍 Multiple cities found, looking for state match:', statePart)
@@ -326,7 +325,7 @@ export default async function CityPage({ params }: CityPageProps) {
           const state = Array.isArray(city.states) ? city.states[0] : city.states
           return state && state.name.toLowerCase().includes(statePart.toLowerCase())
         })
-        
+
         if (matchingCity) {
           foundCity = matchingCity
           foundState = Array.isArray(matchingCity.states) ? matchingCity.states[0] : matchingCity.states
@@ -367,7 +366,7 @@ export default async function CityPage({ params }: CityPageProps) {
       }
     } else {
       console.log('❌ City not found by exact name, trying case-insensitive...')
-      
+
       // Try case-insensitive partial match
       const { data: citiesByPartial, error: partialError } = await supabase
         .from('cities')
@@ -384,14 +383,14 @@ export default async function CityPage({ params }: CityPageProps) {
 
       if (!partialError && citiesByPartial && citiesByPartial.length > 0) {
         console.log(`🔍 Found ${citiesByPartial.length} cities with partial match for "${cityPart}"`)
-        
+
         // If we have multiple cities, try to match by state
         if (citiesByPartial.length > 1 && statePart) {
           const matchingCity = citiesByPartial.find(city => {
             const state = Array.isArray(city.states) ? city.states[0] : city.states
             return state && state.name.toLowerCase().includes(statePart.toLowerCase())
           })
-          
+
           if (matchingCity) {
             foundCity = matchingCity
             foundState = Array.isArray(matchingCity.states) ? matchingCity.states[0] : matchingCity.states
@@ -436,7 +435,7 @@ export default async function CityPage({ params }: CityPageProps) {
     if (foundCity) {
       cityData = foundCity
       stateData = foundState
-      
+
       console.log('Getting listings for city ID:', foundCity.id)
       const { data: cityListings, error: listingsError } = await supabase
         .from('listings')
@@ -454,7 +453,7 @@ export default async function CityPage({ params }: CityPageProps) {
         .eq('city_id', foundCity.id)
         .order('featured', { ascending: false })
         .order('business')
-      
+
       if (!listingsError && cityListings) {
         listings = cityListings
         totalListings = listings.length
@@ -471,7 +470,7 @@ export default async function CityPage({ params }: CityPageProps) {
       listings = []
       totalListings = 0
       featuredListings = 0
-      
+
       // Set fallback data to avoid "Unknown City" display
       cityData = { id: '', name: cityName }
       stateData = statePart ? { id: '', name: statePart } : null
@@ -528,7 +527,7 @@ export default async function CityPage({ params }: CityPageProps) {
   let randomCities: Array<{ id: string; name: string; slug: string; state_name?: string }> = []
   try {
     console.log('🔍 Fetching random cities for interlinking...')
-    
+
     // First get cities without the join
     const { data: allCities, error: citiesError } = await supabase
       .from('cities')
@@ -540,21 +539,21 @@ export default async function CityPage({ params }: CityPageProps) {
       console.error('❌ Error fetching random cities:', citiesError)
     } else if (allCities && allCities.length > 0) {
       console.log(`✅ Found ${allCities.length} cities for randomization`)
-      
+
       // Get states separately for better reliability
       const { data: states } = await supabase
         .from('states')
         .select('id, name')
-      
+
       const stateMap = new Map(states?.map(s => [s.id, s.name]) || [])
-      
+
       // Add state names to cities and generate slugs
       const citiesWithStates = allCities.map(city => ({
         ...city,
         slug: city.name.toLowerCase().replace(/\s+/g, '-'),
         state_name: stateMap.get(city.state_id)
       }))
-      
+
       // Shuffle and take 10 random cities
       const shuffled = [...citiesWithStates].sort(() => 0.5 - Math.random())
       randomCities = shuffled.slice(0, 10)
@@ -568,32 +567,32 @@ export default async function CityPage({ params }: CityPageProps) {
 
   const structuredListings = Array.isArray(listings)
     ? listings.slice(0, 20).map((listing) => ({
-        '@context': 'https://schema.org',
-        '@type': 'LocalBusiness',
-        name: listing.business,
-        url: listing.website
-          ? listing.website.startsWith('http')
-            ? listing.website
-            : `https://${listing.website}`
-          : undefined,
-        telephone: listing.phone || undefined,
-        address: {
-          '@type': 'PostalAddress',
-          streetAddress: listing.address || '',
-          addressLocality: cityData?.name || cityName,
-          addressRegion: stateData?.name || '',
-          addressCountry: 'USA',
-        },
-        aggregateRating: listing.review_rating
-          ? {
-              '@type': 'AggregateRating',
-              ratingValue: Number(listing.review_rating),
-              reviewCount: Number((listing as { number_of_reviews?: number }).number_of_reviews) || 0,
-            }
-          : undefined,
-        priceRange: listing.price_per_night ? `$${listing.price_per_night}+` : undefined,
-        description: listing.category || undefined,
-      }))
+      '@context': 'https://schema.org',
+      '@type': 'LocalBusiness',
+      name: listing.business,
+      url: listing.website
+        ? listing.website.startsWith('http')
+          ? listing.website
+          : `https://${listing.website}`
+        : undefined,
+      telephone: listing.phone || undefined,
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: listing.address || '',
+        addressLocality: cityData?.name || cityName,
+        addressRegion: stateData?.name || '',
+        addressCountry: 'USA',
+      },
+      aggregateRating: listing.review_rating
+        ? {
+          '@type': 'AggregateRating',
+          ratingValue: Number(listing.review_rating),
+          reviewCount: Number((listing as { number_of_reviews?: number }).number_of_reviews) || 0,
+        }
+        : undefined,
+      priceRange: listing.price_per_night ? `$${listing.price_per_night}+` : undefined,
+      description: listing.category || undefined,
+    }))
     : []
 
   const structuredDataJson = structuredListings.length > 0 ? JSON.stringify(structuredListings) : ''
@@ -608,7 +607,7 @@ export default async function CityPage({ params }: CityPageProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Back to Home Button */}
           <div className="mb-6">
-            <Link 
+            <Link
               href="/"
               className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium transition-colors"
             >
@@ -618,11 +617,11 @@ export default async function CityPage({ params }: CityPageProps) {
               Back to Home
             </Link>
           </div>
-          
+
           <div className="text-center">
             <h1 className="text-4xl font-bold text-gray-900 mb-2">
               {niche} {cityData?.name || cityName}
-          </h1>
+            </h1>
             {stateData && (
               <p className="text-xl text-gray-600 mb-4">
                 {cityData?.name}, {stateData.name}
@@ -632,11 +631,11 @@ export default async function CityPage({ params }: CityPageProps) {
               <div className="flex items-center">
                 <MapPin className="h-4 w-4 mr-1" />
                 {totalListings} {totalListings === 1 ? 'Business' : 'Businesses'}
-            </div>
+              </div>
               <div className="flex items-center">
                 <Star className="h-4 w-4 mr-1" />
                 {featuredListings} Featured
-            </div>
+              </div>
             </div>
           </div>
         </div>
@@ -649,7 +648,7 @@ export default async function CityPage({ params }: CityPageProps) {
             <div className="bg-white rounded-lg shadow-sm p-8">
               <h2 className="text-2xl font-semibold text-gray-900 mb-4">
                 No {niche} found in {cityData?.name || cityName}
-                </h2>
+              </h2>
               <p className="text-gray-600 mb-6">
                 We don&apos;t have any {niche} listed for {cityData?.name || cityName} yet.
               </p>
@@ -663,12 +662,7 @@ export default async function CityPage({ params }: CityPageProps) {
           </div>
         ) : (
           <div className="space-y-8">
-            {/* AdSense Banner 1 - Top of Listings */}
-            <ServerAdSense 
-              adSlot="1234567894" 
-              className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4"
-              adStyle={{ display: 'block', width: '100%', height: '250px' }}
-            />
+
 
             {/* Featured Listings */}
             {listings.filter(l => Boolean(l.featured)).length > 0 && (
@@ -696,52 +690,52 @@ export default async function CityPage({ params }: CityPageProps) {
                     .slice(0, 3)
                     .map((listing) => (
                       <div key={listing.id} className="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-lg shadow-lg p-6 hover:shadow-xl transition-all duration-300 border-2 border-yellow-200 transform hover:-translate-y-1">
-                      <div className="flex justify-between items-start mb-4">
+                        <div className="flex justify-between items-start mb-4">
                           <h3 className="text-xl font-bold text-gray-900">{listing.business}</h3>
                           {listing.featured && (
                             <span className="bg-yellow-500 text-white text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap">
                               ⭐ Featured
                             </span>
                           )}
-                      </div>
-                      
+                        </div>
+
                         <div className="space-y-3 text-sm">
-                        {listing.address && (
+                          {listing.address && (
                             <div className="flex items-start">
                               <MapPin className="h-4 w-4 text-orange-500 mt-0.5 mr-2 flex-shrink-0" />
                               <span className="text-gray-700">{listing.address}</span>
                             </div>
-                        )}
-                            
-                        {listing.phone && (
+                          )}
+
+                          {listing.phone && (
                             <div className="flex items-center justify-between bg-white/60 rounded-lg p-2 -mx-2">
                               <div className="flex items-center">
                                 <Phone className="h-4 w-4 text-orange-500 mr-2" />
                                 <span className="text-gray-700 font-medium">{listing.phone}</span>
                               </div>
-                            <a 
-                              href={`tel:${listing.phone}`}
+                              <a
+                                href={`tel:${listing.phone}`}
                                 className="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 transition-colors shadow-md"
-                            >
+                              >
                                 📞 Call Now
-                            </a>
-                          </div>
-                        )}
-                            
-                        {listing.website && (
+                              </a>
+                            </div>
+                          )}
+
+                          {listing.website && (
                             <div className="flex items-center">
                               <Globe className="h-4 w-4 text-orange-500 mr-2" />
-                              <a 
+                              <a
                                 href={listing.website.startsWith('http') ? listing.website : `https://${listing.website}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-blue-600 hover:text-blue-800 font-medium hover:underline"
                               >
-                              Visit Website
-                            </a>
+                                Visit Website
+                              </a>
                             </div>
                           )}
-                            
+
                           {listing.email && (
                             <div className="flex items-center">
                               <Mail className="h-4 w-4 text-orange-500 mr-2" />
@@ -750,7 +744,7 @@ export default async function CityPage({ params }: CityPageProps) {
                               </a>
                             </div>
                           )}
-                            
+
                           <div className="flex items-center justify-between pt-3 border-t border-yellow-200">
                             <div className="flex items-center">
                               <Star className="h-5 w-5 text-yellow-500 fill-current mr-1" />
@@ -767,19 +761,14 @@ export default async function CityPage({ params }: CityPageProps) {
                               {listing.category}
                             </div>
                           )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               </div>
             )}
 
-            {/* AdSense Banner 2 - Between Featured and All Listings */}
-            <ServerAdSense 
-              adSlot="1234567895" 
-              className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4"
-              adStyle={{ display: 'block', width: '100%', height: '250px' }}
-            />
+
 
             {/* All Listings */}
             <div>
@@ -796,51 +785,51 @@ export default async function CityPage({ params }: CityPageProps) {
                   })
                   // No slice; featured are excluded above
                   .map((listing) => (
-                <div key={listing.id} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-                    <h3 className="text-xl font-semibold text-gray-900 mb-4">{listing.business}</h3>
-                  
-                  <div className="space-y-2 text-sm text-gray-600">
-                    {listing.address && (
-                      <p><span className="font-medium">Address:</span> {listing.address}</p>
-                    )}
-                      
-                    {listing.phone && (
-                      <div className="flex items-center justify-between">
-                        <p><span className="font-medium">Phone:</span> {listing.phone}</p>
-                        <a 
-                          href={`tel:${listing.phone}`}
-                          className="inline-flex items-center px-3 py-1 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors"
-                        >
-                          📞 Call
-                        </a>
+                    <div key={listing.id} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+                      <h3 className="text-xl font-semibold text-gray-900 mb-4">{listing.business}</h3>
+
+                      <div className="space-y-2 text-sm text-gray-600">
+                        {listing.address && (
+                          <p><span className="font-medium">Address:</span> {listing.address}</p>
+                        )}
+
+                        {listing.phone && (
+                          <div className="flex items-center justify-between">
+                            <p><span className="font-medium">Phone:</span> {listing.phone}</p>
+                            <a
+                              href={`tel:${listing.phone}`}
+                              className="inline-flex items-center px-3 py-1 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors"
+                            >
+                              📞 Call
+                            </a>
+                          </div>
+                        )}
+
+                        {listing.website && (
+                          <p>
+                            <span className="font-medium">Website:</span>{' '}
+                            <a
+                              href={listing.website.startsWith('http') ? listing.website : `https://${listing.website}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 hover:underline"
+                            >
+                              Visit Website
+                            </a>
+                          </p>
+                        )}
+
+                        {listing.review_rating && Number(listing.review_rating) > 0 && (
+                          <p>
+                            <span className="font-medium">Rating:</span> {listing.review_rating}/5
+                            <span className="ml-1 text-yellow-500">★</span>
+                          </p>
+                        )}
                       </div>
-                    )}
-                      
-                    {listing.website && (
-                      <p>
-                        <span className="font-medium">Website:</span>{' '}
-                          <a 
-                            href={listing.website.startsWith('http') ? listing.website : `https://${listing.website}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-600 hover:underline"
-                          >
-                          Visit Website
-                        </a>
-                      </p>
-                    )}
-                      
-                      {listing.review_rating && Number(listing.review_rating) > 0 && (
-                      <p>
-                        <span className="font-medium">Rating:</span> {listing.review_rating}/5 
-                          <span className="ml-1 text-yellow-500">★</span>
-                      </p>
-                    )}
-                  </div>
-                </div>
-              ))}
+                    </div>
+                  ))}
+              </div>
             </div>
-          </div>
           </div>
         )}
 
@@ -861,12 +850,7 @@ export default async function CityPage({ params }: CityPageProps) {
           </div>
         </noscript>
 
-        {/* AdSense Banner 3 - Before Random Cities */}
-        <ServerAdSense 
-          adSlot="1234567896" 
-          className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4"
-          adStyle={{ display: 'block', width: '100%', height: '250px' }}
-        />
+
 
         {/* Random City Interlinking Section */}
         <section className="py-12 bg-white border-t border-gray-200">
@@ -900,8 +884,8 @@ export default async function CityPage({ params }: CityPageProps) {
             ) : (
               <div className="text-center py-8">
                 <p className="text-gray-600 mb-4">Discover more cities with {niche.toLowerCase()} services</p>
-                <Link 
-                  href="/" 
+                <Link
+                  href="/"
                   className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   <MapPin className="w-4 h-4 mr-2" />
@@ -911,7 +895,7 @@ export default async function CityPage({ params }: CityPageProps) {
             )}
           </div>
         </section>
-        </div>
+      </div>
     </div>
   )
 }
