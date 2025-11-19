@@ -50,7 +50,7 @@ async function fetchCities(): Promise<CityWithState[]> {
   }
 }
 
-async function fetchListings(limit = 120): Promise<ListingWithRelations[]> {
+async function fetchListings(): Promise<ListingWithRelations[]> {
   try {
     const { data, error } = await supabaseAdmin
       .from('listings')
@@ -65,7 +65,6 @@ async function fetchListings(limit = 120): Promise<ListingWithRelations[]> {
         )`)
       .order('featured', { ascending: false })
       .order('business')
-      .limit(limit)
 
     if (error) {
       console.error('Error fetching listings:', error)
