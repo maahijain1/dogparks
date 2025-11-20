@@ -53,42 +53,7 @@ const closingTemplates = [
 
     (d: CityContentData) => `Whether you need ${d.niche.toLowerCase()} for a weekend getaway or an extended vacation, ${d.cityName} has excellent options. Start by browsing the ${d.listingCount} facilities listed above, and don't forget to book early during peak travel seasons!`,
 ]
-
-/**
- * Generates unique content for a city page
- * Uses hash of city name to select consistent but varied templates
- */
-export function generateCityContent(data: CityContentData): string {
-    // Use city name hash to select templates (consistent per city, but varied across cities)
-    const hash = data.cityName.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
-
-    const intro = introTemplates[hash % introTemplates.length](data)
-    const whyChoose = whyChooseTemplates[(hash + 1) % whyChooseTemplates.length](data)
-    const whatToLookFor = whatToLookForTemplates[(hash + 2) % whatToLookForTemplates.length](data)
-    const services = servicesTemplates[(hash + 3) % servicesTemplates.length](data)
-    const closing = closingTemplates[(hash + 4) % closingTemplates.length](data)
-
-    return `
-    <div class="city-content prose max-w-none">
-      <p class="text-lg leading-relaxed mb-4">${intro}</p>
-      
-      <h2 class="text-2xl font-bold mt-6 mb-3">Why Choose ${data.cityName} for ${data.niche}?</h2>
-      <p class="leading-relaxed mb-4">${whyChoose}</p>
-      
-      <h2 class="text-2xl font-bold mt-6 mb-3">What to Look For</h2>
-      <p class="leading-relaxed mb-4">${whatToLookFor}</p>
-      
-      <h2 class="text-2xl font-bold mt-6 mb-3">Services Available</h2>
-      <p class="leading-relaxed mb-4">${services}</p>
-      
-      <p class="text-lg leading-relaxed mt-6">${closing}</p>
-    </div>
-  `.trim()
-}
-
-/**
- * Generates plain text content for meta description
- */
+    */
 export function generateCityMetaDescription(data: CityContentData): string {
     const templates = [
         `Find ${data.listingCount} trusted ${data.niche.toLowerCase()} in ${data.cityName}, ${data.stateAbbr}. Compare facilities, read reviews, and book the perfect place for your dog. Quality care guaranteed.`,
