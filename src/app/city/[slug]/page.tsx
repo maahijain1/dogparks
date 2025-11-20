@@ -1,9 +1,10 @@
 import { Metadata } from 'next'
 import { supabase } from '@/lib/supabase'
 import { Listing } from '@/types/database'
-import { MapPin, Star, Phone, Globe, Mail } from 'lucide-react'
+import { Star, Phone, Globe, MapPin, Mail, Clock, ChevronLeft, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
-import { getSiteSettings } from '@/lib/dynamic-config'
+import { getSiteSettings, generateDynamicContent } from '@/lib/dynamic-config'
+import { generateCityContent } from '@/lib/generateCityContent'
 
 interface CityPageProps {
   params: Promise<{ slug: string }>
@@ -663,6 +664,19 @@ export default async function CityPage({ params }: CityPageProps) {
         ) : (
           <div className="space-y-8">
 
+            {/* Dynamic SEO Content */}
+            <div
+              className="bg-white rounded-lg shadow-md p-8 mb-8"
+              dangerouslySetInnerHTML={{
+                __html: generateCityContent({
+                  cityName: cityData?.name || cityName,
+                  stateName: stateData?.name || '',
+                  stateAbbr: stateData?.abbreviation || '',
+                  listingCount: listings.length,
+                  niche: niche
+                })
+              }}
+            />
 
             {/* Featured Listings */}
             {listings.filter(l => Boolean(l.featured)).length > 0 && (
