@@ -664,20 +664,6 @@ export default async function CityPage({ params }: CityPageProps) {
         ) : (
           <div className="space-y-8">
 
-            {/* Dynamic SEO Content */}
-            <div
-              className="bg-white rounded-lg shadow-md p-8 mb-8"
-              dangerouslySetInnerHTML={{
-                __html: generateCityContent({
-                  cityName: cityData?.name || cityName,
-                  stateName: stateData?.name || '',
-                  stateAbbr: stateData?.name?.substring(0, 2).toUpperCase() || '',
-                  listingCount: listings.length,
-                  niche: niche
-                })
-              }}
-            />
-
             {/* Featured Listings */}
             {listings.filter(l => Boolean(l.featured)).length > 0 && (
               <div>
@@ -909,7 +895,27 @@ export default async function CityPage({ params }: CityPageProps) {
             )}
           </div>
         </section>
+
+        {/* Dynamic SEO Content - Moved to bottom for better UX */}
+        <section className="py-12 bg-gray-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div
+              className="bg-white rounded-lg shadow-md p-8"
+              dangerouslySetInnerHTML={{
+                __html: generateCityContent({
+                  cityName: cityData?.name || cityName,
+                  stateName: stateData?.name || '',
+                  stateAbbr: stateData?.name?.substring(0, 2).toUpperCase() || '',
+                  listingCount: listings.length,
+                  niche: niche
+                })
+              }}
+            />
+          </div>
+        </section>
+
       </div>
     </div>
   )
 }
+```
