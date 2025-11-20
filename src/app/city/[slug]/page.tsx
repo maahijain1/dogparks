@@ -670,8 +670,8 @@ export default async function CityPage({ params }: CityPageProps) {
               dangerouslySetInnerHTML={{
                 __html: generateCityContent({
                   cityName: cityData?.name || cityName,
-                  stateName: stateData?.name || '',
-                  stateAbbr: stateData?.abbreviation || '',
+                  stateName: stateData?.name || state || '',
+                  stateAbbr: stateAbbr || '',
                   listingCount: listings.length,
                   niche: niche
                 })
