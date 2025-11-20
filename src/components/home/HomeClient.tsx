@@ -79,7 +79,7 @@ export default function HomeClient({
   const [userLocation, setUserLocation] = useState<{ lat: number, lng: number } | null>(null)
   const [locationLoading, setLocationLoading] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
-  const [itemsPerPage] = useState(9) // Reduced to 9 for optimal performance
+  const [itemsPerPage] = useState(18) // Balanced for SEO and performance
   const [articlesCurrentPage, setArticlesCurrentPage] = useState(1)
   const [articlesPerPage] = useState(12) // 12 articles per page
 
