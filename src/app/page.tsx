@@ -66,7 +66,7 @@ async function fetchListings(): Promise<ListingWithRelations[]> {
         )`)
       .order('featured', { ascending: false })
       .order('business')
-      .limit(150) // Balanced for SEO and performance
+    // No limit - fetch all listings for complete directory
 
     if (error) {
       console.error('Error fetching listings:', error)
