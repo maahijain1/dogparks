@@ -5,7 +5,7 @@ const nextConfig = {
     optimizeCss: true,
     optimizePackageImports: ['lucide-react'],
   },
-  
+
   // Image optimization
   images: {
     formats: ['image/webp', 'image/avif'],
@@ -41,15 +41,15 @@ const nextConfig = {
       },
     ],
   },
-  
+
   // Compression
   compress: true,
-  
+
   // Bundle analyzer (uncomment to analyze bundle)
   // bundleAnalyzer: {
   //   enabled: process.env.ANALYZE === 'true',
   // },
-  
+
   // Redirects for city pages - simple approach that always works
   async redirects() {
     return [
@@ -88,6 +88,16 @@ const nextConfig = {
           {
             key: 'Referrer-Policy',
             value: 'origin-when-cross-origin'
+          }
+        ]
+      },
+      // Cache static assets aggressively
+      {
+        source: '/:all*(svg|jpg|jpeg|png|webp|avif|woff|woff2|ttf|otf)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable'
           }
         ]
       },

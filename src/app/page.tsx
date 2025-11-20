@@ -6,7 +6,9 @@ import { State, City, Listing, Article } from '@/types/database'
 type CityWithState = City & { states?: State }
 type ListingWithRelations = Listing & { cities?: CityWithState }
 
-export const dynamic = 'force-dynamic'
+// Enable ISR (Incremental Static Regeneration) for better performance
+// Page will be statically generated and revalidated every hour
+export const revalidate = 3600 // Revalidate every 1 hour
 
 async function fetchStates(): Promise<State[]> {
   try {
