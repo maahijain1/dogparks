@@ -7,7 +7,7 @@ import GoogleAnalytics from '@/components/GoogleAnalytics'
 import CookieConsent from '@/components/CookieConsent'
 import ServiceWorkerCleanup from '@/components/ServiceWorkerCleanup'
 
-const inter = Inter({ 
+const inter = Inter({
   subsets: ['latin'],
   display: 'swap',
   preload: true,
@@ -18,18 +18,18 @@ export async function generateMetadata(): Promise<Metadata> {
   // Get dynamic settings (force refresh for meta tags)
   const settings = await getSiteSettings(true)
   const baseUrl = settings.site_url || 'https://www.dogboardingkennels.us'
-  
+
   // Generate dynamic content
   const dynamicTitle = generateDynamicContent(siteConfig.seo.homepage.title, {
     niche: settings.niche || 'Dog Park',
     country: settings.country || 'USA'
   })
-  
+
   const dynamicDescription = generateDynamicContent(siteConfig.seo.homepage.description, {
     niche: settings.niche || 'Dog Park',
     country: settings.country || 'USA'
   })
-  
+
   const dynamicKeywords = generateDynamicContent(siteConfig.seo.homepage.keywords, {
     niche: settings.niche || 'Dog Park',
     country: settings.country || 'USA'
@@ -95,22 +95,17 @@ export default function RootLayout({
         <link rel="manifest" href="/site.webmanifest" />
         <meta name="theme-color" content="#2563eb" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        
+
         {/* Performance optimizations */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="//fonts.googleapis.com" />
         <link rel="dns-prefetch" href="//fonts.gstatic.com" />
-        
+
         {/* Preload critical resources */}
         <link rel="preload" href="/hero-background-simple.svg" as="image" type="image/svg+xml" />
-        
-        {/* Google AdSense */}
-        <script 
-          async 
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7485448000854503"
-          crossOrigin="anonymous"
-        />
+
+        {/* Google AdSense - Removed from head to prevent render blocking */}
       </head>
       <body className={inter.className}>
         <GoogleAnalytics measurementId="G-QW1ELNERMR" />

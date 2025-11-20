@@ -1,9 +1,17 @@
-/** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Performance optimizations
+  // Aggressive performance optimizations
+  swcMinify: true, // Use SWC for faster minification
+
   experimental: {
     optimizeCss: true,
-    optimizePackageImports: ['lucide-react'],
+    optimizePackageImports: ['lucide-react', 'react-icons'],
+  },
+
+  // Production optimizations
+  productionBrowserSourceMaps: false, // Disable source maps in production
+
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production', // Remove console.logs in production
   },
 
   // Image optimization

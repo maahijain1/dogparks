@@ -66,7 +66,7 @@ async function fetchListings(): Promise<ListingWithRelations[]> {
         )`)
       .order('featured', { ascending: false })
       .order('business')
-      .limit(100) // Limit to 100 for faster initial load
+      .limit(50) // Reduced to 50 for optimal performance
 
     if (error) {
       console.error('Error fetching listings:', error)
@@ -116,7 +116,7 @@ async function fetchArticles(): Promise<Article[]> {
       .select('*')
       .eq('published', true)
       .order('created_at', { ascending: false })
-      .limit(24)
+      .limit(12) // Reduced from 24 to 12 for performance
 
     if (error) {
       console.error('Error fetching articles:', error)
