@@ -6,9 +6,8 @@ import { State, City, Listing, Article } from '@/types/database'
 type CityWithState = City & { states?: State }
 type ListingWithRelations = Listing & { cities?: CityWithState }
 
-// Enable ISR (Incremental Static Regeneration) for better performance
-// Page will be statically generated and revalidated every hour
-export const revalidate = 3600 // Revalidate every 1 hour
+// Use ISR with 5-minute revalidation for balance between speed and freshness
+export const revalidate = 300 // 5 minutes
 
 async function fetchStates(): Promise<State[]> {
   try {
@@ -67,6 +66,7 @@ async function fetchListings(): Promise<ListingWithRelations[]> {
         )`)
       .order('featured', { ascending: false })
       .order('business')
+      .limit(100) // Limit to 100 for faster initial load
 
     if (error) {
       console.error('Error fetching listings:', error)
